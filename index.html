@@ -22,10 +22,21 @@
             background-size: cover;
             background-position: center center;
             background-attachment: fixed;
-            transition: background-image 0.5s ease, background-color 0.5s ease;
+            transition: background 0.8s ease, background-color 0.8s ease;
+            /* 添加背景切换过渡 */;
         }
 
         body.dark-mode {
+            background-image: none !important;
+            background-color: #000000 !important;
+        }
+
+        body.bg-img5 {
+            background-image: url('img5.jpg') !important;
+        }
+
+        /* 暗黑模式优先，覆盖背景切换 */
+        body.dark-mode.bg-img5 {
             background-image: none !important;
             background-color: #000000 !important;
         }
@@ -275,51 +286,49 @@
             }
         }
 
-        /* ===== 圆形按钮 ===== */
-        .circle-btn {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.85);
-            color: #1a1a2e;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-            font-size: 0.75rem;
-            font-weight: 700;
+        /* ===== 长圆玻璃按钮 ===== */
+        .btn-glass {
+            display: inline-block;
+            padding: 14px 48px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            transition: all 0.3s ease;
             text-align: center;
-            line-height: 1.2;
-            padding: 10px;
-            font-family: inherit;
             letter-spacing: 0.5px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            font-family: inherit;
             user-select: none;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            flex-shrink: 0;
         }
 
-        .circle-btn:hover {
-            transform: scale(1.05);
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.02);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
 
-        .circle-btn:active {
-            transform: scale(0.93);
+        .btn-glass:active {
+            transform: scale(0.97);
         }
 
-        body.dark-mode .circle-btn {
-            background: rgba(255, 255, 255, 0.9);
-            color: #000000;
-            border-color: rgba(255, 255, 255, 0.2);
+        body.dark-mode .btn-glass {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        body.dark-mode .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.12);
         }
 
         /* ================================================================
-               卡片区域 — 统一高度 + 滚动缩放
+               卡片区域 — 统一高度 + 滚动缩放 + 毛玻璃
                ================================================================ */
         .cards-section {
             width: 100%;
@@ -340,15 +349,20 @@
             transform-origin: center center;
             will-change: transform;
 
-            background: #000000;
+            /* ===== 毛玻璃效果 ===== */
+            background: rgba(20, 20, 40, 0.35);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 5px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
             border-radius: 24px;
             padding: 40px 35px;
             height: 280px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
-            border: 5px solid rgba(255, 255, 255, 0.7);
             transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
                 box-shadow 0.25s ease,
-                border-color 0.5s ease;
+                border-color 0.5s ease,
+                background 0.3s ease;
             width: 100%;
             display: flex;
             flex-direction: row;
@@ -360,7 +374,9 @@
 
         .card:hover {
             transform: scale(calc(var(--scale) * 1.02)) translateY(-4px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            background: rgba(30, 30, 60, 0.45);
+            border-color: rgba(255, 255, 255, 0.4);
         }
 
         .card:active {
@@ -368,7 +384,13 @@
         }
 
         body.dark-mode .card {
-            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .card:hover {
+            background: rgba(0, 0, 0, 0.6);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .card-content {
@@ -392,17 +414,19 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .card-body {
             font-size: 1.15rem;
             line-height: 1.6;
-            color: rgba(255, 255, 255, 0.78);
+            color: rgba(255, 255, 255, 0.85);
             font-weight: 300;
             letter-spacing: 0.3px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
         }
 
         .card-image {
@@ -416,6 +440,7 @@
             align-items: center;
             justify-content: center;
             pointer-events: none;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
 
         .card-image img {
@@ -435,10 +460,11 @@
             height: auto;
             text-align: center;
             user-select: none;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
         }
 
         /* ================================================================
-               全屏新卡片页 — 铺满视口，左右滑动入场
+               全屏新卡片页 — 铺满视口，长距离左右滑动入场 + 毛玻璃
                ================================================================ */
         .fullpage-section {
             width: 100%;
@@ -447,7 +473,6 @@
             align-items: center;
             justify-content: center;
             padding: 100px 40px 80px;
-            /* 给导航栏和dock留空间 */;
         }
 
         .fullpage-inner {
@@ -459,15 +484,15 @@
             align-items: stretch;
         }
 
-        /* 左侧列 */
+        /* 左侧列 — 更长的滑入距离 */
         .fullpage-left {
             display: flex;
             flex-direction: column;
             gap: 40px;
             opacity: 0;
-            transform: translateX(-120px);
-            transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1),
-                transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+            transform: translateX(-220px);
+            transition: opacity 1.5s cubic-bezier(0.23, 1, 0.32, 1),
+                transform 1.5s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         .fullpage-left.visible {
@@ -475,13 +500,13 @@
             transform: translateX(0);
         }
 
-        /* 右侧列 */
+        /* 右侧列 — 更长的滑入距离 */
         .fullpage-right {
             display: flex;
             opacity: 0;
-            transform: translateX(120px);
-            transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1),
-                transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+            transform: translateX(220px);
+            transition: opacity 1.5s cubic-bezier(0.23, 1, 0.32, 1),
+                transform 1.5s cubic-bezier(0.23, 1, 0.32, 1);
             transition-delay: 0.15s;
         }
 
@@ -490,20 +515,23 @@
             transform: translateX(0);
         }
 
-        /* 全屏卡片样式 — 更大，铺满 */
+        /* 全屏卡片 — 毛玻璃 + 大号字体 */
         .fullpage-card {
-            background: #000000;
+            background: rgba(20, 20, 40, 0.35);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 5px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
             border-radius: 28px;
             padding: 45px 40px;
-            box-shadow: 0 16px 50px rgba(0, 0, 0, 0.7);
-            border: 5px solid rgba(255, 255, 255, 0.7);
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start;
             width: 100%;
             cursor: pointer;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s ease;
             overflow: hidden;
             flex: 1;
             min-height: 280px;
@@ -511,11 +539,23 @@
 
         .fullpage-card:hover {
             transform: translateY(-6px) scale(1.01);
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+            background: rgba(30, 30, 60, 0.45);
+            border-color: rgba(255, 255, 255, 0.4);
         }
 
         .fullpage-card:active {
             transform: scale(0.97);
+        }
+
+        body.dark-mode .fullpage-card {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .fullpage-card:hover {
+            background: rgba(0, 0, 0, 0.6);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .fullpage-card .card-title {
@@ -528,17 +568,19 @@
             white-space: normal;
             overflow: visible;
             text-overflow: unset;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .fullpage-card .card-body {
             font-size: 1.6rem;
             line-height: 1.7;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.85);
             font-weight: 300;
             letter-spacing: 0.3px;
             white-space: normal;
             overflow: visible;
             text-overflow: unset;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
         }
 
         .fullpage-left .fullpage-card {
@@ -547,11 +589,6 @@
 
         .fullpage-right .fullpage-card {
             min-height: 560px;
-            /* 右侧卡片高度 = 左侧两个卡片高度 + 间距 */;
-        }
-
-        body.dark-mode .fullpage-card {
-            border-color: rgba(255, 255, 255, 0.15);
         }
 
         /* ================================================================
@@ -676,6 +713,12 @@
             .fullpage-section {
                 padding: 100px 30px 80px;
             }
+            .fullpage-left {
+                transform: translateX(-150px);
+            }
+            .fullpage-right {
+                transform: translateX(150px);
+            }
         }
 
         @media (max-width: 768px) {
@@ -732,10 +775,9 @@
             .cards-section {
                 gap: 60px;
             }
-            .circle-btn {
-                width: 64px;
-                height: 64px;
-                font-size: 0.65rem;
+            .btn-glass {
+                padding: 12px 32px;
+                font-size: 0.9rem;
             }
             .dock-bar {
                 padding: 12px 18px;
@@ -758,22 +800,21 @@
             }
             .fullpage-left {
                 gap: 30px;
+                transform: translateX(-100px);
+            }
+            .fullpage-right {
+                transform: translateX(100px);
             }
             .fullpage-card {
                 padding: 30px 25px;
                 min-height: 200px !important;
+                border-width: 4px;
             }
             .fullpage-card .card-title {
                 font-size: 2.0rem;
             }
             .fullpage-card .card-body {
                 font-size: 1.1rem;
-            }
-            .fullpage-left {
-                transform: translateX(-80px);
-            }
-            .fullpage-right {
-                transform: translateX(80px);
             }
         }
 
@@ -841,10 +882,9 @@
             .cards-section {
                 gap: 40px;
             }
-            .circle-btn {
-                width: 56px;
-                height: 56px;
-                font-size: 0.55rem;
+            .btn-glass {
+                padding: 10px 24px;
+                font-size: 0.8rem;
             }
             .dock-bar {
                 padding: 10px 14px;
@@ -867,6 +907,10 @@
             }
             .fullpage-left {
                 gap: 20px;
+                transform: translateX(-60px);
+            }
+            .fullpage-right {
+                transform: translateX(60px);
             }
             .fullpage-card {
                 padding: 22px 18px;
@@ -880,12 +924,6 @@
             }
             .fullpage-card .card-body {
                 font-size: 0.95rem;
-            }
-            .fullpage-left {
-                transform: translateX(-60px);
-            }
-            .fullpage-right {
-                transform: translateX(60px);
             }
         }
 
@@ -927,10 +965,9 @@
             .cards-section {
                 gap: 32px;
             }
-            .circle-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 0.5rem;
+            .btn-glass {
+                padding: 8px 18px;
+                font-size: 0.7rem;
             }
             .dock-bar {
                 padding: 8px 12px;
@@ -988,7 +1025,7 @@
         <section class="hero-section">
             <div class="content" id="contentWrapper">
                 <div class="dynamic-text" id="typingText">welcome</div>
-                <button class="circle-btn" id="circleBtn">chen的空间</button>
+                <button class="btn-glass" id="circleBtn">✦ chen的空间</button>
             </div>
         </section>
 
@@ -1223,7 +1260,6 @@
 
             let isDarkMode = false;
             let isCard2Clicked = false;
-            let fullpageAnimated = false;
 
             // ================================================================
             //  3. 主题切换
@@ -1256,7 +1292,7 @@
             });
 
             // ================================================================
-            //  5. 圆形按钮
+            //  5. 圆形按钮（长圆玻璃）
             // ================================================================
             circleBtn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -1278,7 +1314,7 @@
 
                 if (shouldReset) {
                     resumeTyping();
-                    circleBtn.textContent = 'chen的空间';
+                    circleBtn.textContent = '✦ chen的空间';
                 }
             });
 
@@ -1570,23 +1606,29 @@
             }
 
             // ================================================================
-            //  13. 全屏卡片入场动画 — 滚动到该区域时触发
+            //  13. 全屏卡片入场动画 + 背景切换
             // ================================================================
             function triggerFullpageAnimation() {
-                if (fullpageAnimated) return;
                 const rect = fullpageSection.getBoundingClientRect();
                 const windowHeight = window.innerHeight;
-                // 当区域顶部进入视口时触发
-                if (rect.top < windowHeight * 0.85) {
-                    fullpageAnimated = true;
+                const isVisible = rect.top < windowHeight - 50 && rect.bottom > 50;
+
+                if (isVisible) {
                     fullpageLeft.classList.add('visible');
                     fullpageRight.classList.add('visible');
+                    // 切换背景到 img5.jpg
+                    document.body.classList.add('bg-img5');
+                } else {
+                    fullpageLeft.classList.remove('visible');
+                    fullpageRight.classList.remove('visible');
+                    // 移除背景切换
+                    document.body.classList.remove('bg-img5');
                 }
             }
 
-            // 滚动监听触发
             window.addEventListener('scroll', triggerFullpageAnimation, { passive: true });
-            // 页面加载完成后检查是否已经在视口中
+            window.addEventListener('resize', triggerFullpageAnimation, { passive: true });
+
             if (document.readyState === 'complete') {
                 setTimeout(triggerFullpageAnimation, 300);
             } else {
