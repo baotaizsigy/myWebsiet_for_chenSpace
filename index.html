@@ -125,17 +125,20 @@
             }
         }
 
-        /* ===== 平板/电脑模式：导航栏加长 ===== */
+        /* ===== 平板模式：导航栏拉宽 ===== */
         @media (min-width: 768px) {
             .navbar {
-                max-width: 920px;
+                width: calc(100% - 48px);
+                max-width: 100%;
                 padding: 14px 32px;
             }
         }
 
+        /* ===== 电脑模式：导航栏进一步拉宽 ===== */
         @media (min-width: 1024px) {
             .navbar {
-                max-width: 1000px;
+                width: calc(100% - 64px);
+                max-width: 100%;
                 padding: 14px 38px;
             }
         }
@@ -222,6 +225,7 @@
             transform: translateY(0);
         }
 
+        /* 平板/电脑模式下 nav-text 更大 */
         @media (min-width: 768px) {
             .nav-text {
                 font-size: 1.3rem;
@@ -236,6 +240,7 @@
             }
         }
 
+        /* 手机模式下 caillo~ 隐藏（节省空间） */
         @media (max-width: 600px) {
             .nav-center {
                 display: none;
@@ -1181,7 +1186,9 @@
             .dynamic-text {
                 font-size: clamp(2.2rem, 7vw, 3.6rem);
             }
+            /* 平板以下恢复窄导航栏 */
             .navbar {
+                width: 90%;
                 max-width: 700px;
                 padding: 12px 24px;
             }
