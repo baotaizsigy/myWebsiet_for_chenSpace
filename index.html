@@ -34,7 +34,12 @@
             background-image: url('img5.jpg') !important;
         }
 
-        body.dark-mode.bg-img5 {
+        body.bg-img6 {
+            background-image: url('img6.jpg') !important;
+        }
+
+        body.dark-mode.bg-img5,
+        body.dark-mode.bg-img6 {
             background-image: none !important;
             background-color: #000000 !important;
         }
@@ -592,7 +597,7 @@
         }
 
         /* ================================================================
-               新增：第三页 — 全屏双卡片（左右各一张）
+               第三页 — 全屏双卡片（左右各一张）
                ================================================================ */
         .fullpage-section-3 {
             width: 100%;
@@ -2172,7 +2177,48 @@
             }
 
             // ================================================================
-            //  14. 全屏卡片入场动画 + 背景切换（第二页）
+            //  14. 背景切换统一管理（解决第二页和第三页过渡闪烁）
+            // ================================================================
+            let lastBgState = '';
+
+            function updateBackground() {
+                const windowHeight = window.innerHeight;
+                const rect2 = fullpageSection.getBoundingClientRect();
+                const rect3 = fullpageSection3.getBoundingClientRect();
+
+                const isPage2Visible = rect2.top < windowHeight - 50 && rect2.bottom > 50;
+                const isPage3Visible = rect3.top < windowHeight - 50 && rect3.bottom > 50;
+
+                let newState = 'default';
+
+                // 优先级：第三页 > 第二页 > 默认
+                if (isPage3Visible) {
+                    newState = 'img6';
+                } else if (isPage2Visible) {
+                    newState = 'img5';
+                } else {
+                    newState = 'default';
+                }
+
+                // 只有状态变化时才更新，避免不必要的DOM操作
+                if (newState !== lastBgState) {
+                    lastBgState = newState;
+
+                    // 清除所有背景类
+                    bodyEl.classList.remove('bg-img5', 'bg-img6');
+
+                    // 添加对应的背景类
+                    if (newState === 'img5') {
+                        bodyEl.classList.add('bg-img5');
+                    } else if (newState === 'img6') {
+                        bodyEl.classList.add('bg-img6');
+                    }
+                    // default 状态下不添加任何额外类，恢复默认背景
+                }
+            }
+
+            // ================================================================
+            //  15. 全屏卡片入场动画（第二页）
             // ================================================================
             function triggerFullpageAnimation() {
                 const rect = fullpageSection.getBoundingClientRect();
@@ -2182,27 +2228,14 @@
                 if (isVisible) {
                     fullpageLeft.classList.add('visible');
                     fullpageRight.classList.add('visible');
-                    document.body.classList.add('bg-img5');
                 } else {
                     fullpageLeft.classList.remove('visible');
                     fullpageRight.classList.remove('visible');
-                    document.body.classList.remove('bg-img5');
                 }
             }
 
-            window.addEventListener('scroll', triggerFullpageAnimation, { passive: true });
-            window.addEventListener('resize', triggerFullpageAnimation, { passive: true });
-
-            if (document.readyState === 'complete') {
-                setTimeout(triggerFullpageAnimation, 300);
-            } else {
-                window.addEventListener('load', function() {
-                    setTimeout(triggerFullpageAnimation, 500);
-                });
-            }
-
             // ================================================================
-            //  15. 全屏卡片入场动画（第三页）
+            //  16. 全屏卡片入场动画（第三页）
             // ================================================================
             function triggerFullpageAnimation3() {
                 const rect = fullpageSection3.getBoundingClientRect();
@@ -2218,14 +2251,35 @@
                 }
             }
 
-            window.addEventListener('scroll', triggerFullpageAnimation3, { passive: true });
-            window.addEventListener('resize', triggerFullpageAnimation3, { passive: true });
+            // ================================================================
+            //  17. 统一的滚动处理函数
+            // ================================================================
+            let scrollTicking = false;
 
+            function handleScroll() {
+                if (!scrollTicking) {
+                    window.requestAnimationFrame(function() {
+                        // 更新背景
+                        updateBackground();
+                        // 更新卡片动画
+                        triggerFullpageAnimation();
+                        triggerFullpageAnimation3();
+                        scrollTicking = false;
+                    });
+                    scrollTicking = true;
+                }
+            }
+
+            // 监听滚动和窗口尺寸变化
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            window.addEventListener('resize', handleScroll, { passive: true });
+
+            // 页面加载完成后初始化
             if (document.readyState === 'complete') {
-                setTimeout(triggerFullpageAnimation3, 300);
+                setTimeout(handleScroll, 300);
             } else {
                 window.addEventListener('load', function() {
-                    setTimeout(triggerFullpageAnimation3, 500);
+                    setTimeout(handleScroll, 500);
                 });
             }
 
