@@ -157,7 +157,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 20px 40px;
+            padding: 20px 20px 100px;
         }
 
         .hero-section {
@@ -319,7 +319,7 @@
         }
 
         /* ================================================================
-               卡片区域 — 使用 --scale 变量实现滚动缩放
+               卡片区域 — 统一高度 + 滚动缩放
                ================================================================ */
         .cards-section {
             width: 100%;
@@ -334,9 +334,7 @@
             transform: none;
         }
 
-        /* ---- 卡片基础 ---- */
         .card {
-            /* 核心：缩放由 --scale 控制，默认 1 */
             --scale: 1;
             transform: scale(var(--scale)) translateY(0);
             transform-origin: center center;
@@ -344,8 +342,8 @@
 
             background: #000000;
             border-radius: 24px;
-            padding: 55px 40px;
-            min-height: 260px;
+            padding: 40px 35px;
+            height: 280px;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
             border: 5px solid rgba(255, 255, 255, 0.7);
             transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
@@ -354,63 +352,64 @@
             width: 100%;
             display: flex;
             flex-direction: row;
-            align-items: center;
+            align-items: stretch;
             justify-content: space-between;
             cursor: pointer;
-            overflow: visible;
+            overflow: hidden;
         }
 
-        /* hover：在 --scale 基础上 ×1.02，并上移 4px */
         .card:hover {
             transform: scale(calc(var(--scale) * 1.02)) translateY(-4px);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
         }
 
-        /* active：在 --scale 基础上 ×0.97，归位 */
         .card:active {
             transform: scale(calc(var(--scale) * 0.97)) translateY(0);
         }
 
-        /* 黑暗模式下的卡片边框 */
         body.dark-mode .card {
             border-color: rgba(255, 255, 255, 0.15);
         }
 
-        /* ---- 卡片内容 ---- */
         .card-content {
             display: flex;
             flex-direction: column;
             flex: 1 1 auto;
             min-width: 0;
             pointer-events: none;
-            overflow: visible;
+            overflow: hidden;
+            justify-content: flex-start;
+            align-items: flex-start;
         }
 
         .card-title {
-            font-size: 2.6rem;
+            font-size: 2.2rem;
             font-weight: 800;
             letter-spacing: 0.5px;
-            margin-bottom: 14px;
+            margin-bottom: 10px;
             color: #ffffff;
             line-height: 1.2;
             white-space: nowrap;
-            transition: font-size 0.1s ease;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .card-body {
-            font-size: 1.3rem;
-            line-height: 1.7;
+            font-size: 1.15rem;
+            line-height: 1.6;
             color: rgba(255, 255, 255, 0.78);
             font-weight: 300;
             letter-spacing: 0.3px;
             white-space: nowrap;
-            transition: font-size 0.1s ease;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .card-image {
             flex-shrink: 0;
-            margin-left: 30px;
-            max-width: 160px;
+            margin-left: 25px;
+            max-width: 140px;
+            max-height: 160px;
             border-radius: 12px;
             overflow: hidden;
             display: flex;
@@ -427,7 +426,7 @@
         }
 
         .card-emoji {
-            font-size: 140px;
+            font-size: 110px;
             line-height: 1;
             display: flex;
             align-items: center;
@@ -436,6 +435,207 @@
             height: auto;
             text-align: center;
             user-select: none;
+        }
+
+        /* ================================================================
+               全屏新卡片页 — 铺满视口，左右滑动入场
+               ================================================================ */
+        .fullpage-section {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 40px 80px;
+            /* 给导航栏和dock留空间 */;
+        }
+
+        .fullpage-inner {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: stretch;
+        }
+
+        /* 左侧列 */
+        .fullpage-left {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            opacity: 0;
+            transform: translateX(-120px);
+            transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1),
+                transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .fullpage-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* 右侧列 */
+        .fullpage-right {
+            display: flex;
+            opacity: 0;
+            transform: translateX(120px);
+            transition: opacity 0.9s cubic-bezier(0.23, 1, 0.32, 1),
+                transform 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+            transition-delay: 0.15s;
+        }
+
+        .fullpage-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* 全屏卡片样式 — 更大，铺满 */
+        .fullpage-card {
+            background: #000000;
+            border-radius: 28px;
+            padding: 45px 40px;
+            box-shadow: 0 16px 50px rgba(0, 0, 0, 0.7);
+            border: 5px solid rgba(255, 255, 255, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            width: 100%;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            overflow: hidden;
+            flex: 1;
+            min-height: 280px;
+        }
+
+        .fullpage-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .fullpage-card:active {
+            transform: scale(0.97);
+        }
+
+        .fullpage-card .card-title {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            color: #ffffff;
+            line-height: 1.2;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: unset;
+        }
+
+        .fullpage-card .card-body {
+            font-size: 1.6rem;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 300;
+            letter-spacing: 0.3px;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: unset;
+        }
+
+        .fullpage-left .fullpage-card {
+            min-height: 260px;
+        }
+
+        .fullpage-right .fullpage-card {
+            min-height: 560px;
+            /* 右侧卡片高度 = 左侧两个卡片高度 + 间距 */;
+        }
+
+        body.dark-mode .fullpage-card {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* ================================================================
+               Dock 栏 — 底部毛玻璃
+               ================================================================ */
+        .dock-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 14px 24px;
+            background: rgba(10, 10, 30, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            transform: translateY(100%);
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            opacity: 0;
+            visibility: hidden;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+                opacity 0.4s ease,
+                visibility 0s 0.5s;
+        }
+
+        .dock-bar.visible {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+                opacity 0.4s ease,
+                visibility 0s 0s;
+        }
+
+        .dock-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.75);
+            letter-spacing: 1px;
+        }
+
+        .dock-home-btn {
+            padding: 8px 28px;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: inherit;
+            letter-spacing: 0.5px;
+        }
+
+        .dock-home-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+            transform: scale(1.04);
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.06);
+        }
+
+        .dock-home-btn:active {
+            transform: scale(0.95);
+        }
+
+        body.dark-mode .dock-bar {
+            background: rgba(0, 0, 0, 0.7);
+            border-top-color: rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .dock-home-btn {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        body.dark-mode .dock-home-btn:hover {
+            background: rgba(255, 255, 255, 0.16);
         }
 
         /* ===== 滚动条 ===== */
@@ -456,6 +656,28 @@
         /* ================================================================
                响应式
                ================================================================ */
+        @media (max-width: 968px) {
+            .fullpage-inner {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .fullpage-right .fullpage-card {
+                min-height: 260px;
+            }
+            .fullpage-left .fullpage-card {
+                min-height: 220px;
+            }
+            .fullpage-card .card-title {
+                font-size: 2.4rem;
+            }
+            .fullpage-card .card-body {
+                font-size: 1.3rem;
+            }
+            .fullpage-section {
+                padding: 100px 30px 80px;
+            }
+        }
+
         @media (max-width: 768px) {
             .content {
                 padding: 1.4rem 1.6rem;
@@ -488,24 +710,24 @@
             }
 
             .card {
-                padding: 40px 28px;
-                min-height: 200px;
+                height: 240px;
+                padding: 30px 25px;
                 border-width: 4px;
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
             }
             .card-title {
-                font-size: 2.0rem;
+                font-size: 1.8rem;
             }
             .card-body {
-                font-size: 1.1rem;
+                font-size: 1.0rem;
             }
             .card-image {
-                margin-left: 0;
-                margin-top: 20px;
-                max-width: 120px;
+                max-width: 110px;
+                max-height: 130px;
+                margin-left: 20px;
             }
             .card-emoji {
-                font-size: 110px;
+                font-size: 90px;
             }
             .cards-section {
                 gap: 60px;
@@ -514,6 +736,44 @@
                 width: 64px;
                 height: 64px;
                 font-size: 0.65rem;
+            }
+            .dock-bar {
+                padding: 12px 18px;
+                gap: 18px;
+            }
+            .dock-text {
+                font-size: 0.85rem;
+            }
+            .dock-home-btn {
+                padding: 6px 20px;
+                font-size: 0.8rem;
+            }
+
+            .fullpage-section {
+                padding: 80px 20px 80px;
+                min-height: auto;
+            }
+            .fullpage-inner {
+                gap: 30px;
+            }
+            .fullpage-left {
+                gap: 30px;
+            }
+            .fullpage-card {
+                padding: 30px 25px;
+                min-height: 200px !important;
+            }
+            .fullpage-card .card-title {
+                font-size: 2.0rem;
+            }
+            .fullpage-card .card-body {
+                font-size: 1.1rem;
+            }
+            .fullpage-left {
+                transform: translateX(-80px);
+            }
+            .fullpage-right {
+                transform: translateX(80px);
             }
         }
 
@@ -556,27 +816,27 @@
             }
 
             .card {
-                padding: 30px 20px;
-                min-height: 160px;
+                height: 200px;
+                padding: 20px 16px;
                 border-radius: 18px;
                 border-width: 3px;
-                flex-direction: column;
-                align-items: flex-start;
+                flex-direction: row;
+                align-items: center;
             }
             .card-title {
-                font-size: 1.6rem;
+                font-size: 1.4rem;
+                margin-bottom: 6px;
             }
             .card-body {
-                font-size: 1.0rem;
+                font-size: 0.9rem;
             }
             .card-image {
-                margin-left: 0;
-                margin-top: 16px;
-                max-width: 100px;
-                align-self: flex-end;
+                max-width: 80px;
+                max-height: 100px;
+                margin-left: 14px;
             }
             .card-emoji {
-                font-size: 90px;
+                font-size: 70px;
             }
             .cards-section {
                 gap: 40px;
@@ -585,6 +845,47 @@
                 width: 56px;
                 height: 56px;
                 font-size: 0.55rem;
+            }
+            .dock-bar {
+                padding: 10px 14px;
+                gap: 14px;
+                flex-wrap: wrap;
+            }
+            .dock-text {
+                font-size: 0.75rem;
+            }
+            .dock-home-btn {
+                padding: 5px 14px;
+                font-size: 0.7rem;
+            }
+
+            .fullpage-section {
+                padding: 60px 16px 80px;
+            }
+            .fullpage-inner {
+                gap: 20px;
+            }
+            .fullpage-left {
+                gap: 20px;
+            }
+            .fullpage-card {
+                padding: 22px 18px;
+                min-height: 160px !important;
+                border-radius: 20px;
+                border-width: 4px;
+            }
+            .fullpage-card .card-title {
+                font-size: 1.6rem;
+                margin-bottom: 10px;
+            }
+            .fullpage-card .card-body {
+                font-size: 0.95rem;
+            }
+            .fullpage-left {
+                transform: translateX(-60px);
+            }
+            .fullpage-right {
+                transform: translateX(60px);
             }
         }
 
@@ -604,36 +905,67 @@
                 padding: 1px 6px;
             }
 
+            .card {
+                height: 170px;
+                padding: 16px 14px;
+                border-width: 3px;
+            }
             .card-title {
-                font-size: 1.3rem;
+                font-size: 1.1rem;
             }
             .card-body {
-                font-size: 0.9rem;
+                font-size: 0.8rem;
             }
-            .card {
-                min-height: 140px;
-                padding: 22px 16px;
-                border-width: 3px;
+            .card-image {
+                max-width: 65px;
+                max-height: 80px;
+                margin-left: 10px;
+            }
+            .card-emoji {
+                font-size: 55px;
             }
             .cards-section {
                 gap: 32px;
-            }
-            .card-image {
-                max-width: 80px;
-            }
-            .card-emoji {
-                font-size: 70px;
             }
             .circle-btn {
                 width: 50px;
                 height: 50px;
                 font-size: 0.5rem;
             }
+            .dock-bar {
+                padding: 8px 12px;
+                gap: 10px;
+            }
+            .dock-text {
+                font-size: 0.65rem;
+            }
+            .dock-home-btn {
+                padding: 4px 12px;
+                font-size: 0.6rem;
+            }
+
+            .fullpage-card {
+                padding: 18px 14px;
+                min-height: 140px !important;
+                border-radius: 16px;
+                border-width: 3px;
+            }
+            .fullpage-card .card-title {
+                font-size: 1.3rem;
+            }
+            .fullpage-card .card-body {
+                font-size: 0.8rem;
+            }
+            .fullpage-left {
+                transform: translateX(-40px);
+            }
+            .fullpage-right {
+                transform: translateX(40px);
+            }
         }
     </style>
 </head>
 <body>
-
     <!-- ===== 模糊覆盖层 ===== -->
     <div class="blur-overlay" id="blurOverlay"></div>
 
@@ -660,9 +992,8 @@
             </div>
         </section>
 
-        <!-- 卡片区域 -->
+        <!-- 原有卡片区域 -->
         <section class="cards-section" id="cardsSection">
-            <!-- 卡片 1 -->
             <div class="card" id="card1">
                 <div class="card-content">
                     <div class="card-title">ai牛逼</div>
@@ -673,7 +1004,6 @@
                 </div>
             </div>
 
-            <!-- 卡片 2 -->
             <div class="card" id="card2">
                 <div class="card-content">
                     <div class="card-title">极致的网页美观</div>
@@ -684,7 +1014,6 @@
                 </div>
             </div>
 
-            <!-- 卡片 3 -->
             <div class="card" id="card3">
                 <div class="card-content">
                     <div class="card-title">我还没做完呢，先上传试试</div>
@@ -696,6 +1025,42 @@
             </div>
         </section>
 
+        <!-- ===== 全屏新卡片页 ===== -->
+        <section class="fullpage-section" id="fullpageSection">
+            <div class="fullpage-inner">
+                <!-- 左侧列 -->
+                <div class="fullpage-left" id="fullpageLeft">
+                    <div class="fullpage-card" id="card4">
+                        <div class="card-content">
+                            <div class="card-title">这个空间有什么鸟有？</div>
+                            <div class="card-body">没啥鸟有，就分享资源，学术交流😋😋</div>
+                        </div>
+                    </div>
+                    <div class="fullpage-card" id="card5">
+                        <div class="card-content">
+                            <div class="card-title">有bug?</div>
+                            <div class="card-body">正常啦，没有反馈入口hhh🤣(bushi)</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 右侧列 -->
+                <div class="fullpage-right" id="fullpageRight">
+                    <div class="fullpage-card" id="card6">
+                        <div class="card-content">
+                            <div class="card-title">就这点？</div>
+                            <div class="card-body">还在写，莫催</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ===== Dock 栏 ===== -->
+    <div class="dock-bar" id="dockBar">
+        <span class="dock-text">🏁 到底了</span>
+        <button class="dock-home-btn" id="dockHomeBtn">首页</button>
     </div>
 
     <script>
@@ -703,7 +1068,7 @@
             'use strict';
 
             // ================================================================
-            //  1. 打字机动画（保留原逻辑）
+            //  1. 打字机动画
             // ================================================================
             const textEl = document.getElementById('typingText');
             const words = ['welcome', '你好', '欢迎来到我的空间', '无限进步'];
@@ -849,9 +1214,16 @@
             const circleBtn = document.getElementById('circleBtn');
             const bodyEl = document.body;
             const cards = document.querySelectorAll('.card');
+            const dockBar = document.getElementById('dockBar');
+            const dockHomeBtn = document.getElementById('dockHomeBtn');
+
+            const fullpageLeft = document.getElementById('fullpageLeft');
+            const fullpageRight = document.getElementById('fullpageRight');
+            const fullpageSection = document.getElementById('fullpageSection');
 
             let isDarkMode = false;
             let isCard2Clicked = false;
+            let fullpageAnimated = false;
 
             // ================================================================
             //  3. 主题切换
@@ -911,11 +1283,10 @@
             });
 
             // ================================================================
-            //  6. 卡片点击事件（保留业务逻辑，移除 style.transform 修改）
+            //  6. 卡片点击事件
             // ================================================================
             document.getElementById('card1').addEventListener('click', function(e) {
                 window.open('https://www.deepseek.com/', '_blank');
-                // 点击反馈由 CSS :active 处理，不再手动改 transform
             });
 
             document.getElementById('card2').addEventListener('click', function(e) {
@@ -928,23 +1299,32 @@
             });
 
             document.getElementById('card3').addEventListener('click', function(e) {
-                // 纯点击反馈由 CSS :active 处理
+                // 仅反馈
+            });
+
+            document.getElementById('card4').addEventListener('click', function(e) {
+                // 仅反馈
+            });
+            document.getElementById('card5').addEventListener('click', function(e) {
+                // 仅反馈
+            });
+            document.getElementById('card6').addEventListener('click', function(e) {
+                // 仅反馈
             });
 
             // ================================================================
-            //  7. ★★★ 核心：滚动缩放卡片 ★★★
-            //    卡片在屏幕底部 30% 区域缩小，到 70% 位置恢复为 1 倍
+            //  7. 滚动缩放卡片（仅对原有卡片生效）
             // ================================================================
-            const MIN_SCALE = 0.30; // 底部最小缩放
+            const MIN_SCALE = 0.30;
             const NORMAL_SCALE = 1.0;
-            const THRESHOLD_TOP = 0.70; // 70% 位置恢复正常
-            const THRESHOLD_BOTTOM = 1.00; // 100% 位置（底部）最小
+            const THRESHOLD_TOP = 0.70;
+            const THRESHOLD_BOTTOM = 1.00;
 
             function updateCardScales() {
                 const windowHeight = window.innerHeight;
                 const thresholdTopPx = windowHeight * THRESHOLD_TOP;
                 const thresholdBottomPx = windowHeight * THRESHOLD_BOTTOM;
-                const range = thresholdBottomPx - thresholdTopPx; // 30% 窗口高度
+                const range = thresholdBottomPx - thresholdTopPx;
 
                 cards.forEach(function(card) {
                     const rect = card.getBoundingClientRect();
@@ -953,24 +1333,20 @@
                     let scale = NORMAL_SCALE;
 
                     if (top <= thresholdTopPx) {
-                        // 卡片在 70% 位置以上 → 正常大小
                         scale = NORMAL_SCALE;
                     } else if (top >= thresholdBottomPx) {
-                        // 卡片在 100% 位置以下 → 最小
                         scale = MIN_SCALE;
                     } else {
-                        // 在 70% ~ 100% 之间 → 线性插值
-                        const progress = (top - thresholdTopPx) / range; // 0 ~ 1
+                        const progress = (top - thresholdTopPx) / range;
                         scale = NORMAL_SCALE - (NORMAL_SCALE - MIN_SCALE) * progress;
                     }
 
-                    // 通过 CSS 变量 --scale 控制缩放
                     card.style.setProperty('--scale', scale);
                 });
             }
 
-            // 滚动节流：使用 requestAnimationFrame
             let ticking = false;
+
             function onScroll() {
                 if (!ticking) {
                     window.requestAnimationFrame(function() {
@@ -986,7 +1362,6 @@
                 updateCardScales();
             }, { passive: true });
 
-            // 页面加载完成后立即计算一次
             if (document.readyState === 'complete') {
                 updateCardScales();
             } else {
@@ -996,7 +1371,7 @@
             }
 
             // ================================================================
-            //  8. 模糊覆盖层（原有逻辑）
+            //  8. 模糊覆盖层
             // ================================================================
             const blurOverlay = document.getElementById('blurOverlay');
             const heroSection = document.querySelector('.hero-section');
@@ -1022,7 +1397,51 @@
             setTimeout(updateBlurOverlay, 200);
 
             // ================================================================
-            //  9. 自适应字体大小（原有逻辑）
+            //  9. Dock 栏 — 滚动到底部时显示
+            // ================================================================
+            let dockVisible = false;
+
+            function checkDockVisibility() {
+                const scrollY = window.scrollY;
+                const windowHeight = window.innerHeight;
+                const documentHeight = document.documentElement.scrollHeight;
+                const isAtBottom = scrollY + windowHeight >= documentHeight - 20;
+
+                if (isAtBottom && !dockVisible) {
+                    dockVisible = true;
+                    dockBar.classList.add('visible');
+                } else if (!isAtBottom && dockVisible) {
+                    dockVisible = false;
+                    dockBar.classList.remove('visible');
+                }
+            }
+
+            window.addEventListener('scroll', checkDockVisibility, { passive: true });
+            window.addEventListener('resize', function() {
+                clearTimeout(window._dockResizeTimer);
+                window._dockResizeTimer = setTimeout(checkDockVisibility, 200);
+            }, { passive: true });
+
+            if (document.readyState === 'complete') {
+                setTimeout(checkDockVisibility, 300);
+            } else {
+                window.addEventListener('load', function() {
+                    setTimeout(checkDockVisibility, 500);
+                });
+            }
+
+            // ================================================================
+            //  10. Dock 栏「首页」按钮
+            // ================================================================
+            dockHomeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // ================================================================
+            //  11. 自适应字体大小
             // ================================================================
             function adjustFontSize() {
                 const allCards = document.querySelectorAll('.card');
@@ -1126,7 +1545,7 @@
             });
 
             // ================================================================
-            //  10. 设备检测（手机用 img4.jpg）
+            //  12. 设备检测
             // ================================================================
             function detectDevice() {
                 const ua = navigator.userAgent;
@@ -1148,6 +1567,32 @@
                 detectDevice();
             } else {
                 window.addEventListener('load', detectDevice);
+            }
+
+            // ================================================================
+            //  13. 全屏卡片入场动画 — 滚动到该区域时触发
+            // ================================================================
+            function triggerFullpageAnimation() {
+                if (fullpageAnimated) return;
+                const rect = fullpageSection.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+                // 当区域顶部进入视口时触发
+                if (rect.top < windowHeight * 0.85) {
+                    fullpageAnimated = true;
+                    fullpageLeft.classList.add('visible');
+                    fullpageRight.classList.add('visible');
+                }
+            }
+
+            // 滚动监听触发
+            window.addEventListener('scroll', triggerFullpageAnimation, { passive: true });
+            // 页面加载完成后检查是否已经在视口中
+            if (document.readyState === 'complete') {
+                setTimeout(triggerFullpageAnimation, 300);
+            } else {
+                window.addEventListener('load', function() {
+                    setTimeout(triggerFullpageAnimation, 500);
+                });
             }
 
         })();
