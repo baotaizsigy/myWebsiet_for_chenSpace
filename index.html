@@ -90,7 +90,6 @@
             align-items: center;
             justify-content: space-between;
             z-index: 1000;
-            /* ===== 使用 mask-image 代替 clip-path，边缘柔化 ===== */
             -webkit-mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
             mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
             -webkit-mask-size: 0% 100%;
@@ -102,11 +101,9 @@
             opacity: 0;
             animation: navbarExpand 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
             animation-delay: 0.05s;
-            /* 动画结束后保持最终状态 */
             animation-fill-mode: forwards;
         }
 
-        /* 动画完成后，移除 mask-image（由 JS 控制） */
         .navbar.mask-done {
             -webkit-mask-image: none !important;
             mask-image: none !important;
@@ -174,7 +171,6 @@
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
-        /* ===== 导航栏中间：caillo~ / 诗句 ===== */
         .nav-center {
             flex: 1;
             display: flex;
@@ -183,7 +179,6 @@
             z-index: 2;
             min-height: 2.2rem;
             padding: 0 8px;
-            /* 从上方滑入 */
             opacity: 0;
             transform: translateY(-28px);
             animation: slideDownCaillo 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
@@ -217,19 +212,16 @@
             will-change: transform, opacity;
         }
 
-        /* 淡出状态 */
         .nav-text.fade-out {
             opacity: 0;
             transform: translateY(-12px);
         }
 
-        /* 淡入状态（由 JS 添加） */
         .nav-text.fade-in {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* 平板/电脑模式下文字更大 */
         @media (min-width: 768px) {
             .nav-text {
                 font-size: 1.3rem;
@@ -244,7 +236,6 @@
             }
         }
 
-        /* 手机模式下 caillo~ 隐藏（节省空间） */
         @media (max-width: 600px) {
             .nav-center {
                 display: none;
@@ -287,7 +278,6 @@
             transform: scale(0.96);
         }
 
-        /* 手机模式下按钮自适应 */
         @media (max-width: 480px) {
             .nav-btn {
                 padding: 4px 14px;
@@ -316,7 +306,7 @@
             }
         }
 
-        /* ===== 主布局（以下保持原样） ===== */
+        /* ===== 主布局 ===== */
         .main-wrapper {
             position: relative;
             z-index: 2;
@@ -1130,7 +1120,7 @@
             background: rgba(255, 255, 255, 0.4);
         }
 
-        /* ===== 响应式（简略，保留核心） ===== */
+        /* ===== 响应式 ===== */
         @media (max-width: 968px) {
             .fullpage-inner {
                 grid-template-columns: 1fr;
@@ -2058,7 +2048,7 @@
                 const refBtn = document.getElementById('modalRefBtn');
                 if (refBtn) {
                     refBtn.addEventListener('click', function() {
-                        window.open('https://www.bilibili.com/video/BV15uub6AEqQ/?share_source=copy_web&vd_source=04e58fdb6c6c69a8b4a8d3040e0589ed', '_blank');
+                        window.open('https://www.bilibili.com/video/BV1NkM66LEzF/?share_source=copy_web&vd_source=04e58fdb6c6c69a8b4a8d3040e0589ed', '_blank');
                     });
                 }
             });
@@ -2438,21 +2428,18 @@
             }
 
             // ================================================================
-            //  18. ★★★ 导航栏边缘过渡消除（动画完成后移除 mask-image）
+            //  18. 导航栏边缘过渡消除（动画完成后移除 mask-image）
             // ================================================================
             function onNavbarExpandEnd() {
                 navbarEl.classList.add('mask-done');
             }
 
-            // 监听导航栏展开动画结束
             navbarEl.addEventListener('animationend', function(e) {
-                // 只处理 navbarExpand 动画
                 if (e.animationName === 'navbarExpand') {
                     onNavbarExpandEnd();
                 }
             });
 
-            // 后备：如果 animationend 未触发，5秒后强制移除
             setTimeout(function() {
                 if (!navbarEl.classList.contains('mask-done')) {
                     navbarEl.classList.add('mask-done');
@@ -2460,7 +2447,7 @@
             }, 5000);
 
             // ================================================================
-            //  19. ★★★ caillo~ 3秒后切换为随机诗句
+            //  19. caillo~ 3秒后切换为随机诗句
             // ================================================================
             let poemSwitched = false;
 
@@ -2468,17 +2455,13 @@
                 if (poemSwitched) return;
                 poemSwitched = true;
 
-                // 随机选一句诗
                 const randomPoem = poems[Math.floor(Math.random() * poems.length)];
 
-                // 先淡出
                 navTextEl.classList.add('fade-out');
 
-                // 等待淡出完成后更换文本并淡入
                 setTimeout(function() {
                     navTextEl.textContent = randomPoem;
 
-                    // 根据诗句长度调整字体大小
                     const len = randomPoem.length;
                     let fontSize = 1.1;
                     if (len > 20) {
@@ -2488,7 +2471,6 @@
                     } else if (len > 8) {
                         fontSize = 0.95;
                     }
-                    // 在平板/大屏上放大
                     const isWide = window.innerWidth >= 768;
                     if (isWide) {
                         fontSize = fontSize * 1.2;
@@ -2496,19 +2478,15 @@
                     if (window.innerWidth >= 1024) {
                         fontSize = fontSize * 1.3;
                     }
-                    // 限制最大最小值
                     fontSize = Math.min(Math.max(fontSize, 0.7), 1.6);
                     navTextEl.style.fontSize = fontSize + 'rem';
 
-                    // 移除淡出，添加淡入
                     navTextEl.classList.remove('fade-out');
-                    // 强制重排后添加淡入
                     void navTextEl.offsetWidth;
                     navTextEl.classList.add('fade-in');
                 }, 450);
             }
 
-            // 在 caillo~ 滑入动画完成后 3 秒切换
             const navCenterEl = document.querySelector('.nav-center');
             if (navCenterEl) {
                 navCenterEl.addEventListener('animationend', function(e) {
@@ -2518,7 +2496,6 @@
                 });
             }
 
-            // 后备：如果 animationend 未触发，5.5秒后强制切换
             setTimeout(function() {
                 if (!poemSwitched) {
                     switchToPoem();
