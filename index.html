@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chen_space</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            color: white;
+            overflow-x: hidden;
+            background-color: #1a1a2e;
+            background-image: url('img.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            transition: background-image 0.5s ease, background-color 0.5s ease;
+        }
+
+        body.dark-mode {
+            background-image: none !important;
+            background-color: #000000 !important;
+        }
+
+        /* ===== 模糊覆盖层 - 顶部羽化边缘 ===== */
+        .blur-overlay {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: transparent;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            z-index: 1;
+            pointer-events: none;
+            transition: height 0.08s ease-out;
+            /* 顶部羽化：从透明到完全不透明渐变 */
+            -webkit-mask-image: linear-gradient(to top, black 0%, black 65%, transparent 100%);
+            mask-image: linear-gradient(to top, black 0%, black 65%, transparent 100%);
+            -webkit-mask-composite: source-over;
+            mask-composite: add;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 700px;
+            padding: 12px 24px;
+            background: rgba(10, 10, 30, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+            animation: navFadeIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation-delay: 0.3s;
+        }
+
+        @keyframes navFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .nav-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: 0.8px;
+            white-space: nowrap;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .nav-btn {
+            padding: 6px 22px;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            letter-spacing: 0.5px;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: scale(1.04);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.96);
+        }
+
+        .main-wrapper {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 20px 40px;
+        }
+
+        .hero-section {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding-top: 40px;
+        }
+
+        .content {
+            max-width: 80vw;
+            padding: 1.8rem 2.2rem;
+            background: rgba(10, 10, 30, 0.3);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transition: transform 0.2s ease, background 0.5s ease, border-color 0.5s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeUp 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation-delay: 0.1s;
+            margin-top: 60px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        body.dark-mode .content {
+            background: rgba(0, 0, 0, 0.7);
+            border-color: rgba(255, 0, 0, 0.3);
+        }
+
+        body.dark-mode .card {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .content:hover {
+            transform: scale(1.01);
+        }
+
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+                text-shadow: 0 0 0 rgba(255, 255, 255, 0);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+                text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+            }
+        }
+
+        .dynamic-text {
+            font-size: clamp(2.8rem, 8vw, 5rem);
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            color: white;
+            text-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            line-height: 1.2;
+            min-height: 1.4em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            position: relative;
+            transition: color 0.4s ease;
+        }
+
+        .dynamic-text.red-mode {
+            color: #ff1744 !important;
+            text-shadow: 0 0 40px rgba(255, 23, 68, 0.4);
+        }
+
+        .dynamic-text::after {
+            content: '|';
+            display: inline-block;
+            margin-left: 2px;
+            font-weight: 300;
+            opacity: 0.7;
+            animation: blinkCursor 0.9s step-end infinite;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+            transition: color 0.4s ease;
+        }
+
+        .dynamic-text.red-mode::after {
+            color: #ff1744;
+        }
+
+        .dynamic-text.no-cursor::after {
+            content: none;
+            animation: none;
+            opacity: 0;
+        }
+
+        @keyframes blinkCursor {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 0; }
+        }
+
+        .circle-btn {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.85);
+            color: #1a1a2e;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+            padding: 10px;
+            font-family: inherit;
+            letter-spacing: 0.5px;
+            user-select: none;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            flex-shrink: 0;
+        }
+
+        .circle-btn:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .circle-btn:active {
+            transform: scale(0.93);
+        }
+
+        body.dark-mode .circle-btn {
+            background: rgba(255, 255, 255, 0.9);
+            color: #000000;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .cards-section {
+            width: 100%;
+            max-width: 960px;
+            margin-top: 40px;
+            padding-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 80px;
+            flex-shrink: 0;
+            opacity: 1;
+            transform: none;
+        }
+
+        .card {
+            --scale: 1;
+            background: #000000;
+            border-radius: 24px;
+            padding: 55px 40px;
+            min-height: 260px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            border: 5px solid rgba(255, 255, 255, 0.7);
+            transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.25s ease, border-color 0.5s ease;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            overflow: visible;
+            transform: scale(var(--scale));
+            will-change: transform;
+            transform-origin: center center;
+        }
+
+        .card:hover {
+            transform: scale(var(--scale)) translateY(-4px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+        }
+
+        .card:active {
+            transform: scale(calc(var(--scale) * 0.97));
+        }
+
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            min-width: 0;
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        .card-title {
+            font-size: 2.6rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+            color: #ffffff;
+            line-height: 1.2;
+            white-space: nowrap;
+            transition: font-size 0.1s ease;
+        }
+
+        .card-body {
+            font-size: 1.3rem;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.78);
+            font-weight: 300;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            transition: font-size 0.1s ease;
+        }
+
+        .card-image {
+            flex-shrink: 0;
+            margin-left: 30px;
+            max-width: 160px;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+        }
+
+        .card-emoji {
+            font-size: 140px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: auto;
+            text-align: center;
+            user-select: none;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 1.4rem 1.6rem;
+                max-width: 85vw;
+                gap: 16px;
+            }
+            .dynamic-text {
+                font-size: clamp(2.2rem, 7vw, 3.6rem);
+            }
+            .navbar {
+                padding: 10px 18px;
+                gap: 10px;
+                top: 16px;
+                width: 92%;
+                flex-wrap: nowrap;
+            }
+            .nav-title {
+                font-size: 0.95rem;
+            }
+            .nav-btn {
+                padding: 5px 14px;
+                font-size: 0.75rem;
+            }
+            .card {
+                padding: 40px 28px;
+                min-height: 200px;
+                border-width: 4px;
+                flex-wrap: wrap;
+            }
+            .card-title {
+                font-size: 2.0rem;
+            }
+            .card-body {
+                font-size: 1.1rem;
+            }
+            .card-image {
+                margin-left: 0;
+                margin-top: 20px;
+                max-width: 120px;
+            }
+            .card-emoji {
+                font-size: 110px;
+            }
+            .cards-section {
+                gap: 60px;
+            }
+            .circle-btn {
+                width: 64px;
+                height: 64px;
+                font-size: 0.65rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-section {
+                min-height: 60vh;
+            }
+            .content {
+                padding: 1.2rem 1.2rem;
+                border-radius: 1.8rem;
+                margin-top: 40px;
+                max-width: 92vw;
+                gap: 14px;
+            }
+            .dynamic-text {
+                font-size: clamp(1.8rem, 6vw, 2.8rem);
+            }
+            .navbar {
+                padding: 8px 14px;
+                gap: 8px;
+                border-radius: 40px;
+            }
+            .nav-title {
+                font-size: 0.8rem;
+            }
+            .nav-btn {
+                padding: 4px 10px;
+                font-size: 0.65rem;
+                border-radius: 20px;
+            }
+            .nav-buttons {
+                gap: 6px;
+            }
+            .card {
+                padding: 30px 20px;
+                min-height: 160px;
+                border-radius: 18px;
+                border-width: 3px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .card-title {
+                font-size: 1.6rem;
+            }
+            .card-body {
+                font-size: 1.0rem;
+            }
+            .card-image {
+                margin-left: 0;
+                margin-top: 16px;
+                max-width: 100px;
+                align-self: flex-end;
+            }
+            .card-emoji {
+                font-size: 90px;
+            }
+            .cards-section {
+                gap: 40px;
+            }
+            .circle-btn {
+                width: 56px;
+                height: 56px;
+                font-size: 0.55rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .dynamic-text {
+                font-size: clamp(1.5rem, 5vw, 2.2rem);
+            }
+            .nav-title {
+                font-size: 0.7rem;
+            }
+            .nav-btn {
+                font-size: 0.6rem;
+                padding: 3px 8px;
+            }
+            .card-title {
+                font-size: 1.3rem;
+            }
+            .card-body {
+                font-size: 0.9rem;
+            }
+            .card {
+                min-height: 140px;
+                padding: 22px 16px;
+                border-width: 3px;
+            }
+            .cards-section {
+                gap: 32px;
+            }
+            .card-image {
+                max-width: 80px;
+            }
+            .card-emoji {
+                font-size: 70px;
+            }
+            .circle-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="blur-overlay" id="blurOverlay"></div>
+
+    <nav class="navbar">
+        <span class="nav-title">✦ chen的空间</span>
+        <div class="nav-buttons">
+            <button class="nav-btn" id="homeBtn">🏠 首页</button>
+            <button class="nav-btn" id="themeBtn">🎨 主题切换</button>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+
+        <section class="hero-section">
+            <div class="content" id="contentWrapper">
+                <div class="dynamic-text" id="typingText">welcome</div>
+                <button class="circle-btn" id="circleBtn">chen的空间</button>
+            </div>
+        </section>
+
+        <section class="cards-section" id="cardsSection">
+            <div class="card" id="card1">
+                <div class="card-content">
+                    <div class="card-title">ai牛逼</div>
+                    <div class="card-body">5万token做的网页！</div>
+                </div>
+                <div class="card-image">
+                    <img src="img1.jpg" alt="img1.jpg">
+                </div>
+            </div>
+
+            <div class="card" id="card2">
+                <div class="card-content">
+                    <div class="card-title">极致的网页美观</div>
+                    <div class="card-body">正如标题所述</div>
+                </div>
+                <div class="card-image">
+                    <span class="card-emoji">🎨</span>
+                </div>
+            </div>
+
+            <div class="card" id="card3">
+                <div class="card-content">
+                    <div class="card-title">我还没做完呢，先上传试试</div>
+                    <div class="card-body">往下拉个头</div>
+                </div>
+                <div class="card-image">
+                    <img src="img3.png" alt="img3.png">
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        (function() {
+            // ===== 打字机动画 =====
+            const textEl = document.getElementById('typingText');
+            const words = ['welcome', '你好', '欢迎来到我的空间', '希望你喜欢！', '无限进步'];
+            let currentIndex = 0;
+            let currentText = words[currentIndex];
+            let displayText = '';
+            let pos = 0;
+            let timer = null;
+            let isWaiting = false;
+            let waitStartTime = 0;
+            const WAIT_DURATION = 3000;
+            const CHAR_INTERVAL = 70;
+            let lastCharTime = 0;
+            let mode = 'typing';
+            let isStopped = false;
+
+            function clearTimer() {
+                if (timer) {
+                    cancelAnimationFrame(timer);
+                    timer = null;
+                }
+            }
+
+            function updateDisplay() {
+                textEl.textContent = displayText;
+            }
+
+            function switchToNextWord() {
+                if (isStopped) return;
+                currentIndex = (currentIndex + 1) % words.length;
+                currentText = words[currentIndex];
+                displayText = '';
+                pos = 0;
+                mode = 'typing';
+                isWaiting = false;
+                lastCharTime = performance.now();
+                updateDisplay();
+                step(performance.now());
+            }
+
+            function step(timestamp) {
+                if (isStopped) return;
+                if (!timestamp) timestamp = performance.now();
+
+                if (isWaiting) {
+                    if (timestamp - waitStartTime >= WAIT_DURATION) {
+                        isWaiting = false;
+                        mode = 'deleting';
+                        lastCharTime = timestamp;
+                        timer = requestAnimationFrame(step);
+                    } else {
+                        timer = requestAnimationFrame(step);
+                    }
+                    return;
+                }
+
+                if (mode === 'typing') {
+                    if (timestamp - lastCharTime >= CHAR_INTERVAL) {
+                        if (pos < currentText.length) {
+                            pos++;
+                            displayText = currentText.substring(0, pos);
+                            updateDisplay();
+                            lastCharTime = timestamp;
+                            if (pos === currentText.length) {
+                                isWaiting = true;
+                                waitStartTime = timestamp;
+                                timer = requestAnimationFrame(step);
+                                return;
+                            }
+                        }
+                    }
+                    timer = requestAnimationFrame(step);
+                } else if (mode === 'deleting') {
+                    if (timestamp - lastCharTime >= CHAR_INTERVAL) {
+                        if (pos > 0) {
+                            pos--;
+                            displayText = currentText.substring(0, pos);
+                            updateDisplay();
+                            lastCharTime = timestamp;
+                            if (pos === 0) {
+                                switchToNextWord();
+                                return;
+                            }
+                        }
+                    }
+                    timer = requestAnimationFrame(step);
+                }
+            }
+
+            function startAnimation() {
+                clearTimer();
+                isStopped = false;
+                displayText = '';
+                pos = 0;
+                currentIndex = 0;
+                currentText = words[currentIndex];
+                mode = 'typing';
+                isWaiting = false;
+                lastCharTime = performance.now();
+                updateDisplay();
+                textEl.classList.remove('no-cursor');
+                textEl.classList.remove('red-mode');
+                step(performance.now());
+            }
+
+            function stopTypingAndSetText(fixedText, isRed) {
+                clearTimer();
+                isStopped = true;
+                textEl.textContent = fixedText;
+                if (isRed) {
+                    textEl.classList.add('red-mode');
+                } else {
+                    textEl.classList.remove('red-mode');
+                }
+                textEl.classList.add('no-cursor');
+            }
+
+            function resumeTyping() {
+                clearTimer();
+                isStopped = false;
+                textEl.classList.remove('red-mode');
+                textEl.classList.remove('no-cursor');
+                displayText = '';
+                pos = 0;
+                currentIndex = 0;
+                currentText = words[currentIndex];
+                mode = 'typing';
+                isWaiting = false;
+                lastCharTime = performance.now();
+                updateDisplay();
+                step(performance.now());
+            }
+
+            startAnimation();
+
+            window.addEventListener('beforeunload', function() {
+                clearTimer();
+            });
+
+            // ===== DOM 引用 =====
+            const circleBtn = document.getElementById('circleBtn');
+            const bodyEl = document.body;
+
+            // ===== 状态管理 =====
+            let isDarkMode = false;
+            let isCard2Clicked = false;
+
+            // ===== 主题切换 =====
+            function enterDarkMode() {
+                if (isDarkMode) return;
+                isDarkMode = true;
+                bodyEl.classList.add('dark-mode');
+                stopTypingAndSetText('质疑我审美？😡', true);
+                circleBtn.textContent = '变回来';
+            }
+
+            // ===== 导航栏按钮 =====
+            document.getElementById('homeBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            document.getElementById('themeBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+                if (!isDarkMode) {
+                    enterDarkMode();
+                }
+            });
+
+            // ===== 圆形按钮点击 =====
+            circleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.93)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+
+                let shouldReset = false;
+
+                if (isDarkMode) {
+                    isDarkMode = false;
+                    bodyEl.classList.remove('dark-mode');
+                    shouldReset = true;
+                }
+
+                if (isCard2Clicked) {
+                    isCard2Clicked = false;
+                    shouldReset = true;
+                }
+
+                if (shouldReset) {
+                    resumeTyping();
+                    circleBtn.textContent = 'chen的空间';
+                }
+            });
+
+            // ===== 展示框点击事件 =====
+            document.getElementById('card1').addEventListener('click', function(e) {
+                window.open('https://www.deepseek.com/', '_blank');
+                this.style.transform = 'scale(calc(var(--scale) * 0.97))';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+            });
+
+            document.getElementById('card2').addEventListener('click', function(e) {
+                this.style.transform = 'scale(calc(var(--scale) * 0.97))';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+
+                if (!isDarkMode) {
+                    stopTypingAndSetText('是不是很美观？', false);
+                    isCard2Clicked = true;
+                    circleBtn.textContent = '变回来';
+                }
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            document.getElementById('card3').addEventListener('click', function(e) {
+                this.style.transform = 'scale(calc(var(--scale) * 0.97))';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+            });
+
+            // ================================================================
+            // ===== 纯模糊覆盖层 - 无白线，仅羽化边缘 =====
+            // ================================================================
+            const blurOverlay = document.getElementById('blurOverlay');
+            const heroSection = document.querySelector('.hero-section');
+
+            function updateBlurOverlay() {
+                const scrollY = window.scrollY;
+                const windowHeight = window.innerHeight;
+                const heroHeight = heroSection ? heroSection.offsetHeight : windowHeight;
+
+                const startY = heroHeight * 0.01;
+                const endY = heroHeight * 0.80;
+
+                let progress = 0;
+                if (scrollY > startY) {
+                    progress = Math.min((scrollY - startY) / (endY - startY), 1);
+                }
+
+                const easedProgress = Math.pow(progress, 0.6);
+                const glassHeight = easedProgress * 100;
+
+                blurOverlay.style.height = glassHeight + '%';
+            }
+
+            window.addEventListener('scroll', updateBlurOverlay, { passive: true });
+            window.addEventListener('resize', updateBlurOverlay, { passive: true });
+            setTimeout(updateBlurOverlay, 200);
+
+            // ===== 自适应字体大小 =====
+            function adjustFontSize() {
+                const cards = document.querySelectorAll('.card');
+                cards.forEach(card => {
+                    const title = card.querySelector('.card-title');
+                    const body = card.querySelector('.card-body');
+                    if (title) {
+                        let fontSize = parseFloat(window.getComputedStyle(title).fontSize);
+                        const maxWidth = card.offsetWidth - 40;
+                        const image = card.querySelector('.card-image');
+                        let imageWidth = 0;
+                        if (image) {
+                            const style = window.getComputedStyle(image);
+                            const marginLeft = parseFloat(style.marginLeft) || 0;
+                            imageWidth = image.offsetWidth + marginLeft;
+                        }
+                        const availableWidth = maxWidth - imageWidth - 40;
+                        if (availableWidth <= 0) return;
+                        let tempSpan = document.createElement('span');
+                        tempSpan.style.whiteSpace = 'nowrap';
+                        tempSpan.style.fontSize = fontSize + 'px';
+                        tempSpan.style.fontWeight = '800';
+                        tempSpan.style.visibility = 'hidden';
+                        tempSpan.textContent = title.textContent;
+                        document.body.appendChild(tempSpan);
+                        let textWidth = tempSpan.offsetWidth;
+                        document.body.removeChild(tempSpan);
+                        if (textWidth > availableWidth) {
+                            let newSize = fontSize * (availableWidth / textWidth);
+                            newSize = Math.max(newSize, 16);
+                            title.style.fontSize = newSize + 'px';
+                        } else {
+                            if (!title.dataset.defaultSize) {
+                                title.dataset.defaultSize = getComputedStyle(title).fontSize;
+                            }
+                            const defaultSize = parseFloat(title.dataset.defaultSize);
+                            if (parseFloat(title.style.fontSize) < defaultSize && textWidth < availableWidth * 0.9) {
+                                title.style.fontSize = defaultSize + 'px';
+                            }
+                        }
+                    }
+                    if (body) {
+                        let fontSize = parseFloat(window.getComputedStyle(body).fontSize);
+                        const maxWidth = card.offsetWidth - 40;
+                        const image = card.querySelector('.card-image');
+                        let imageWidth = 0;
+                        if (image) {
+                            const style = window.getComputedStyle(image);
+                            const marginLeft = parseFloat(style.marginLeft) || 0;
+                            imageWidth = image.offsetWidth + marginLeft;
+                        }
+                        const availableWidth = maxWidth - imageWidth - 40;
+                        if (availableWidth <= 0) return;
+                        let tempSpan = document.createElement('span');
+                        tempSpan.style.whiteSpace = 'nowrap';
+                        tempSpan.style.fontSize = fontSize + 'px';
+                        tempSpan.style.fontWeight = '300';
+                        tempSpan.style.visibility = 'hidden';
+                        tempSpan.textContent = body.textContent;
+                        document.body.appendChild(tempSpan);
+                        let textWidth = tempSpan.offsetWidth;
+                        document.body.removeChild(tempSpan);
+                        if (textWidth > availableWidth) {
+                            let newSize = fontSize * (availableWidth / textWidth);
+                            newSize = Math.max(newSize, 12);
+                            body.style.fontSize = newSize + 'px';
+                        } else {
+                            if (!body.dataset.defaultSize) {
+                                body.dataset.defaultSize = getComputedStyle(body).fontSize;
+                            }
+                            const defaultSize = parseFloat(body.dataset.defaultSize);
+                            if (parseFloat(body.style.fontSize) < defaultSize && textWidth < availableWidth * 0.9) {
+                                body.style.fontSize = defaultSize + 'px';
+                            }
+                        }
+                    }
+                });
+            }
+
+            window.addEventListener('load', function() {
+                document.querySelectorAll('.card-title').forEach(el => {
+                    if (!el.dataset.defaultSize) {
+                        el.dataset.defaultSize = getComputedStyle(el).fontSize;
+                    }
+                });
+                document.querySelectorAll('.card-body').forEach(el => {
+                    if (!el.dataset.defaultSize) {
+                        el.dataset.defaultSize = getComputedStyle(el).fontSize;
+                    }
+                });
+                adjustFontSize();
+            });
+
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(adjustFontSize, 100);
+            });
+            window.addEventListener('orientationchange', function() {
+                setTimeout(adjustFontSize, 300);
+            });
+
+            // ================================================================
+            // ===== 卡片缩放：顶部70% → 100%，底部30% → 50% =====
+            // ================================================================
+            function updateCardScales() {
+                const cards = document.querySelectorAll('.card');
+                const viewportHeight = window.innerHeight;
+
+                cards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    const cardCenter = rect.top + rect.height / 2;
+                    const pos = Math.max(0, Math.min(1, cardCenter / viewportHeight));
+
+                    let scale;
+                    if (pos <= 0.70) {
+                        scale = 1.0;
+                    } else {
+                        const t = (pos - 0.70) / 0.30;
+                        const eased = 1 - Math.pow(1 - t, 1.5);
+                        scale = 1.0 - eased * 0.5;
+                    }
+
+                    scale = Math.max(0.5, Math.min(1.0, scale));
+                    card.style.setProperty('--scale', scale);
+                });
+            }
+
+            const cardsSectionEl = document.getElementById('cardsSection');
+            cardsSectionEl.style.opacity = '1';
+            cardsSectionEl.style.transform = 'none';
+
+            function initialScale() {
+                updateCardScales();
+                requestAnimationFrame(updateCardScales);
+            }
+
+            if (document.readyState === 'complete') {
+                initialScale();
+            } else {
+                window.addEventListener('load', initialScale);
+            }
+
+            let ticking = false;
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        updateCardScales();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }, { passive: true });
+
+            window.addEventListener('resize', () => {
+                updateCardScales();
+            }, { passive: true });
+
+            setTimeout(updateCardScales, 100);
+            setTimeout(updateCardScales, 300);
+
+        })();
+    </script>
+
+</body>
+</html>
