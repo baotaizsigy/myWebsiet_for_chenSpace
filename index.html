@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>chen_space</title>
     <style>
+        /* ===== 全局重置 & 基础 ===== */
         * {
             margin: 0;
             padding: 0;
@@ -29,6 +30,7 @@
             background-color: #000000 !important;
         }
 
+        /* ===== 模糊覆盖层（底部羽化） ===== */
         .blur-overlay {
             position: fixed;
             bottom: 0;
@@ -47,6 +49,7 @@
             mask-composite: add;
         }
 
+        /* ===== 导航栏 ===== */
         .navbar {
             position: fixed;
             top: 20px;
@@ -146,6 +149,7 @@
             transform: scale(0.96);
         }
 
+        /* ===== 主布局 ===== */
         .main-wrapper {
             position: relative;
             z-index: 2;
@@ -167,6 +171,7 @@
             padding-top: 40px;
         }
 
+        /* ===== 顶部内容框 ===== */
         .content {
             max-width: 80vw;
             padding: 1.8rem 2.2rem;
@@ -216,6 +221,7 @@
             }
         }
 
+        /* ===== 打字机文字 ===== */
         .dynamic-text {
             font-size: clamp(2.8rem, 8vw, 5rem);
             font-weight: 700;
@@ -260,10 +266,16 @@
         }
 
         @keyframes blinkCursor {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 0; }
+            0%,
+            100% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 0;
+            }
         }
 
+        /* ===== 圆形按钮 ===== */
         .circle-btn {
             width: 72px;
             height: 72px;
@@ -306,6 +318,9 @@
             border-color: rgba(255, 255, 255, 0.2);
         }
 
+        /* ================================================================
+               卡片区域 — 使用 --scale 变量实现滚动缩放
+               ================================================================ */
         .cards-section {
             width: 100%;
             max-width: 960px;
@@ -319,15 +334,23 @@
             transform: none;
         }
 
+        /* ---- 卡片基础 ---- */
         .card {
+            /* 核心：缩放由 --scale 控制，默认 1 */
             --scale: 1;
+            transform: scale(var(--scale)) translateY(0);
+            transform-origin: center center;
+            will-change: transform;
+
             background: #000000;
             border-radius: 24px;
             padding: 55px 40px;
             min-height: 260px;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
             border: 5px solid rgba(255, 255, 255, 0.7);
-            transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.25s ease, border-color 0.5s ease;
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 0.25s ease,
+                border-color 0.5s ease;
             width: 100%;
             display: flex;
             flex-direction: row;
@@ -335,20 +358,25 @@
             justify-content: space-between;
             cursor: pointer;
             overflow: visible;
-            transform: scale(var(--scale));
-            will-change: transform;
-            transform-origin: center center;
         }
 
+        /* hover：在 --scale 基础上 ×1.02，并上移 4px */
         .card:hover {
-            transform: scale(var(--scale)) translateY(-4px);
+            transform: scale(calc(var(--scale) * 1.02)) translateY(-4px);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
         }
 
+        /* active：在 --scale 基础上 ×0.97，归位 */
         .card:active {
-            transform: scale(calc(var(--scale) * 0.97));
+            transform: scale(calc(var(--scale) * 0.97)) translateY(0);
         }
 
+        /* 黑暗模式下的卡片边框 */
+        body.dark-mode .card {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* ---- 卡片内容 ---- */
         .card-content {
             display: flex;
             flex-direction: column;
@@ -410,6 +438,7 @@
             user-select: none;
         }
 
+        /* ===== 滚动条 ===== */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -424,6 +453,9 @@
             background: rgba(255, 255, 255, 0.4);
         }
 
+        /* ================================================================
+               响应式
+               ================================================================ */
         @media (max-width: 768px) {
             .content {
                 padding: 1.4rem 1.6rem;
@@ -454,6 +486,7 @@
             .nav-left {
                 gap: 6px;
             }
+
             .card {
                 padding: 40px 28px;
                 min-height: 200px;
@@ -521,6 +554,7 @@
             .nav-left {
                 gap: 4px;
             }
+
             .card {
                 padding: 30px 20px;
                 min-height: 160px;
@@ -569,6 +603,7 @@
                 font-size: 0.5rem;
                 padding: 1px 6px;
             }
+
             .card-title {
                 font-size: 1.3rem;
             }
@@ -599,8 +634,10 @@
 </head>
 <body>
 
+    <!-- ===== 模糊覆盖层 ===== -->
     <div class="blur-overlay" id="blurOverlay"></div>
 
+    <!-- ===== 导航栏 ===== -->
     <nav class="navbar">
         <div class="nav-left">
             <span class="device-indicator" id="deviceIndicator">💻</span>
@@ -612,8 +649,10 @@
         </div>
     </nav>
 
+    <!-- ===== 主体 ===== -->
     <div class="main-wrapper">
 
+        <!-- 顶部区域 -->
         <section class="hero-section">
             <div class="content" id="contentWrapper">
                 <div class="dynamic-text" id="typingText">welcome</div>
@@ -621,17 +660,20 @@
             </div>
         </section>
 
+        <!-- 卡片区域 -->
         <section class="cards-section" id="cardsSection">
+            <!-- 卡片 1 -->
             <div class="card" id="card1">
                 <div class="card-content">
                     <div class="card-title">ai牛逼</div>
                     <div class="card-body">5万token做的网页！</div>
                 </div>
                 <div class="card-image">
-                    <img src="img1.jpg" alt="img1.jpg">
+                    <img src="img1.jpg" alt="img1.jpg" />
                 </div>
             </div>
 
+            <!-- 卡片 2 -->
             <div class="card" id="card2">
                 <div class="card-content">
                     <div class="card-title">极致的网页美观</div>
@@ -642,13 +684,14 @@
                 </div>
             </div>
 
+            <!-- 卡片 3 -->
             <div class="card" id="card3">
                 <div class="card-content">
                     <div class="card-title">我还没做完呢，先上传试试</div>
                     <div class="card-body">往下拉个头</div>
                 </div>
                 <div class="card-image">
-                    <img src="img3.png" alt="img3.png">
+                    <img src="img3.png" alt="img3.png" />
                 </div>
             </div>
         </section>
@@ -657,7 +700,11 @@
 
     <script>
         (function() {
-            // ===== 打字机动画 =====
+            'use strict';
+
+            // ================================================================
+            //  1. 打字机动画（保留原逻辑）
+            // ================================================================
             const textEl = document.getElementById('typingText');
             const words = ['welcome', '你好', '欢迎来到我的空间', '无限进步'];
             let currentIndex = 0;
@@ -796,15 +843,19 @@
                 clearTimer();
             });
 
-            // ===== DOM 引用 =====
+            // ================================================================
+            //  2. DOM 引用 & 状态
+            // ================================================================
             const circleBtn = document.getElementById('circleBtn');
             const bodyEl = document.body;
+            const cards = document.querySelectorAll('.card');
 
-            // ===== 状态管理 =====
             let isDarkMode = false;
             let isCard2Clicked = false;
 
-            // ===== 主题切换 =====
+            // ================================================================
+            //  3. 主题切换
+            // ================================================================
             function enterDarkMode() {
                 if (isDarkMode) return;
                 isDarkMode = true;
@@ -813,15 +864,14 @@
                 circleBtn.textContent = '变回来';
             }
 
-            // ===== 导航栏按钮 =====
+            // ================================================================
+            //  4. 导航栏按钮
+            // ================================================================
             document.getElementById('homeBtn').addEventListener('click', function(e) {
                 e.preventDefault();
                 this.style.transform = 'scale(0.94)';
                 setTimeout(() => { this.style.transform = ''; }, 150);
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
             document.getElementById('themeBtn').addEventListener('click', function(e) {
@@ -833,7 +883,9 @@
                 }
             });
 
-            // ===== 圆形按钮点击 =====
+            // ================================================================
+            //  5. 圆形按钮
+            // ================================================================
             circleBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 this.style.transform = 'scale(0.93)';
@@ -858,36 +910,93 @@
                 }
             });
 
-            // ===== 展示框点击事件 =====
+            // ================================================================
+            //  6. 卡片点击事件（保留业务逻辑，移除 style.transform 修改）
+            // ================================================================
             document.getElementById('card1').addEventListener('click', function(e) {
                 window.open('https://www.deepseek.com/', '_blank');
-                this.style.transform = 'scale(calc(var(--scale) * 0.97))';
-                setTimeout(() => { this.style.transform = ''; }, 150);
+                // 点击反馈由 CSS :active 处理，不再手动改 transform
             });
 
             document.getElementById('card2').addEventListener('click', function(e) {
-                this.style.transform = 'scale(calc(var(--scale) * 0.97))';
-                setTimeout(() => { this.style.transform = ''; }, 150);
-
                 if (!isDarkMode) {
                     stopTypingAndSetText('是不是很美观？', false);
                     isCard2Clicked = true;
                     circleBtn.textContent = '变回来';
                 }
-
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
             document.getElementById('card3').addEventListener('click', function(e) {
-                this.style.transform = 'scale(calc(var(--scale) * 0.97))';
-                setTimeout(() => { this.style.transform = ''; }, 150);
+                // 纯点击反馈由 CSS :active 处理
             });
 
             // ================================================================
-            // ===== 纯模糊覆盖层 - 无白线，仅羽化边缘 =====
+            //  7. ★★★ 核心：滚动缩放卡片 ★★★
+            //    卡片在屏幕底部 30% 区域缩小，到 70% 位置恢复为 1 倍
+            // ================================================================
+            const MIN_SCALE = 0.30; // 底部最小缩放
+            const NORMAL_SCALE = 1.0;
+            const THRESHOLD_TOP = 0.70; // 70% 位置恢复正常
+            const THRESHOLD_BOTTOM = 1.00; // 100% 位置（底部）最小
+
+            function updateCardScales() {
+                const windowHeight = window.innerHeight;
+                const thresholdTopPx = windowHeight * THRESHOLD_TOP;
+                const thresholdBottomPx = windowHeight * THRESHOLD_BOTTOM;
+                const range = thresholdBottomPx - thresholdTopPx; // 30% 窗口高度
+
+                cards.forEach(function(card) {
+                    const rect = card.getBoundingClientRect();
+                    const top = rect.top;
+
+                    let scale = NORMAL_SCALE;
+
+                    if (top <= thresholdTopPx) {
+                        // 卡片在 70% 位置以上 → 正常大小
+                        scale = NORMAL_SCALE;
+                    } else if (top >= thresholdBottomPx) {
+                        // 卡片在 100% 位置以下 → 最小
+                        scale = MIN_SCALE;
+                    } else {
+                        // 在 70% ~ 100% 之间 → 线性插值
+                        const progress = (top - thresholdTopPx) / range; // 0 ~ 1
+                        scale = NORMAL_SCALE - (NORMAL_SCALE - MIN_SCALE) * progress;
+                    }
+
+                    // 通过 CSS 变量 --scale 控制缩放
+                    card.style.setProperty('--scale', scale);
+                });
+            }
+
+            // 滚动节流：使用 requestAnimationFrame
+            let ticking = false;
+            function onScroll() {
+                if (!ticking) {
+                    window.requestAnimationFrame(function() {
+                        updateCardScales();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('resize', function() {
+                updateCardScales();
+            }, { passive: true });
+
+            // 页面加载完成后立即计算一次
+            if (document.readyState === 'complete') {
+                updateCardScales();
+            } else {
+                window.addEventListener('load', function() {
+                    updateCardScales();
+                });
+            }
+
+            // ================================================================
+            //  8. 模糊覆盖层（原有逻辑）
             // ================================================================
             const blurOverlay = document.getElementById('blurOverlay');
             const heroSection = document.querySelector('.hero-section');
@@ -904,21 +1013,20 @@
                 if (scrollY > startY) {
                     progress = Math.min((scrollY - startY) / (endY - startY), 1);
                 }
-
                 const easedProgress = Math.pow(progress, 0.6);
-                const glassHeight = easedProgress * 100;
-
-                blurOverlay.style.height = glassHeight + '%';
+                blurOverlay.style.height = (easedProgress * 100) + '%';
             }
 
             window.addEventListener('scroll', updateBlurOverlay, { passive: true });
             window.addEventListener('resize', updateBlurOverlay, { passive: true });
             setTimeout(updateBlurOverlay, 200);
 
-            // ===== 自适应字体大小 =====
+            // ================================================================
+            //  9. 自适应字体大小（原有逻辑）
+            // ================================================================
             function adjustFontSize() {
-                const cards = document.querySelectorAll('.card');
-                cards.forEach(card => {
+                const allCards = document.querySelectorAll('.card');
+                allCards.forEach(function(card) {
                     const title = card.querySelector('.card-title');
                     const body = card.querySelector('.card-body');
                     if (title) {
@@ -995,12 +1103,12 @@
             }
 
             window.addEventListener('load', function() {
-                document.querySelectorAll('.card-title').forEach(el => {
+                document.querySelectorAll('.card-title').forEach(function(el) {
                     if (!el.dataset.defaultSize) {
                         el.dataset.defaultSize = getComputedStyle(el).fontSize;
                     }
                 });
-                document.querySelectorAll('.card-body').forEach(el => {
+                document.querySelectorAll('.card-body').forEach(function(el) {
                     if (!el.dataset.defaultSize) {
                         el.dataset.defaultSize = getComputedStyle(el).fontSize;
                     }
@@ -1018,67 +1126,7 @@
             });
 
             // ================================================================
-            // ===== 卡片缩放：顶部70% → 100%，底部30% → 30% =====
-            // ================================================================
-            function updateCardScales() {
-                const cards = document.querySelectorAll('.card');
-                const viewportHeight = window.innerHeight;
-
-                cards.forEach(card => {
-                    const rect = card.getBoundingClientRect();
-                    const cardCenter = rect.top + rect.height / 2;
-                    const pos = Math.max(0, Math.min(1, cardCenter / viewportHeight));
-
-                    let scale;
-                    if (pos <= 0.70) {
-                        scale = 1.0;
-                    } else {
-                        const t = (pos - 0.70) / 0.30;
-                        const eased = 1 - Math.pow(1 - t, 1.5);
-                        // 从 1.0 平滑缩小到 0.3（30%）
-                        scale = 1.0 - eased * 0.7;
-                    }
-
-                    scale = Math.max(0.3, Math.min(1.0, scale));
-                    card.style.setProperty('--scale', scale);
-                });
-            }
-
-            const cardsSectionEl = document.getElementById('cardsSection');
-            cardsSectionEl.style.opacity = '1';
-            cardsSectionEl.style.transform = 'none';
-
-            function initialScale() {
-                updateCardScales();
-                requestAnimationFrame(updateCardScales);
-            }
-
-            if (document.readyState === 'complete') {
-                initialScale();
-            } else {
-                window.addEventListener('load', initialScale);
-            }
-
-            let ticking = false;
-            window.addEventListener('scroll', () => {
-                if (!ticking) {
-                    window.requestAnimationFrame(() => {
-                        updateCardScales();
-                        ticking = false;
-                    });
-                    ticking = true;
-                }
-            }, { passive: true });
-
-            window.addEventListener('resize', () => {
-                updateCardScales();
-            }, { passive: true });
-
-            setTimeout(updateCardScales, 100);
-            setTimeout(updateCardScales, 300);
-
-            // ================================================================
-            // ===== 设备检测：手机用 img4.jpg，平板/电脑用 img.jpg =====
+            //  10. 设备检测（手机用 img4.jpg）
             // ================================================================
             function detectDevice() {
                 const ua = navigator.userAgent;
