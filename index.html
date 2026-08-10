@@ -23,7 +23,6 @@
             background-position: center center;
             background-attachment: fixed;
             transition: background 0.8s ease, background-color 0.8s ease;
-            /* 添加背景切换过渡 */;
         }
 
         body.dark-mode {
@@ -35,7 +34,6 @@
             background-image: url('img5.jpg') !important;
         }
 
-        /* 暗黑模式优先，覆盖背景切换 */
         body.dark-mode.bg-img5 {
             background-image: none !important;
             background-color: #000000 !important;
@@ -53,11 +51,18 @@
             -webkit-backdrop-filter: blur(24px);
             z-index: 1;
             pointer-events: none;
-            transition: height 0.08s ease-out;
+            transition: height 0.08s ease-out, -webkit-mask-image 0.3s ease;
+            transition: height 0.08s ease-out, mask-image 0.3s ease;
             -webkit-mask-image: linear-gradient(to top, black 0%, black 65%, transparent 100%);
             mask-image: linear-gradient(to top, black 0%, black 65%, transparent 100%);
             -webkit-mask-composite: source-over;
             mask-composite: add;
+        }
+
+        /* 当模糊层完全覆盖时，移除羽化，让顶部也完全模糊 */
+        .blur-overlay.full {
+            -webkit-mask-image: none !important;
+            mask-image: none !important;
         }
 
         /* ===== 导航栏 ===== */
@@ -349,7 +354,6 @@
             transform-origin: center center;
             will-change: transform;
 
-            /* ===== 毛玻璃效果 ===== */
             background: rgba(20, 20, 40, 0.35);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
@@ -484,7 +488,6 @@
             align-items: stretch;
         }
 
-        /* 左侧列 — 更长的滑入距离 */
         .fullpage-left {
             display: flex;
             flex-direction: column;
@@ -500,7 +503,6 @@
             transform: translateX(0);
         }
 
-        /* 右侧列 — 更长的滑入距离 */
         .fullpage-right {
             display: flex;
             opacity: 0;
@@ -515,7 +517,6 @@
             transform: translateX(0);
         }
 
-        /* 全屏卡片 — 毛玻璃 + 大号字体 */
         .fullpage-card {
             background: rgba(20, 20, 40, 0.35);
             backdrop-filter: blur(16px);
@@ -1069,8 +1070,8 @@
                 <div class="fullpage-left" id="fullpageLeft">
                     <div class="fullpage-card" id="card4">
                         <div class="card-content">
-                            <div class="card-title">这个空间有什么鸟有？</div>
-                            <div class="card-body">没啥鸟有，就分享资源，学术交流😋😋</div>
+                            <div class="card-title">这个空间有什么鸟用？</div>
+                            <div class="card-body">没啥鸟用，就分享资源，学术交流😋😋</div>
                         </div>
                     </div>
                     <div class="fullpage-card" id="card5">
@@ -1407,7 +1408,7 @@
             }
 
             // ================================================================
-            //  8. 模糊覆盖层
+            //  8. 模糊覆盖层 — 完全覆盖时移除羽化
             // ================================================================
             const blurOverlay = document.getElementById('blurOverlay');
             const heroSection = document.querySelector('.hero-section');
@@ -1425,7 +1426,16 @@
                     progress = Math.min((scrollY - startY) / (endY - startY), 1);
                 }
                 const easedProgress = Math.pow(progress, 0.6);
-                blurOverlay.style.height = (easedProgress * 100) + '%';
+                const glassHeight = easedProgress * 100;
+
+                blurOverlay.style.height = glassHeight + '%';
+
+                // 当模糊层几乎完全覆盖（> 95%）时，移除羽化效果，让顶部也完全模糊
+                if (glassHeight > 95) {
+                    blurOverlay.classList.add('full');
+                } else {
+                    blurOverlay.classList.remove('full');
+                }
             }
 
             window.addEventListener('scroll', updateBlurOverlay, { passive: true });
@@ -1616,12 +1626,10 @@
                 if (isVisible) {
                     fullpageLeft.classList.add('visible');
                     fullpageRight.classList.add('visible');
-                    // 切换背景到 img5.jpg
                     document.body.classList.add('bg-img5');
                 } else {
                     fullpageLeft.classList.remove('visible');
                     fullpageRight.classList.remove('visible');
-                    // 移除背景切换
                     document.body.classList.remove('bg-img5');
                 }
             }
