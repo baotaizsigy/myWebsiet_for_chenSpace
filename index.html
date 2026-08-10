@@ -59,7 +59,6 @@
             mask-composite: add;
         }
 
-        /* 当模糊层完全覆盖时，移除羽化，让顶部也完全模糊 */
         .blur-overlay.full {
             -webkit-mask-image: none !important;
             mask-image: none !important;
@@ -593,14 +592,14 @@
         }
 
         /* ================================================================
-               Dock 栏 — 底部毛玻璃
+               Dock 栏 — 底部毛玻璃，左中右三栏布局
                ================================================================ */
         .dock-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            padding: 14px 24px;
+            padding: 12px 24px;
             background: rgba(10, 10, 30, 0.55);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
@@ -609,8 +608,7 @@
             z-index: 500;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 28px;
+            justify-content: space-between;
             transform: translateY(100%);
             transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             opacity: 0;
@@ -629,11 +627,42 @@
                 visibility 0s 0s;
         }
 
+        .dock-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dock-email {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .dock-email-icon {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .dock-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+
         .dock-text {
             font-size: 1rem;
             font-weight: 500;
             color: rgba(255, 255, 255, 0.75);
             letter-spacing: 1px;
+        }
+
+        .dock-right {
+            display: flex;
+            align-items: center;
         }
 
         .dock-home-btn {
@@ -780,15 +809,33 @@
                 padding: 12px 32px;
                 font-size: 0.9rem;
             }
+
             .dock-bar {
-                padding: 12px 18px;
-                gap: 18px;
+                padding: 10px 16px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .dock-left {
+                order: 1;
+                flex: 0 1 auto;
+            }
+            .dock-center {
+                order: 2;
+                flex: 1;
+                justify-content: center;
+            }
+            .dock-right {
+                order: 3;
+                flex: 0 1 auto;
+            }
+            .dock-email {
+                font-size: 0.7rem;
             }
             .dock-text {
                 font-size: 0.85rem;
             }
             .dock-home-btn {
-                padding: 6px 20px;
+                padding: 6px 18px;
                 font-size: 0.8rem;
             }
 
@@ -887,10 +934,27 @@
                 padding: 10px 24px;
                 font-size: 0.8rem;
             }
+
             .dock-bar {
-                padding: 10px 14px;
-                gap: 14px;
+                padding: 8px 12px;
+                gap: 6px;
                 flex-wrap: wrap;
+            }
+            .dock-left {
+                order: 1;
+                flex: 0 1 100%;
+                justify-content: center;
+            }
+            .dock-center {
+                order: 2;
+                flex: 0 1 auto;
+            }
+            .dock-right {
+                order: 3;
+                flex: 0 1 auto;
+            }
+            .dock-email {
+                font-size: 0.6rem;
             }
             .dock-text {
                 font-size: 0.75rem;
@@ -970,9 +1034,13 @@
                 padding: 8px 18px;
                 font-size: 0.7rem;
             }
+
             .dock-bar {
-                padding: 8px 12px;
-                gap: 10px;
+                padding: 6px 10px;
+                gap: 4px;
+            }
+            .dock-email {
+                font-size: 0.55rem;
             }
             .dock-text {
                 font-size: 0.65rem;
@@ -1097,8 +1165,16 @@
 
     <!-- ===== Dock 栏 ===== -->
     <div class="dock-bar" id="dockBar">
-        <span class="dock-text">🏁 到底了</span>
-        <button class="dock-home-btn" id="dockHomeBtn">首页</button>
+        <div class="dock-left">
+            <span class="dock-email-icon">📧</span>
+            <span class="dock-email">反馈邮箱：3836729616@qq.com</span>
+        </div>
+        <div class="dock-center">
+            <span class="dock-text">🏁 到底了</span>
+        </div>
+        <div class="dock-right">
+            <button class="dock-home-btn" id="dockHomeBtn">首页</button>
+        </div>
     </div>
 
     <script>
@@ -1430,7 +1506,6 @@
 
                 blurOverlay.style.height = glassHeight + '%';
 
-                // 当模糊层几乎完全覆盖（> 95%）时，移除羽化效果，让顶部也完全模糊
                 if (glassHeight > 95) {
                     blurOverlay.classList.add('full');
                 } else {
