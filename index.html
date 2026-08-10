@@ -69,7 +69,9 @@
             mask-image: none !important;
         }
 
-        /* ===== 导航栏 ===== */
+        /* ================================================================
+               导航栏 — mask-image 渐变展开（边缘柔化，动画结束后转为硬边）
+               ================================================================ */
         .navbar {
             position: fixed;
             top: 20px;
@@ -88,20 +90,56 @@
             align-items: center;
             justify-content: space-between;
             z-index: 1000;
+            /* ===== 使用 mask-image 代替 clip-path，边缘柔化 ===== */
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
+            -webkit-mask-size: 0% 100%;
+            mask-size: 0% 100%;
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
             opacity: 0;
-            transform: translateX(-50%) translateY(-20px);
-            animation: navFadeIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-            animation-delay: 0.3s;
+            animation: navbarExpand 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation-delay: 0.05s;
+            /* 动画结束后保持最终状态 */
+            animation-fill-mode: forwards;
         }
 
-        @keyframes navFadeIn {
+        /* 动画完成后，移除 mask-image（由 JS 控制） */
+        .navbar.mask-done {
+            -webkit-mask-image: none !important;
+            mask-image: none !important;
+        }
+
+        @keyframes navbarExpand {
             0% {
+                -webkit-mask-size: 0% 100%;
+                mask-size: 0% 100%;
                 opacity: 0;
-                transform: translateX(-50%) translateY(-20px);
+            }
+            60% {
+                opacity: 1;
             }
             100% {
+                -webkit-mask-size: 100% 100%;
+                mask-size: 100% 100%;
                 opacity: 1;
-                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* ===== 平板/电脑模式：导航栏加长 ===== */
+        @media (min-width: 768px) {
+            .navbar {
+                max-width: 920px;
+                padding: 14px 32px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .navbar {
+                max-width: 1000px;
+                padding: 14px 38px;
             }
         }
 
@@ -109,6 +147,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-shrink: 0;
+            z-index: 2;
         }
 
         .device-indicator {
@@ -134,10 +174,88 @@
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
+        /* ===== 导航栏中间：caillo~ / 诗句 ===== */
+        .nav-center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            min-height: 2.2rem;
+            padding: 0 8px;
+            /* 从上方滑入 */
+            opacity: 0;
+            transform: translateY(-28px);
+            animation: slideDownCaillo 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation-delay: 0.15s;
+        }
+
+        @keyframes slideDownCaillo {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            60% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nav-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.75);
+            letter-spacing: 1.5px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            white-space: nowrap;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            transition: opacity 0.45s cubic-bezier(0.23, 1, 0.32, 1),
+                transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: transform, opacity;
+        }
+
+        /* 淡出状态 */
+        .nav-text.fade-out {
+            opacity: 0;
+            transform: translateY(-12px);
+        }
+
+        /* 淡入状态（由 JS 添加） */
+        .nav-text.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 平板/电脑模式下文字更大 */
+        @media (min-width: 768px) {
+            .nav-text {
+                font-size: 1.3rem;
+                letter-spacing: 2px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .nav-text {
+                font-size: 1.5rem;
+                letter-spacing: 2.5px;
+            }
+        }
+
+        /* 手机模式下 caillo~ 隐藏（节省空间） */
+        @media (max-width: 600px) {
+            .nav-center {
+                display: none;
+            }
+        }
+
         .nav-buttons {
             display: flex;
             gap: 12px;
             flex-shrink: 0;
+            z-index: 2;
         }
 
         .nav-btn {
@@ -169,7 +287,36 @@
             transform: scale(0.96);
         }
 
-        /* ===== 主布局 ===== */
+        /* 手机模式下按钮自适应 */
+        @media (max-width: 480px) {
+            .nav-btn {
+                padding: 4px 14px;
+                font-size: 0.75rem;
+            }
+            .nav-title {
+                font-size: 0.9rem;
+            }
+            .device-indicator {
+                font-size: 0.6rem;
+                padding: 1px 8px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .nav-btn {
+                padding: 3px 10px;
+                font-size: 0.65rem;
+            }
+            .nav-title {
+                font-size: 0.75rem;
+            }
+            .device-indicator {
+                font-size: 0.5rem;
+                padding: 1px 6px;
+            }
+        }
+
+        /* ===== 主布局（以下保持原样） ===== */
         .main-wrapper {
             position: relative;
             z-index: 2;
@@ -191,7 +338,6 @@
             padding-top: 40px;
         }
 
-        /* ===== 顶部内容框 ===== */
         .content {
             max-width: 80vw;
             padding: 1.8rem 2.2rem;
@@ -241,7 +387,6 @@
             }
         }
 
-        /* ===== 打字机文字 ===== */
         .dynamic-text {
             font-size: clamp(2.8rem, 8vw, 5rem);
             font-weight: 700;
@@ -295,7 +440,6 @@
             }
         }
 
-        /* ===== 长圆玻璃按钮 ===== */
         .btn-glass {
             display: inline-block;
             padding: 14px 48px;
@@ -336,9 +480,7 @@
             background: rgba(255, 255, 255, 0.12);
         }
 
-        /* ================================================================
-               卡片区域 — 统一高度 + 滚动缩放 + 毛玻璃
-               ================================================================ */
+        /* ===== 卡片区域 ===== */
         .cards-section {
             width: 100%;
             max-width: 960px;
@@ -471,9 +613,7 @@
             filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
         }
 
-        /* ================================================================
-               全屏卡片页（第二页）— 铺满视口，长距离左右滑动入场 + 毛玻璃
-               ================================================================ */
+        /* ===== 全屏卡片页（第二页） ===== */
         .fullpage-section {
             width: 100%;
             min-height: 100vh;
@@ -527,7 +667,6 @@
             -webkit-backdrop-filter: blur(16px);
             border: 5px solid rgba(255, 255, 255, 0.25);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-
             border-radius: 28px;
             padding: 45px 40px;
             display: flex;
@@ -596,9 +735,7 @@
             min-height: 560px;
         }
 
-        /* ================================================================
-               第三页 — 全屏双卡片（左右各一张）
-               ================================================================ */
+        /* ===== 第三页 ===== */
         .fullpage-section-3 {
             width: 100%;
             min-height: 100vh;
@@ -710,9 +847,7 @@
             text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
         }
 
-        /* ================================================================
-               弹窗样式
-               ================================================================ */
+        /* ===== 弹窗 ===== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -868,9 +1003,7 @@
             background: rgba(255, 255, 255, 0.12);
         }
 
-        /* ================================================================
-               Dock 栏 — 底部毛玻璃，左中右三栏布局
-               ================================================================ */
+        /* ===== Dock 栏 ===== */
         .dock-bar {
             position: fixed;
             bottom: 0;
@@ -997,9 +1130,7 @@
             background: rgba(255, 255, 255, 0.4);
         }
 
-        /* ================================================================
-               响应式
-               ================================================================ */
+        /* ===== 响应式（简略，保留核心） ===== */
         @media (max-width: 968px) {
             .fullpage-inner {
                 grid-template-columns: 1fr;
@@ -1061,18 +1192,18 @@
                 font-size: clamp(2.2rem, 7vw, 3.6rem);
             }
             .navbar {
-                padding: 10px 18px;
-                gap: 10px;
-                top: 16px;
-                width: 92%;
-                flex-wrap: nowrap;
+                max-width: 700px;
+                padding: 12px 24px;
             }
-            .nav-title {
-                font-size: 0.95rem;
+            .nav-text {
+                font-size: 1.0rem;
             }
             .nav-btn {
                 padding: 5px 14px;
                 font-size: 0.75rem;
+            }
+            .nav-title {
+                font-size: 0.95rem;
             }
             .device-indicator {
                 font-size: 0.65rem;
@@ -1191,6 +1322,12 @@
             }
         }
 
+        @media (max-width: 600px) {
+            .nav-center {
+                display: none;
+            }
+        }
+
         @media (max-width: 480px) {
             .hero-section {
                 min-height: 60vh;
@@ -1207,7 +1344,6 @@
             }
             .navbar {
                 padding: 8px 14px;
-                gap: 8px;
                 border-radius: 40px;
             }
             .nav-title {
@@ -1475,10 +1611,13 @@
     <div class="blur-overlay" id="blurOverlay"></div>
 
     <!-- ===== 导航栏 ===== -->
-    <nav class="navbar">
+    <nav class="navbar" id="navbar">
         <div class="nav-left">
             <span class="device-indicator" id="deviceIndicator">💻</span>
             <span class="nav-title">✦ chen的空间</span>
+        </div>
+        <div class="nav-center">
+            <span class="nav-text" id="navText">caillo~</span>
         </div>
         <div class="nav-buttons">
             <button class="nav-btn" id="homeBtn">🏠 首页</button>
@@ -1489,7 +1628,6 @@
     <!-- ===== 主体 ===== -->
     <div class="main-wrapper">
 
-        <!-- 顶部区域 -->
         <section class="hero-section">
             <div class="content" id="contentWrapper">
                 <div class="dynamic-text" id="typingText">welcome</div>
@@ -1497,7 +1635,7 @@
             </div>
         </section>
 
-        <!-- 原有卡片区域 -->
+        <!-- 卡片区域 -->
         <section class="cards-section" id="cardsSection">
             <div class="card" id="card1">
                 <div class="card-content">
@@ -1530,7 +1668,7 @@
             </div>
         </section>
 
-        <!-- ===== 全屏新卡片页（第二页） ===== -->
+        <!-- 第二页 -->
         <section class="fullpage-section" id="fullpageSection">
             <div class="fullpage-inner">
                 <div class="fullpage-left" id="fullpageLeft">
@@ -1558,7 +1696,7 @@
             </div>
         </section>
 
-        <!-- ===== 全屏新卡片页（第三页）- 左右各一张 ===== -->
+        <!-- 第三页 -->
         <section class="fullpage-section-3" id="fullpageSection3">
             <div class="fullpage-inner-3">
                 <div class="fullpage-col-left-3" id="fullpageColLeft3">
@@ -1609,6 +1747,18 @@
     <script>
         (function() {
             'use strict';
+
+            // ================================================================
+            //  0. 诗句列表
+            // ================================================================
+            const poems = [
+                '花季莫浅忆，雨季莫愁离',
+                '汴水流，泗水流，流到瓜州古渡头。吴山点点愁',
+                '直道相思了无益，未妨惆怅是清狂',
+                '人皆荒醉，但唱观音',
+                '少年听雨歌楼上。红烛昏罗帐',
+                '物是人非事事休，欲语泪先流'
+            ];
 
             // ================================================================
             //  1. 打字机动画
@@ -1775,6 +1925,10 @@
             const modalBody = document.getElementById('modalBody');
             const modalBtnContainer = document.getElementById('modalButtonContainer');
 
+            // 导航栏文本
+            const navTextEl = document.getElementById('navText');
+            const navbarEl = document.getElementById('navbar');
+
             let isDarkMode = false;
             let isCard2Clicked = false;
 
@@ -1888,7 +2042,6 @@
                 // 仅反馈
             });
 
-            // ---- 第三页卡片 ----
             document.getElementById('card7').addEventListener('click', function(e) {
                 openModal(
                     '🎉 敬请期待',
@@ -1902,7 +2055,6 @@
                     '这个网页制作和部署免费',
                     '<button class="modal-btn" id="modalRefBtn">参考视频</button>'
                 );
-                // 绑定参考视频按钮事件
                 const refBtn = document.getElementById('modalRefBtn');
                 if (refBtn) {
                     refBtn.addEventListener('click', function() {
@@ -1970,7 +2122,7 @@
             }
 
             // ================================================================
-            //  9. 模糊覆盖层 — 完全覆盖时移除羽化
+            //  9. 模糊覆盖层
             // ================================================================
             const blurOverlay = document.getElementById('blurOverlay');
             const heroSection = document.querySelector('.hero-section');
@@ -2159,7 +2311,9 @@
                 const isPhone = /Mobi|Android|iPhone|iPod/i.test(ua) && !/iPad/i.test(ua);
 
                 if (isPhone) {
-                    document.body.style.backgroundImage = "url('img4.jpg')";
+                    if (!isDarkMode && !bodyEl.classList.contains('bg-img5') && !bodyEl.classList.contains('bg-img6')) {
+                        bodyEl.style.backgroundImage = "url('img4.jpg')";
+                    }
                 }
 
                 const indicator = document.getElementById('deviceIndicator');
@@ -2177,7 +2331,7 @@
             }
 
             // ================================================================
-            //  14. 背景切换统一管理（解决第二页和第三页过渡闪烁）
+            //  14. 背景切换统一管理
             // ================================================================
             let lastBgState = '';
 
@@ -2191,7 +2345,6 @@
 
                 let newState = 'default';
 
-                // 优先级：第三页 > 第二页 > 默认
                 if (isPage3Visible) {
                     newState = 'img6';
                 } else if (isPage2Visible) {
@@ -2200,20 +2353,25 @@
                     newState = 'default';
                 }
 
-                // 只有状态变化时才更新，避免不必要的DOM操作
                 if (newState !== lastBgState) {
                     lastBgState = newState;
 
-                    // 清除所有背景类
                     bodyEl.classList.remove('bg-img5', 'bg-img6');
 
-                    // 添加对应的背景类
                     if (newState === 'img5') {
                         bodyEl.classList.add('bg-img5');
                     } else if (newState === 'img6') {
                         bodyEl.classList.add('bg-img6');
                     }
-                    // default 状态下不添加任何额外类，恢复默认背景
+                    if (newState === 'default') {
+                        const isPhone = /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent) && !/iPad/i.test(
+                        navigator.userAgent);
+                        if (isPhone && !isDarkMode) {
+                            bodyEl.style.backgroundImage = "url('img4.jpg')";
+                        } else {
+                            bodyEl.style.backgroundImage = "url('img.jpg')";
+                        }
+                    }
                 }
             }
 
@@ -2259,9 +2417,7 @@
             function handleScroll() {
                 if (!scrollTicking) {
                     window.requestAnimationFrame(function() {
-                        // 更新背景
                         updateBackground();
-                        // 更新卡片动画
                         triggerFullpageAnimation();
                         triggerFullpageAnimation3();
                         scrollTicking = false;
@@ -2270,11 +2426,9 @@
                 }
             }
 
-            // 监听滚动和窗口尺寸变化
             window.addEventListener('scroll', handleScroll, { passive: true });
             window.addEventListener('resize', handleScroll, { passive: true });
 
-            // 页面加载完成后初始化
             if (document.readyState === 'complete') {
                 setTimeout(handleScroll, 300);
             } else {
@@ -2282,6 +2436,94 @@
                     setTimeout(handleScroll, 500);
                 });
             }
+
+            // ================================================================
+            //  18. ★★★ 导航栏边缘过渡消除（动画完成后移除 mask-image）
+            // ================================================================
+            function onNavbarExpandEnd() {
+                navbarEl.classList.add('mask-done');
+            }
+
+            // 监听导航栏展开动画结束
+            navbarEl.addEventListener('animationend', function(e) {
+                // 只处理 navbarExpand 动画
+                if (e.animationName === 'navbarExpand') {
+                    onNavbarExpandEnd();
+                }
+            });
+
+            // 后备：如果 animationend 未触发，5秒后强制移除
+            setTimeout(function() {
+                if (!navbarEl.classList.contains('mask-done')) {
+                    navbarEl.classList.add('mask-done');
+                }
+            }, 5000);
+
+            // ================================================================
+            //  19. ★★★ caillo~ 3秒后切换为随机诗句
+            // ================================================================
+            let poemSwitched = false;
+
+            function switchToPoem() {
+                if (poemSwitched) return;
+                poemSwitched = true;
+
+                // 随机选一句诗
+                const randomPoem = poems[Math.floor(Math.random() * poems.length)];
+
+                // 先淡出
+                navTextEl.classList.add('fade-out');
+
+                // 等待淡出完成后更换文本并淡入
+                setTimeout(function() {
+                    navTextEl.textContent = randomPoem;
+
+                    // 根据诗句长度调整字体大小
+                    const len = randomPoem.length;
+                    let fontSize = 1.1;
+                    if (len > 20) {
+                        fontSize = 0.75;
+                    } else if (len > 14) {
+                        fontSize = 0.85;
+                    } else if (len > 8) {
+                        fontSize = 0.95;
+                    }
+                    // 在平板/大屏上放大
+                    const isWide = window.innerWidth >= 768;
+                    if (isWide) {
+                        fontSize = fontSize * 1.2;
+                    }
+                    if (window.innerWidth >= 1024) {
+                        fontSize = fontSize * 1.3;
+                    }
+                    // 限制最大最小值
+                    fontSize = Math.min(Math.max(fontSize, 0.7), 1.6);
+                    navTextEl.style.fontSize = fontSize + 'rem';
+
+                    // 移除淡出，添加淡入
+                    navTextEl.classList.remove('fade-out');
+                    // 强制重排后添加淡入
+                    void navTextEl.offsetWidth;
+                    navTextEl.classList.add('fade-in');
+                }, 450);
+            }
+
+            // 在 caillo~ 滑入动画完成后 3 秒切换
+            const navCenterEl = document.querySelector('.nav-center');
+            if (navCenterEl) {
+                navCenterEl.addEventListener('animationend', function(e) {
+                    if (e.animationName === 'slideDownCaillo') {
+                        setTimeout(switchToPoem, 3000);
+                    }
+                });
+            }
+
+            // 后备：如果 animationend 未触发，5.5秒后强制切换
+            setTimeout(function() {
+                if (!poemSwitched) {
+                    switchToPoem();
+                }
+            }, 5500);
 
         })();
     </script>
