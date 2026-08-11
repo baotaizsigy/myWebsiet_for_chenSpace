@@ -308,7 +308,7 @@
         }
 
         /* ================================================================
-               通知系统 — 滑入动画 + 跑马灯
+               通知系统 — 滑入动画 + 跑马灯 + 自适应宽度
                ================================================================ */
         .notification-container {
             position: fixed;
@@ -338,7 +338,10 @@
                 padding 0.4s ease;
             will-change: transform, max-height, opacity;
             transform-origin: top center;
-            width: 100%;
+            /* 宽度由内容决定 */
+            width: auto;
+            max-width: 90vw;
+            flex-shrink: 0;
         }
 
         .notification-item.show {
@@ -393,6 +396,7 @@
                 border-radius: 15px;
                 padding: 2.5px;
                 max-height: 100px;
+                max-width: 85vw;
             }
         }
 
@@ -412,6 +416,7 @@
                 border-radius: 12px;
                 padding: 2px;
                 max-height: 120px;
+                max-width: 80vw;
             }
         }
 
@@ -422,6 +427,7 @@
             }
             .notification-item {
                 max-height: 100px;
+                max-width: 80vw;
             }
         }
 
@@ -1723,6 +1729,7 @@
         </div>
         <div class="nav-buttons">
             <button class="nav-btn" id="homeBtn">🏠 首页</button>
+            <button class="nav-btn" id="shareBtn">🔗 分享页</button>
             <button class="nav-btn" id="themeBtn">🎨 主题切换</button>
         </div>
     </nav>
@@ -2042,6 +2049,7 @@
             // ================================================================
             let isDarkMode = false;
             let isCard2Clicked = false;
+            let isSharing = false;
 
             // ================================================================
             //  5. ★★★ 随机跑马灯配色方案 ★★★
@@ -2107,8 +2115,10 @@
             //  7. 初始化欢迎通知队列
             // ================================================================
             function initWelcomeNotifications() {
-                const welcomeMsg = ['🎉 欢迎来到chen_space', '🖱️ 上下滑动浏览更多', '👆 部分卡片可点击'];
-                const delays = [200, 400, 600];
+                const welcomeMsg = ['🎉 欢迎来到chen_space', '🖱️ 上下滑动浏览更多', '👆 部分卡片可点击',
+                    '顶部分享页可切换页面'
+                ];
+                const delays = [200, 400, 600, 800];
 
                 welcomeMsg.forEach((msg, index) => {
                     setTimeout(function() {
@@ -2125,7 +2135,6 @@
                 modalBody.innerHTML = bodyHTML;
                 modalBtnContainer.innerHTML = buttonHTML || '';
 
-                // 如果包含参考视频按钮，重新绑定事件
                 if (buttonHTML) {
                     const refBtn = document.getElementById('modalRefBtn');
                     if (refBtn) {
@@ -2146,7 +2155,6 @@
                 document.body.style.overflow = '';
             }
 
-            // 关闭弹窗事件
             modalClose.addEventListener('click', closeModal);
             modalOverlay.addEventListener('click', function(e) {
                 if (e.target === modalOverlay) {
@@ -2155,12 +2163,11 @@
             });
 
             // ================================================================
-            //  9. ★★★ 所有卡片事件绑定（包括第三页） ★★★
+            //  9. ★★★ 所有卡片事件绑定 ★★★
             // ================================================================
             function bindAllCardEvents() {
                 console.log('🔄 绑定所有卡片事件...');
 
-                // 卡片1：打开 DeepSeek
                 const c1 = document.getElementById('card1');
                 if (c1) {
                     c1.addEventListener('click', function() {
@@ -2169,7 +2176,6 @@
                     });
                 }
 
-                // 卡片2：切换文字
                 const c2 = document.getElementById('card2');
                 if (c2) {
                     c2.addEventListener('click', function() {
@@ -2185,7 +2191,6 @@
                     });
                 }
 
-                // 卡片3
                 const c3 = document.getElementById('card3');
                 if (c3) {
                     c3.addEventListener('click', function() {
@@ -2193,7 +2198,6 @@
                     });
                 }
 
-                // 卡片4
                 const c4 = document.getElementById('card4');
                 if (c4) {
                     c4.addEventListener('click', function() {
@@ -2201,7 +2205,6 @@
                     });
                 }
 
-                // 卡片5
                 const c5 = document.getElementById('card5');
                 if (c5) {
                     c5.addEventListener('click', function() {
@@ -2209,7 +2212,6 @@
                     });
                 }
 
-                // 卡片6
                 const c6 = document.getElementById('card6');
                 if (c6) {
                     c6.addEventListener('click', function() {
@@ -2217,7 +2219,6 @@
                     });
                 }
 
-                // ★★★ 卡片7 — 第三页左侧 ★★★
                 const c7 = document.getElementById('card7');
                 if (c7) {
                     c7.addEventListener('click', function() {
@@ -2229,7 +2230,6 @@
                     });
                 }
 
-                // ★★★ 卡片8 — 第三页右侧 ★★★
                 const c8 = document.getElementById('card8');
                 if (c8) {
                     c8.addEventListener('click', function() {
@@ -2246,7 +2246,7 @@
             }
 
             // ================================================================
-            //  10. ★★★ 圆形按钮事件（独立绑定，确保可用） ★★★
+            //  10. ★★★ 圆形按钮事件 ★★★
             // ================================================================
             function bindCircleButton() {
                 console.log('🔄 绑定圆形按钮...');
@@ -2258,20 +2258,17 @@
 
                     let shouldReset = false;
 
-                    // 如果处于暗黑模式，退出暗黑模式
                     if (isDarkMode) {
                         isDarkMode = false;
                         bodyEl.classList.remove('dark-mode');
                         shouldReset = true;
                     }
 
-                    // 如果卡片2被点击过，重置状态
                     if (isCard2Clicked) {
                         isCard2Clicked = false;
                         shouldReset = true;
                     }
 
-                    // 执行重置
                     if (shouldReset) {
                         resumeTyping();
                         circleBtn.textContent = '✦ chen的空间';
@@ -2282,8 +2279,31 @@
             }
 
             // ================================================================
-            //  11. 主题切换
+            //  11. 导航栏按钮
             // ================================================================
+            document.getElementById('homeBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('shareBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (isSharing) return;
+                isSharing = true;
+
+                modalTitle.textContent = '⏳ 即将跳转';
+                modalBody.innerHTML = '正在前往分享页...';
+                modalBtnContainer.innerHTML = '';
+                modalOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                setTimeout(function() {
+                    window.location.href = 'index2.html';
+                }, 3000);
+            });
+
             document.getElementById('themeBtn').addEventListener('click', function(e) {
                 e.preventDefault();
                 this.style.transform = 'scale(0.94)';
@@ -2294,13 +2314,6 @@
                     stopTypingAndSetText('质疑我审美？😡', true);
                     circleBtn.textContent = '变回来';
                 }
-            });
-
-            document.getElementById('homeBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                this.style.transform = 'scale(0.94)';
-                setTimeout(() => { this.style.transform = ''; }, 150);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
             // ================================================================
@@ -2761,24 +2774,16 @@
             });
 
             // ================================================================
-            //  22. ★★★ 主初始化：按顺序执行所有绑定 ★★★
+            //  22. ★★★ 主初始化 ★★★
             // ================================================================
             function init() {
                 console.log('🚀 初始化页面...');
-
-                // 1. 欢迎通知（延迟出现）
                 setTimeout(initWelcomeNotifications, 800);
-
-                // 2. 卡片事件绑定
                 bindAllCardEvents();
-
-                // 3. 圆形按钮绑定
                 bindCircleButton();
-
                 console.log('✅ 初始化完成');
             }
 
-            // 页面加载完成后执行
             if (document.readyState === 'complete') {
                 init();
             } else {
