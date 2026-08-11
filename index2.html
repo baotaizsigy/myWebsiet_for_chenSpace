@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>chen_space · 分享页</title>
+    <style>
+        /* ===== 全局重置 & 基础 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            color: white;
+            overflow-x: hidden;
+            background-color: #1a1a2e;
+            background-image: url('img5.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            transition: background-image 0.8s ease, background-color 0.8s ease;
+        }
+
+        body.dark-mode {
+            background-image: none !important;
+            background-color: #000000 !important;
+        }
+
+        /* ================================================================
+               左半背景模糊层（带羽化边缘）
+               ================================================================ */
+        .left-blur {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 60%;
+            height: 100vh;
+            background: transparent;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            z-index: 0;
+            pointer-events: none;
+            /* 从左到右渐变透明，实现中间羽化 */
+            -webkit-mask-image: linear-gradient(to right, black 0%, black 65%, transparent 100%);
+            mask-image: linear-gradient(to right, black 0%, black 65%, transparent 100%);
+            -webkit-mask-composite: source-over;
+            mask-composite: add;
+        }
+
+        body.dark-mode .left-blur {
+            display: none;
+        }
+
+        /* ===== 底部羽化模糊覆盖层 ===== */
+        .blur-overlay {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: transparent;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            z-index: 1;
+            pointer-events: none;
+            transition: height 0.08s ease-out, -webkit-mask-image 0.3s ease;
+            transition: height 0.08s ease-out, mask-image 0.3s ease;
+            -webkit-mask-image: linear-gradient(to top, black 0%, black 65%, transparent 100%);
+            mask-image: linear-gradient(to top, black 0%, black 65%, transparent 100%);
+            -webkit-mask-composite: source-over;
+            mask-composite: add;
+        }
+
+        .blur-overlay.full {
+            -webkit-mask-image: none !important;
+            mask-image: none !important;
+        }
+
+        /* ================================================================
+               导航栏
+               ================================================================ */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 700px;
+            padding: 12px 24px;
+            background: rgba(10, 10, 30, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
+            -webkit-mask-size: 0% 100%;
+            mask-size: 0% 100%;
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            opacity: 0;
+            animation: navbarExpand 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation-delay: 0.05s;
+            animation-fill-mode: forwards;
+        }
+
+        .navbar.mask-done {
+            -webkit-mask-image: none !important;
+            mask-image: none !important;
+        }
+
+        @keyframes navbarExpand {
+            0% {
+                -webkit-mask-size: 0% 100%;
+                mask-size: 0% 100%;
+                opacity: 0;
+            }
+            60% {
+                opacity: 1;
+            }
+            100% {
+                -webkit-mask-size: 100% 100%;
+                mask-size: 100% 100%;
+                opacity: 1;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .navbar {
+                width: calc(100% - 48px);
+                max-width: 100%;
+                padding: 14px 32px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .navbar {
+                width: calc(100% - 64px);
+                max-width: 100%;
+                padding: 14px 38px;
+            }
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+            z-index: 2;
+        }
+
+        .device-indicator {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .nav-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: 0.8px;
+            white-space: nowrap;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            min-height: 2.2rem;
+            padding: 0 8px;
+            opacity: 0;
+            transform: translateY(-28px);
+            animation: slideDownCaillo 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation-delay: 0.15s;
+        }
+
+        @keyframes slideDownCaillo {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            60% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nav-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.75);
+            letter-spacing: 1.5px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            white-space: nowrap;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            transition: opacity 0.45s cubic-bezier(0.23, 1, 0.32, 1),
+                transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+            will-change: transform, opacity;
+        }
+
+        .nav-text.fade-out {
+            opacity: 0;
+            transform: translateY(-12px);
+        }
+
+        .nav-text.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (min-width: 768px) {
+            .nav-text {
+                font-size: 1.3rem;
+                letter-spacing: 2px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .nav-text {
+                font-size: 1.5rem;
+                letter-spacing: 2.5px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav-center {
+                display: none;
+            }
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+            z-index: 2;
+        }
+
+        .nav-btn {
+            padding: 6px 22px;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            letter-spacing: 0.5px;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: scale(1.04);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.96);
+        }
+
+        @media (max-width: 480px) {
+            .nav-btn {
+                padding: 4px 14px;
+                font-size: 0.75rem;
+            }
+            .nav-title {
+                font-size: 0.9rem;
+            }
+            .device-indicator {
+                font-size: 0.6rem;
+                padding: 1px 8px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .nav-btn {
+                padding: 3px 10px;
+                font-size: 0.65rem;
+            }
+            .nav-title {
+                font-size: 0.75rem;
+            }
+            .device-indicator {
+                font-size: 0.5rem;
+                padding: 1px 6px;
+            }
+        }
+
+        /* ================================================================
+               通知系统
+               ================================================================ */
+        .notification-container {
+            position: fixed;
+            right: 20px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            pointer-events: none;
+            max-width: 90vw;
+        }
+
+        .notification-item {
+            padding: 3px;
+            border-radius: 18px;
+            background-size: 300% 300%;
+            animation: borderRotate 3s linear infinite;
+            overflow: hidden;
+            max-height: 120px;
+            opacity: 0;
+            transform: translateX(calc(100% + 30px));
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+                opacity 0.4s ease,
+                max-height 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+                margin 0.4s ease,
+                padding 0.4s ease;
+            will-change: transform, max-height, opacity;
+            transform-origin: top center;
+            width: auto;
+            max-width: 90vw;
+            flex-shrink: 0;
+        }
+
+        .notification-item.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification-item.removing {
+            transform: translateX(calc(100% + 30px));
+            opacity: 0;
+            max-height: 0;
+            margin: 0;
+            padding: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        @keyframes borderRotate {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 300% 50%;
+            }
+        }
+
+        .notification-inner {
+            background: rgba(60, 60, 85, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 16px 30px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 0.6px;
+            white-space: nowrap;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .notification-container {
+                right: 12px;
+                max-width: 85vw;
+            }
+            .notification-inner {
+                font-size: 0.9rem;
+                padding: 12px 20px;
+                border-radius: 13px;
+            }
+            .notification-item {
+                border-radius: 15px;
+                padding: 2.5px;
+                max-height: 100px;
+                max-width: 85vw;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .notification-container {
+                right: 8px;
+                gap: 6px;
+                max-width: 80vw;
+            }
+            .notification-inner {
+                font-size: 0.78rem;
+                padding: 10px 16px;
+                border-radius: 11px;
+                white-space: normal;
+            }
+            .notification-item {
+                border-radius: 12px;
+                padding: 2px;
+                max-height: 120px;
+                max-width: 80vw;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .notification-inner {
+                font-size: 0.7rem;
+                padding: 8px 12px;
+            }
+            .notification-item {
+                max-height: 100px;
+                max-width: 80vw;
+            }
+        }
+
+        /* ================================================================
+               主布局 — 左对齐文字，无模糊框
+               ================================================================ */
+        .main-wrapper {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 20px 40px 100px;
+        }
+
+        .hero-section {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 40px;
+            position: relative;
+        }
+
+        .main-title {
+            font-size: clamp(4rem, 12vw, 7rem);
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+            line-height: 1.1;
+            letter-spacing: 0.02em;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sub-text {
+            font-size: clamp(1.2rem, 2.5vw, 2rem);
+            color: #ffffff;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+            opacity: 0.92;
+            position: relative;
+            z-index: 1;
+        }
+
+        body.dark-mode .main-title {
+            color: #ffffff;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        body.dark-mode .sub-text {
+            color: rgba(255, 255, 255, 0.7);
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ===== Dock 栏 ===== */
+        .dock-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 12px 24px;
+            background: rgba(10, 10, 30, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transform: translateY(100%);
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            opacity: 0;
+            visibility: hidden;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+                opacity 0.4s ease,
+                visibility 0s 0.5s;
+        }
+
+        .dock-bar.visible {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+                opacity 0.4s ease,
+                visibility 0s 0s;
+        }
+
+        .dock-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dock-email {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .dock-email-icon {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .dock-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .dock-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.75);
+            letter-spacing: 1px;
+        }
+
+        .dock-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .dock-home-btn {
+            padding: 8px 28px;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: inherit;
+            letter-spacing: 0.5px;
+        }
+
+        .dock-home-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+            transform: scale(1.04);
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.06);
+        }
+
+        .dock-home-btn:active {
+            transform: scale(0.95);
+        }
+
+        body.dark-mode .dock-bar {
+            background: rgba(0, 0, 0, 0.7);
+            border-top-color: rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .dock-home-btn {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        body.dark-mode .dock-home-btn:hover {
+            background: rgba(255, 255, 255, 0.16);
+        }
+
+        /* ===== 滚动条 ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 768px) {
+            .navbar {
+                width: 90%;
+                max-width: 700px;
+                padding: 12px 24px;
+            }
+            .nav-text {
+                font-size: 1.0rem;
+            }
+            .nav-btn {
+                padding: 5px 14px;
+                font-size: 0.75rem;
+            }
+            .nav-title {
+                font-size: 0.95rem;
+            }
+            .device-indicator {
+                font-size: 0.65rem;
+                padding: 1px 10px;
+            }
+            .nav-left {
+                gap: 6px;
+            }
+
+            .main-wrapper {
+                padding: 20px 24px 100px;
+            }
+            .main-title {
+                font-size: clamp(3rem, 10vw, 4.5rem);
+            }
+            .sub-text {
+                font-size: clamp(1rem, 2.5vw, 1.4rem);
+            }
+
+            .left-blur {
+                width: 70%;
+                -webkit-mask-image: linear-gradient(to right, black 0%, black 70%, transparent 100%);
+                mask-image: linear-gradient(to right, black 0%, black 70%, transparent 100%);
+            }
+
+            .dock-bar {
+                padding: 10px 16px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .dock-left {
+                order: 1;
+                flex: 0 1 auto;
+            }
+            .dock-center {
+                order: 2;
+                flex: 1;
+                justify-content: center;
+            }
+            .dock-right {
+                order: 3;
+                flex: 0 1 auto;
+            }
+            .dock-email {
+                font-size: 0.7rem;
+            }
+            .dock-text {
+                font-size: 0.85rem;
+            }
+            .dock-home-btn {
+                padding: 6px 18px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav-center {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-wrapper {
+                padding: 20px 16px 80px;
+            }
+            .main-title {
+                font-size: clamp(2.4rem, 8vw, 3.2rem);
+            }
+            .sub-text {
+                font-size: clamp(0.9rem, 2vw, 1.1rem);
+            }
+            .navbar {
+                padding: 8px 14px;
+                border-radius: 40px;
+            }
+            .nav-title {
+                font-size: 0.8rem;
+            }
+            .nav-btn {
+                padding: 4px 10px;
+                font-size: 0.65rem;
+                border-radius: 20px;
+            }
+            .nav-buttons {
+                gap: 6px;
+            }
+            .device-indicator {
+                font-size: 0.55rem;
+                padding: 1px 8px;
+            }
+            .nav-left {
+                gap: 4px;
+            }
+
+            .left-blur {
+                width: 80%;
+                -webkit-mask-image: linear-gradient(to right, black 0%, black 80%, transparent 100%);
+                mask-image: linear-gradient(to right, black 0%, black 80%, transparent 100%);
+            }
+
+            .dock-bar {
+                padding: 8px 12px;
+                gap: 6px;
+                flex-wrap: wrap;
+            }
+            .dock-left {
+                order: 1;
+                flex: 0 1 100%;
+                justify-content: center;
+            }
+            .dock-center {
+                order: 2;
+                flex: 0 1 auto;
+            }
+            .dock-right {
+                order: 3;
+                flex: 0 1 auto;
+            }
+            .dock-email {
+                font-size: 0.6rem;
+            }
+            .dock-text {
+                font-size: 0.75rem;
+            }
+            .dock-home-btn {
+                padding: 5px 14px;
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .main-title {
+                font-size: clamp(2rem, 6vw, 2.6rem);
+            }
+            .sub-text {
+                font-size: clamp(0.8rem, 1.8vw, 1rem);
+            }
+            .nav-title {
+                font-size: 0.7rem;
+            }
+            .nav-btn {
+                font-size: 0.6rem;
+                padding: 3px 8px;
+            }
+            .device-indicator {
+                font-size: 0.5rem;
+                padding: 1px 6px;
+            }
+
+            .left-blur {
+                width: 85%;
+                -webkit-mask-image: linear-gradient(to right, black 0%, black 85%, transparent 100%);
+                mask-image: linear-gradient(to right, black 0%, black 85%, transparent 100%);
+            }
+
+            .dock-bar {
+                padding: 6px 10px;
+                gap: 4px;
+            }
+            .dock-email {
+                font-size: 0.55rem;
+            }
+            .dock-text {
+                font-size: 0.65rem;
+            }
+            .dock-home-btn {
+                padding: 4px 12px;
+                font-size: 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== 左半背景模糊层（带羽化） ===== -->
+    <div class="left-blur" id="leftBlur"></div>
+
+    <!-- ===== 底部羽化模糊覆盖层 ===== -->
+    <div class="blur-overlay" id="blurOverlay"></div>
+
+    <!-- ===== 导航栏 ===== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-left">
+            <span class="device-indicator" id="deviceIndicator">💻</span>
+            <span class="nav-title">✦ chen的空间</span>
+        </div>
+        <div class="nav-center">
+            <span class="nav-text" id="navText">caillo~</span>
+        </div>
+        <div class="nav-buttons">
+            <button class="nav-btn" id="homeBtn">🏠 首页</button>
+            <button class="nav-btn" id="backBtn">🔙 回空间</button>
+            <button class="nav-btn" id="wallpaperBtn">🖼️ 换壁纸</button>
+        </div>
+    </nav>
+
+    <!-- ===== 通知容器 ===== -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- ===== 主体 ===== -->
+    <div class="main-wrapper">
+
+        <section class="hero-section">
+            <div class="main-title">分享页</div>
+            <div class="sub-text">赠人玫瑰</div>
+        </section>
+
+    </div>
+
+    <!-- ===== Dock 栏 ===== -->
+    <div class="dock-bar" id="dockBar">
+        <div class="dock-left">
+            <span class="dock-email-icon">📧</span>
+            <span class="dock-email">反馈邮箱：3836729616@qq.com</span>
+        </div>
+        <div class="dock-center">
+            <span class="dock-text">🏁 到底了</span>
+        </div>
+        <div class="dock-right">
+            <button class="dock-home-btn" id="dockHomeBtn">首页</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ================================================================
+            //  1. 诗句列表
+            // ================================================================
+            const poems = [
+                '花季莫浅忆，雨季莫愁离',
+                '汴水流，泗水流，流到瓜州古渡头。吴山点点愁',
+                '直道相思了无益，未妨惆怅是清狂',
+                '人皆荒醉，但唱观音',
+                '少年听雨歌楼上。红烛昏罗帐',
+                '物是人非事事休，欲语泪先流'
+            ];
+
+            // ================================================================
+            //  2. DOM 引用 & 状态
+            // ================================================================
+            const bodyEl = document.body;
+            const dockBar = document.getElementById('dockBar');
+            const dockHomeBtn = document.getElementById('dockHomeBtn');
+            const navbarEl = document.getElementById('navbar');
+            const navTextEl = document.getElementById('navText');
+            const notifContainer = document.getElementById('notificationContainer');
+
+            const wallpapers = ['img.jpg', 'img5.jpg', 'img6.jpg'];
+            let currentWallpaperIndex = 0;
+            let isDarkMode = false;
+
+            // ================================================================
+            //  3. ★★★ 随机跑马灯配色方案 ★★★
+            // ================================================================
+            const colorPalettes = [
+                ['#ff6b6b', '#feca57', '#48dbfb', '#a29bfe'],
+                ['#fd79a8', '#fdcb6e', '#00cec9', '#6c5ce7'],
+                ['#ff7675', '#fdcb6e', '#74b9ff', '#a29bfe'],
+                ['#e17055', '#fdcb6e', '#00b894', '#0984e3'],
+                ['#d63031', '#fdcb6e', '#00b894', '#6c5ce7'],
+                ['#6c5ce7', '#fd79a8', '#fdcb6e', '#00b894'],
+                ['#0984e3', '#6c5ce7', '#fd79a8', '#fdcb6e'],
+                ['#00b894', '#00cec9', '#0984e3', '#6c5ce7']
+            ];
+
+            function getRandomPalette() {
+                return colorPalettes[Math.floor(Math.random() * colorPalettes.length)];
+            }
+
+            // ================================================================
+            //  4. ★★★ 通知系统 ★★★
+            // ================================================================
+            function showNotification(text, duration) {
+                duration = duration || 5000;
+
+                const palette = getRandomPalette();
+                const angle = Math.random() * 360;
+                const gradient =
+                    `conic-gradient(from ${angle}deg, ${palette[0]}, ${palette[1]}, ${palette[2]}, ${palette[3]}, ${palette[0]})`;
+
+                const item = document.createElement('div');
+                item.className = 'notification-item';
+                item.style.background = gradient;
+                item.style.backgroundSize = '300% 300%';
+
+                const inner = document.createElement('div');
+                inner.className = 'notification-inner';
+                inner.textContent = text;
+                item.appendChild(inner);
+
+                notifContainer.appendChild(item);
+                void item.offsetWidth;
+
+                requestAnimationFrame(() => {
+                    item.classList.add('show');
+                });
+
+                const hideTimer = setTimeout(function() {
+                    item.classList.remove('show');
+                    item.classList.add('removing');
+                    setTimeout(function() {
+                        if (item.parentNode) {
+                            item.remove();
+                        }
+                    }, 500);
+                }, duration);
+
+                item._hideTimer = hideTimer;
+                return item;
+            }
+
+            // ================================================================
+            //  5. 初始化欢迎通知（无背景模糊相关提示）
+            // ================================================================
+            function initWelcomeNotifications() {
+                const welcomeMsg = [
+                    '🎉 欢迎来到分享页',
+                    '🔙 点击"回空间"返回',
+                    '🖼️ 点击"换壁纸"切换背景'
+                ];
+                const delays = [200, 400, 600];
+
+                welcomeMsg.forEach((msg, index) => {
+                    setTimeout(function() {
+                        showNotification(msg);
+                    }, delays[index]);
+                });
+            }
+
+            // ================================================================
+            //  6. 导航栏按钮
+            // ================================================================
+            document.getElementById('homeBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('backBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+                window.location.href = 'index.html';
+            });
+
+            document.getElementById('wallpaperBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+
+                if (isDarkMode) {
+                    isDarkMode = false;
+                    bodyEl.classList.remove('dark-mode');
+                }
+
+                let newIndex;
+                if (wallpapers.length <= 1) {
+                    newIndex = 0;
+                } else {
+                    do {
+                        newIndex = Math.floor(Math.random() * wallpapers.length);
+                    } while (newIndex === currentWallpaperIndex);
+                }
+
+                currentWallpaperIndex = newIndex;
+                const wallpaper = wallpapers[currentWallpaperIndex];
+                bodyEl.style.backgroundImage = `url('${wallpaper}')`;
+
+                showNotification('🖼️ 已切换壁纸');
+            });
+
+            // ================================================================
+            //  7. Dock 栏
+            // ================================================================
+            let dockVisible = false;
+
+            function checkDockVisibility() {
+                const scrollY = window.scrollY;
+                const windowHeight = window.innerHeight;
+                const documentHeight = document.documentElement.scrollHeight;
+                const isAtBottom = scrollY + windowHeight >= documentHeight - 20;
+
+                if (isAtBottom && !dockVisible) {
+                    dockVisible = true;
+                    dockBar.classList.add('visible');
+                } else if (!isAtBottom && dockVisible) {
+                    dockVisible = false;
+                    dockBar.classList.remove('visible');
+                }
+            }
+
+            window.addEventListener('scroll', checkDockVisibility, { passive: true });
+            window.addEventListener('resize', function() {
+                clearTimeout(window._dockResizeTimer);
+                window._dockResizeTimer = setTimeout(checkDockVisibility, 200);
+            }, { passive: true });
+
+            if (document.readyState === 'complete') {
+                setTimeout(checkDockVisibility, 300);
+            } else {
+                window.addEventListener('load', function() {
+                    setTimeout(checkDockVisibility, 500);
+                });
+            }
+
+            dockHomeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // ================================================================
+            //  8. 底部羽化模糊覆盖层
+            // ================================================================
+            const blurOverlay = document.getElementById('blurOverlay');
+            const heroSection = document.querySelector('.hero-section');
+
+            function updateBlurOverlay() {
+                const scrollY = window.scrollY;
+                const windowHeight = window.innerHeight;
+                const heroHeight = heroSection ? heroSection.offsetHeight : windowHeight;
+
+                const startY = heroHeight * 0.01;
+                const endY = heroHeight * 0.80;
+
+                let progress = 0;
+                if (scrollY > startY) {
+                    progress = Math.min((scrollY - startY) / (endY - startY), 1);
+                }
+                const easedProgress = Math.pow(progress, 0.6);
+                const glassHeight = easedProgress * 100;
+
+                blurOverlay.style.height = glassHeight + '%';
+
+                if (glassHeight > 95) {
+                    blurOverlay.classList.add('full');
+                } else {
+                    blurOverlay.classList.remove('full');
+                }
+            }
+
+            window.addEventListener('scroll', updateBlurOverlay, { passive: true });
+            window.addEventListener('resize', updateBlurOverlay, { passive: true });
+            setTimeout(updateBlurOverlay, 200);
+
+            // ================================================================
+            //  9. 设备检测
+            // ================================================================
+            function detectDevice() {
+                const ua = navigator.userAgent;
+                const isPhone = /Mobi|Android|iPhone|iPod/i.test(ua) && !/iPad/i.test(ua);
+                const indicator = document.getElementById('deviceIndicator');
+                if (isPhone) {
+                    indicator.textContent = '📱 手机';
+                } else {
+                    indicator.textContent = '💻 电脑';
+                }
+            }
+
+            if (document.readyState === 'complete') {
+                detectDevice();
+            } else {
+                window.addEventListener('load', detectDevice);
+            }
+
+            // ================================================================
+            //  10. 导航栏边缘过渡消除
+            // ================================================================
+            function onNavbarExpandEnd() {
+                navbarEl.classList.add('mask-done');
+            }
+
+            navbarEl.addEventListener('animationend', function(e) {
+                if (e.animationName === 'navbarExpand') {
+                    onNavbarExpandEnd();
+                }
+            });
+
+            setTimeout(function() {
+                if (!navbarEl.classList.contains('mask-done')) {
+                    navbarEl.classList.add('mask-done');
+                }
+            }, 5000);
+
+            // ================================================================
+            //  11. caillo~ 切换为随机诗句
+            // ================================================================
+            let poemSwitched = false;
+
+            function switchToPoem() {
+                if (poemSwitched) return;
+                poemSwitched = true;
+
+                const randomPoem = poems[Math.floor(Math.random() * poems.length)];
+
+                navTextEl.classList.add('fade-out');
+
+                setTimeout(function() {
+                    navTextEl.textContent = randomPoem;
+
+                    const len = randomPoem.length;
+                    let fontSize = 1.1;
+                    if (len > 20) {
+                        fontSize = 0.75;
+                    } else if (len > 14) {
+                        fontSize = 0.85;
+                    } else if (len > 8) {
+                        fontSize = 0.95;
+                    }
+                    const isWide = window.innerWidth >= 768;
+                    if (isWide) {
+                        fontSize = fontSize * 1.2;
+                    }
+                    if (window.innerWidth >= 1024) {
+                        fontSize = fontSize * 1.3;
+                    }
+                    fontSize = Math.min(Math.max(fontSize, 0.7), 1.6);
+                    navTextEl.style.fontSize = fontSize + 'rem';
+
+                    navTextEl.classList.remove('fade-out');
+                    void navTextEl.offsetWidth;
+                    navTextEl.classList.add('fade-in');
+                }, 450);
+            }
+
+            const navCenterEl = document.querySelector('.nav-center');
+            if (navCenterEl) {
+                navCenterEl.addEventListener('animationend', function(e) {
+                    if (e.animationName === 'slideDownCaillo') {
+                        setTimeout(switchToPoem, 3000);
+                    }
+                });
+            }
+
+            setTimeout(function() {
+                if (!poemSwitched) {
+                    switchToPoem();
+                }
+            }, 5500);
+
+            // ================================================================
+            //  12. 通知容器位置自适应
+            // ================================================================
+            function updateNotifPosition() {
+                const nav = document.getElementById('navbar');
+                const container = document.getElementById('notificationContainer');
+                if (nav && container) {
+                    const navRect = nav.getBoundingClientRect();
+                    container.style.top = (navRect.bottom + 24) + 'px';
+                }
+            }
+
+            window.addEventListener('resize', updateNotifPosition);
+            window.addEventListener('load', function() {
+                setTimeout(updateNotifPosition, 300);
+            });
+
+            // ================================================================
+            //  13. 主初始化
+            // ================================================================
+            function init() {
+                console.log('🚀 初始化分享页...');
+                setTimeout(initWelcomeNotifications, 800);
+                console.log('✅ 初始化完成');
+            }
+
+            if (document.readyState === 'complete') {
+                init();
+            } else {
+                window.addEventListener('load', init);
+            }
+
+        })();
+    </script>
+
+</body>
+</html>
