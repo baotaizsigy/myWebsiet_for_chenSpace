@@ -44,7 +44,7 @@
             background-color: #000000 !important;
         }
 
-        /* ===== 模糊覆盖层（底部羽化） ===== */
+        /* ===== 模糊覆盖层 ===== */
         .blur-overlay {
             position: fixed;
             bottom: 0;
@@ -70,7 +70,7 @@
         }
 
         /* ================================================================
-               导航栏 — mask-image 渐变展开（边缘柔化，动画结束后转为硬边）
+               导航栏
                ================================================================ */
         .navbar {
             position: fixed;
@@ -125,7 +125,6 @@
             }
         }
 
-        /* ===== 平板模式：导航栏拉宽 ===== */
         @media (min-width: 768px) {
             .navbar {
                 width: calc(100% - 48px);
@@ -134,7 +133,6 @@
             }
         }
 
-        /* ===== 电脑模式：导航栏进一步拉宽 ===== */
         @media (min-width: 1024px) {
             .navbar {
                 width: calc(100% - 64px);
@@ -225,7 +223,6 @@
             transform: translateY(0);
         }
 
-        /* 平板/电脑模式下 nav-text 更大 */
         @media (min-width: 768px) {
             .nav-text {
                 font-size: 1.3rem;
@@ -240,7 +237,6 @@
             }
         }
 
-        /* 手机模式下 caillo~ 隐藏（节省空间） */
         @media (max-width: 600px) {
             .nav-center {
                 display: none;
@@ -308,6 +304,124 @@
             .device-indicator {
                 font-size: 0.5rem;
                 padding: 1px 6px;
+            }
+        }
+
+        /* ================================================================
+               通知系统 — 滑入动画 + 跑马灯
+               ================================================================ */
+        .notification-container {
+            position: fixed;
+            right: 20px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            pointer-events: none;
+            max-width: 90vw;
+        }
+
+        .notification-item {
+            padding: 3px;
+            border-radius: 18px;
+            background-size: 300% 300%;
+            animation: borderRotate 3s linear infinite;
+            overflow: hidden;
+            max-height: 120px;
+            opacity: 0;
+            transform: translateX(calc(100% + 30px));
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+                opacity 0.4s ease,
+                max-height 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+                margin 0.4s ease,
+                padding 0.4s ease;
+            will-change: transform, max-height, opacity;
+            transform-origin: top center;
+            width: 100%;
+        }
+
+        .notification-item.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification-item.removing {
+            transform: translateX(calc(100% + 30px));
+            opacity: 0;
+            max-height: 0;
+            margin: 0;
+            padding: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        @keyframes borderRotate {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 300% 50%;
+            }
+        }
+
+        .notification-inner {
+            background: rgba(60, 60, 85, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 16px 30px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 0.6px;
+            white-space: nowrap;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .notification-container {
+                right: 12px;
+                max-width: 85vw;
+            }
+            .notification-inner {
+                font-size: 0.9rem;
+                padding: 12px 20px;
+                border-radius: 13px;
+            }
+            .notification-item {
+                border-radius: 15px;
+                padding: 2.5px;
+                max-height: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .notification-container {
+                right: 8px;
+                gap: 6px;
+                max-width: 80vw;
+            }
+            .notification-inner {
+                font-size: 0.78rem;
+                padding: 10px 16px;
+                border-radius: 11px;
+                white-space: normal;
+            }
+            .notification-item {
+                border-radius: 12px;
+                padding: 2px;
+                max-height: 120px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .notification-inner {
+                font-size: 0.7rem;
+                padding: 8px 12px;
+            }
+            .notification-item {
+                max-height: 100px;
             }
         }
 
@@ -842,7 +956,9 @@
             text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
         }
 
-        /* ===== 弹窗 ===== */
+        /* ================================================================
+               弹窗
+               ================================================================ */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -856,20 +972,10 @@
             display: none;
             align-items: center;
             justify-content: center;
-            animation: modalFadeIn 0.3s ease;
         }
 
         .modal-overlay.active {
             display: flex;
-        }
-
-        @keyframes modalFadeIn {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
         }
 
         .modal-box {
@@ -1186,7 +1292,6 @@
             .dynamic-text {
                 font-size: clamp(2.2rem, 7vw, 3.6rem);
             }
-            /* 平板以下恢复窄导航栏 */
             .navbar {
                 width: 90%;
                 max-width: 700px;
@@ -1622,6 +1727,9 @@
         </div>
     </nav>
 
+    <!-- ===== 通知容器 ===== -->
+    <div class="notification-container" id="notificationContainer"></div>
+
     <!-- ===== 主体 ===== -->
     <div class="main-wrapper">
 
@@ -1746,7 +1854,7 @@
             'use strict';
 
             // ================================================================
-            //  0. 诗句列表
+            //  1. 诗句列表
             // ================================================================
             const poems = [
                 '花季莫浅忆，雨季莫愁离',
@@ -1758,7 +1866,7 @@
             ];
 
             // ================================================================
-            //  1. 打字机动画
+            //  2. 打字机动画
             // ================================================================
             const textEl = document.getElementById('typingText');
             const words = ['welcome', '你好', '欢迎来到我的空间', '无限进步'];
@@ -1899,7 +2007,7 @@
             });
 
             // ================================================================
-            //  2. DOM 引用 & 状态
+            //  3. DOM 引用 & 状态
             // ================================================================
             const circleBtn = document.getElementById('circleBtn');
             const bodyEl = document.body;
@@ -1926,73 +2034,109 @@
             const navTextEl = document.getElementById('navText');
             const navbarEl = document.getElementById('navbar');
 
+            // 通知容器
+            const notifContainer = document.getElementById('notificationContainer');
+
+            // ================================================================
+            //  4. 状态变量
+            // ================================================================
             let isDarkMode = false;
             let isCard2Clicked = false;
 
             // ================================================================
-            //  3. 主题切换
+            //  5. ★★★ 随机跑马灯配色方案 ★★★
             // ================================================================
-            function enterDarkMode() {
-                if (isDarkMode) return;
-                isDarkMode = true;
-                bodyEl.classList.add('dark-mode');
-                stopTypingAndSetText('质疑我审美？😡', true);
-                circleBtn.textContent = '变回来';
+            const colorPalettes = [
+                ['#ff6b6b', '#feca57', '#48dbfb', '#a29bfe'],
+                ['#fd79a8', '#fdcb6e', '#00cec9', '#6c5ce7'],
+                ['#ff7675', '#fdcb6e', '#74b9ff', '#a29bfe'],
+                ['#e17055', '#fdcb6e', '#00b894', '#0984e3'],
+                ['#d63031', '#fdcb6e', '#00b894', '#6c5ce7'],
+                ['#6c5ce7', '#fd79a8', '#fdcb6e', '#00b894'],
+                ['#0984e3', '#6c5ce7', '#fd79a8', '#fdcb6e'],
+                ['#00b894', '#00cec9', '#0984e3', '#6c5ce7']
+            ];
+
+            function getRandomPalette() {
+                return colorPalettes[Math.floor(Math.random() * colorPalettes.length)];
             }
 
             // ================================================================
-            //  4. 导航栏按钮
+            //  6. ★★★ 通知系统 ★★★
             // ================================================================
-            document.getElementById('homeBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                this.style.transform = 'scale(0.94)';
-                setTimeout(() => { this.style.transform = ''; }, 150);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+            function showNotification(text, duration) {
+                duration = duration || 5000;
 
-            document.getElementById('themeBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                this.style.transform = 'scale(0.94)';
-                setTimeout(() => { this.style.transform = ''; }, 150);
-                if (!isDarkMode) {
-                    enterDarkMode();
-                }
-            });
+                const palette = getRandomPalette();
+                const angle = Math.random() * 360;
+                const gradient =
+                    `conic-gradient(from ${angle}deg, ${palette[0]}, ${palette[1]}, ${palette[2]}, ${palette[3]}, ${palette[0]})`;
 
-            // ================================================================
-            //  5. 圆形按钮（长圆玻璃）
-            // ================================================================
-            circleBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                this.style.transform = 'scale(0.93)';
-                setTimeout(() => { this.style.transform = ''; }, 150);
+                const item = document.createElement('div');
+                item.className = 'notification-item';
+                item.style.background = gradient;
+                item.style.backgroundSize = '300% 300%';
 
-                let shouldReset = false;
+                const inner = document.createElement('div');
+                inner.className = 'notification-inner';
+                inner.textContent = text;
+                item.appendChild(inner);
 
-                if (isDarkMode) {
-                    isDarkMode = false;
-                    bodyEl.classList.remove('dark-mode');
-                    shouldReset = true;
-                }
+                notifContainer.appendChild(item);
+                void item.offsetWidth;
 
-                if (isCard2Clicked) {
-                    isCard2Clicked = false;
-                    shouldReset = true;
-                }
+                requestAnimationFrame(() => {
+                    item.classList.add('show');
+                });
 
-                if (shouldReset) {
-                    resumeTyping();
-                    circleBtn.textContent = '✦ chen的空间';
-                }
-            });
+                const hideTimer = setTimeout(function() {
+                    item.classList.remove('show');
+                    item.classList.add('removing');
+                    setTimeout(function() {
+                        if (item.parentNode) {
+                            item.remove();
+                        }
+                    }, 500);
+                }, duration);
+
+                item._hideTimer = hideTimer;
+                return item;
+            }
 
             // ================================================================
-            //  6. 弹窗功能
+            //  7. 初始化欢迎通知队列
+            // ================================================================
+            function initWelcomeNotifications() {
+                const welcomeMsg = ['🎉 欢迎来到chen_space', '🖱️ 上下滑动浏览更多', '👆 部分卡片可点击'];
+                const delays = [200, 400, 600];
+
+                welcomeMsg.forEach((msg, index) => {
+                    setTimeout(function() {
+                        showNotification(msg);
+                    }, delays[index]);
+                });
+            }
+
+            // ================================================================
+            //  8. 弹窗功能
             // ================================================================
             function openModal(title, bodyHTML, buttonHTML) {
                 modalTitle.textContent = title;
                 modalBody.innerHTML = bodyHTML;
                 modalBtnContainer.innerHTML = buttonHTML || '';
+
+                // 如果包含参考视频按钮，重新绑定事件
+                if (buttonHTML) {
+                    const refBtn = document.getElementById('modalRefBtn');
+                    if (refBtn) {
+                        refBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            window.open('https://www.bilibili.com/video/BV1NkM66LEzF/?share_source=copy_web&vd_source=04e58fdb6c6c69a8b4a8d3040e0589ed',
+                                '_blank');
+                        });
+                    }
+                }
+
                 modalOverlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
@@ -2002,6 +2146,7 @@
                 document.body.style.overflow = '';
             }
 
+            // 关闭弹窗事件
             modalClose.addEventListener('click', closeModal);
             modalOverlay.addEventListener('click', function(e) {
                 if (e.target === modalOverlay) {
@@ -2010,58 +2155,156 @@
             });
 
             // ================================================================
-            //  7. 卡片点击事件
+            //  9. ★★★ 所有卡片事件绑定（包括第三页） ★★★
             // ================================================================
-            document.getElementById('card1').addEventListener('click', function(e) {
-                window.open('https://www.deepseek.com/', '_blank');
-            });
+            function bindAllCardEvents() {
+                console.log('🔄 绑定所有卡片事件...');
 
-            document.getElementById('card2').addEventListener('click', function(e) {
+                // 卡片1：打开 DeepSeek
+                const c1 = document.getElementById('card1');
+                if (c1) {
+                    c1.addEventListener('click', function() {
+                        window.open('https://www.deepseek.com/', '_blank');
+                        showNotification('🚀 已打开 DeepSeek');
+                    });
+                }
+
+                // 卡片2：切换文字
+                const c2 = document.getElementById('card2');
+                if (c2) {
+                    c2.addEventListener('click', function() {
+                        if (!isDarkMode) {
+                            stopTypingAndSetText('是不是很美观？', false);
+                            isCard2Clicked = true;
+                            circleBtn.textContent = '变回来';
+                            showNotification('✨ 文字已切换');
+                        } else {
+                            showNotification('💡 暗黑模式中，请先退出');
+                        }
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    });
+                }
+
+                // 卡片3
+                const c3 = document.getElementById('card3');
+                if (c3) {
+                    c3.addEventListener('click', function() {
+                        showNotification('😅 这个还没做好哦');
+                    });
+                }
+
+                // 卡片4
+                const c4 = document.getElementById('card4');
+                if (c4) {
+                    c4.addEventListener('click', function() {
+                        showNotification('😆 点我没反应吧lol');
+                    });
+                }
+
+                // 卡片5
+                const c5 = document.getElementById('card5');
+                if (c5) {
+                    c5.addEventListener('click', function() {
+                        showNotification('🛠️ 反馈入口还在路上');
+                    });
+                }
+
+                // 卡片6
+                const c6 = document.getElementById('card6');
+                if (c6) {
+                    c6.addEventListener('click', function() {
+                        showNotification('💪 正在努力写代码');
+                    });
+                }
+
+                // ★★★ 卡片7 — 第三页左侧 ★★★
+                const c7 = document.getElementById('card7');
+                if (c7) {
+                    c7.addEventListener('click', function() {
+                        openModal(
+                            '🎉 敬请期待',
+                            '尽情期待（马上就写）'
+                        );
+                        showNotification('🎉 敬请期待');
+                    });
+                }
+
+                // ★★★ 卡片8 — 第三页右侧 ★★★
+                const c8 = document.getElementById('card8');
+                if (c8) {
+                    c8.addEventListener('click', function() {
+                        openModal(
+                            '💡 免费部署',
+                            '这个网页制作和部署免费',
+                            '<button class="modal-btn" id="modalRefBtn">参考视频</button>'
+                        );
+                        showNotification('💡 免费部署已开启');
+                    });
+                }
+
+                console.log('✅ 所有卡片事件绑定完成');
+            }
+
+            // ================================================================
+            //  10. ★★★ 圆形按钮事件（独立绑定，确保可用） ★★★
+            // ================================================================
+            function bindCircleButton() {
+                console.log('🔄 绑定圆形按钮...');
+
+                circleBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.style.transform = 'scale(0.93)';
+                    setTimeout(() => { this.style.transform = ''; }, 150);
+
+                    let shouldReset = false;
+
+                    // 如果处于暗黑模式，退出暗黑模式
+                    if (isDarkMode) {
+                        isDarkMode = false;
+                        bodyEl.classList.remove('dark-mode');
+                        shouldReset = true;
+                    }
+
+                    // 如果卡片2被点击过，重置状态
+                    if (isCard2Clicked) {
+                        isCard2Clicked = false;
+                        shouldReset = true;
+                    }
+
+                    // 执行重置
+                    if (shouldReset) {
+                        resumeTyping();
+                        circleBtn.textContent = '✦ chen的空间';
+                    }
+                });
+
+                console.log('✅ 圆形按钮绑定完成');
+            }
+
+            // ================================================================
+            //  11. 主题切换
+            // ================================================================
+            document.getElementById('themeBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
                 if (!isDarkMode) {
-                    stopTypingAndSetText('是不是很美观？', false);
-                    isCard2Clicked = true;
+                    isDarkMode = true;
+                    bodyEl.classList.add('dark-mode');
+                    stopTypingAndSetText('质疑我审美？😡', true);
                     circleBtn.textContent = '变回来';
                 }
+            });
+
+            document.getElementById('homeBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
-            document.getElementById('card3').addEventListener('click', function(e) {
-                // 仅反馈
-            });
-
-            document.getElementById('card4').addEventListener('click', function(e) {
-                // 仅反馈
-            });
-            document.getElementById('card5').addEventListener('click', function(e) {
-                // 仅反馈
-            });
-            document.getElementById('card6').addEventListener('click', function(e) {
-                // 仅反馈
-            });
-
-            document.getElementById('card7').addEventListener('click', function(e) {
-                openModal(
-                    '🎉 敬请期待',
-                    '尽情期待（马上就写）'
-                );
-            });
-
-            document.getElementById('card8').addEventListener('click', function(e) {
-                openModal(
-                    '💡 免费部署',
-                    '这个网页制作和部署免费',
-                    '<button class="modal-btn" id="modalRefBtn">参考视频</button>'
-                );
-                const refBtn = document.getElementById('modalRefBtn');
-                if (refBtn) {
-                    refBtn.addEventListener('click', function() {
-                        window.open('https://www.bilibili.com/video/BV1NkM66LEzF/?share_source=copy_web&vd_source=04e58fdb6c6c69a8b4a8d3040e0589ed', '_blank');
-                    });
-                }
-            });
-
             // ================================================================
-            //  8. 滚动缩放卡片（仅对原有卡片生效）
+            //  12. 滚动缩放卡片
             // ================================================================
             const MIN_SCALE = 0.30;
             const NORMAL_SCALE = 1.0;
@@ -2119,7 +2362,7 @@
             }
 
             // ================================================================
-            //  9. 模糊覆盖层
+            //  13. 模糊覆盖层
             // ================================================================
             const blurOverlay = document.getElementById('blurOverlay');
             const heroSection = document.querySelector('.hero-section');
@@ -2153,7 +2396,7 @@
             setTimeout(updateBlurOverlay, 200);
 
             // ================================================================
-            //  10. Dock 栏 — 滚动到底部时显示
+            //  14. Dock 栏
             // ================================================================
             let dockVisible = false;
 
@@ -2186,9 +2429,6 @@
                 });
             }
 
-            // ================================================================
-            //  11. Dock 栏「首页」按钮
-            // ================================================================
             dockHomeBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 this.style.transform = 'scale(0.94)';
@@ -2197,7 +2437,7 @@
             });
 
             // ================================================================
-            //  12. 自适应字体大小
+            //  15. 自适应字体大小
             // ================================================================
             function adjustFontSize() {
                 const allCards = document.querySelectorAll('.card');
@@ -2301,7 +2541,7 @@
             });
 
             // ================================================================
-            //  13. 设备检测
+            //  16. 设备检测
             // ================================================================
             function detectDevice() {
                 const ua = navigator.userAgent;
@@ -2328,7 +2568,7 @@
             }
 
             // ================================================================
-            //  14. 背景切换统一管理
+            //  17. 背景切换
             // ================================================================
             let lastBgState = '';
 
@@ -2362,7 +2602,7 @@
                     }
                     if (newState === 'default') {
                         const isPhone = /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent) && !/iPad/i.test(
-                        navigator.userAgent);
+                            navigator.userAgent);
                         if (isPhone && !isDarkMode) {
                             bodyEl.style.backgroundImage = "url('img4.jpg')";
                         } else {
@@ -2373,7 +2613,7 @@
             }
 
             // ================================================================
-            //  15. 全屏卡片入场动画（第二页）
+            //  18. 全屏卡片入场动画
             // ================================================================
             function triggerFullpageAnimation() {
                 const rect = fullpageSection.getBoundingClientRect();
@@ -2389,9 +2629,6 @@
                 }
             }
 
-            // ================================================================
-            //  16. 全屏卡片入场动画（第三页）
-            // ================================================================
             function triggerFullpageAnimation3() {
                 const rect = fullpageSection3.getBoundingClientRect();
                 const windowHeight = window.innerHeight;
@@ -2406,36 +2643,33 @@
                 }
             }
 
-            // ================================================================
-            //  17. 统一的滚动处理函数
-            // ================================================================
-            let scrollTicking = false;
+            let scrollTicking2 = false;
 
-            function handleScroll() {
-                if (!scrollTicking) {
+            function handleScroll2() {
+                if (!scrollTicking2) {
                     window.requestAnimationFrame(function() {
                         updateBackground();
                         triggerFullpageAnimation();
                         triggerFullpageAnimation3();
-                        scrollTicking = false;
+                        scrollTicking2 = false;
                     });
-                    scrollTicking = true;
+                    scrollTicking2 = true;
                 }
             }
 
-            window.addEventListener('scroll', handleScroll, { passive: true });
-            window.addEventListener('resize', handleScroll, { passive: true });
+            window.addEventListener('scroll', handleScroll2, { passive: true });
+            window.addEventListener('resize', handleScroll2, { passive: true });
 
             if (document.readyState === 'complete') {
-                setTimeout(handleScroll, 300);
+                setTimeout(handleScroll2, 300);
             } else {
                 window.addEventListener('load', function() {
-                    setTimeout(handleScroll, 500);
+                    setTimeout(handleScroll2, 500);
                 });
             }
 
             // ================================================================
-            //  18. 导航栏边缘过渡消除（动画完成后移除 mask-image）
+            //  19. 导航栏边缘过渡消除
             // ================================================================
             function onNavbarExpandEnd() {
                 navbarEl.classList.add('mask-done');
@@ -2454,7 +2688,7 @@
             }, 5000);
 
             // ================================================================
-            //  19. caillo~ 3秒后切换为随机诗句
+            //  20. caillo~ 切换为随机诗句
             // ================================================================
             let poemSwitched = false;
 
@@ -2508,6 +2742,48 @@
                     switchToPoem();
                 }
             }, 5500);
+
+            // ================================================================
+            //  21. 通知容器位置自适应
+            // ================================================================
+            function updateNotifPosition() {
+                const nav = document.getElementById('navbar');
+                const container = document.getElementById('notificationContainer');
+                if (nav && container) {
+                    const navRect = nav.getBoundingClientRect();
+                    container.style.top = (navRect.bottom + 24) + 'px';
+                }
+            }
+
+            window.addEventListener('resize', updateNotifPosition);
+            window.addEventListener('load', function() {
+                setTimeout(updateNotifPosition, 300);
+            });
+
+            // ================================================================
+            //  22. ★★★ 主初始化：按顺序执行所有绑定 ★★★
+            // ================================================================
+            function init() {
+                console.log('🚀 初始化页面...');
+
+                // 1. 欢迎通知（延迟出现）
+                setTimeout(initWelcomeNotifications, 800);
+
+                // 2. 卡片事件绑定
+                bindAllCardEvents();
+
+                // 3. 圆形按钮绑定
+                bindCircleButton();
+
+                console.log('✅ 初始化完成');
+            }
+
+            // 页面加载完成后执行
+            if (document.readyState === 'complete') {
+                init();
+            } else {
+                window.addEventListener('load', init);
+            }
 
         })();
     </script>
