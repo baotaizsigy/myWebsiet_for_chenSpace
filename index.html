@@ -338,7 +338,6 @@
                 padding 0.4s ease;
             will-change: transform, max-height, opacity;
             transform-origin: top center;
-            /* 宽度由内容决定 */
             width: auto;
             max-width: 90vw;
             flex-shrink: 0;
@@ -2044,15 +2043,12 @@
             // 通知容器
             const notifContainer = document.getElementById('notificationContainer');
 
-            // ================================================================
-            //  4. 状态变量
-            // ================================================================
             let isDarkMode = false;
             let isCard2Clicked = false;
             let isSharing = false;
 
             // ================================================================
-            //  5. ★★★ 随机跑马灯配色方案 ★★★
+            //  4. ★★★ 随机跑马灯配色方案 ★★★
             // ================================================================
             const colorPalettes = [
                 ['#ff6b6b', '#feca57', '#48dbfb', '#a29bfe'],
@@ -2070,7 +2066,7 @@
             }
 
             // ================================================================
-            //  6. ★★★ 通知系统 ★★★
+            //  5. ★★★ 通知系统 ★★★
             // ================================================================
             function showNotification(text, duration) {
                 duration = duration || 5000;
@@ -2112,7 +2108,7 @@
             }
 
             // ================================================================
-            //  7. 初始化欢迎通知队列
+            //  6. 初始化欢迎通知队列
             // ================================================================
             function initWelcomeNotifications() {
                 const welcomeMsg = ['🎉 欢迎来到chen_space', '🖱️ 上下滑动浏览更多', '👆 部分卡片可点击',
@@ -2128,7 +2124,7 @@
             }
 
             // ================================================================
-            //  8. 弹窗功能
+            //  7. 弹窗功能
             // ================================================================
             function openModal(title, bodyHTML, buttonHTML) {
                 modalTitle.textContent = title;
@@ -2163,11 +2159,12 @@
             });
 
             // ================================================================
-            //  9. ★★★ 所有卡片事件绑定 ★★★
+            //  8. ★★★ 所有卡片事件绑定（包括第三页） ★★★
             // ================================================================
             function bindAllCardEvents() {
                 console.log('🔄 绑定所有卡片事件...');
 
+                // 卡片1：打开 DeepSeek
                 const c1 = document.getElementById('card1');
                 if (c1) {
                     c1.addEventListener('click', function() {
@@ -2176,6 +2173,7 @@
                     });
                 }
 
+                // 卡片2：切换文字
                 const c2 = document.getElementById('card2');
                 if (c2) {
                     c2.addEventListener('click', function() {
@@ -2191,6 +2189,7 @@
                     });
                 }
 
+                // 卡片3
                 const c3 = document.getElementById('card3');
                 if (c3) {
                     c3.addEventListener('click', function() {
@@ -2198,6 +2197,7 @@
                     });
                 }
 
+                // 卡片4
                 const c4 = document.getElementById('card4');
                 if (c4) {
                     c4.addEventListener('click', function() {
@@ -2205,6 +2205,7 @@
                     });
                 }
 
+                // 卡片5
                 const c5 = document.getElementById('card5');
                 if (c5) {
                     c5.addEventListener('click', function() {
@@ -2212,6 +2213,7 @@
                     });
                 }
 
+                // 卡片6
                 const c6 = document.getElementById('card6');
                 if (c6) {
                     c6.addEventListener('click', function() {
@@ -2219,17 +2221,26 @@
                     });
                 }
 
+                // ★★★ 卡片7 — 第三页左侧（资源分享）— 弹窗后跳转 ★★★
                 const c7 = document.getElementById('card7');
                 if (c7) {
                     c7.addEventListener('click', function() {
-                        openModal(
-                            '🎉 敬请期待',
-                            '尽情期待（马上就写）'
-                        );
-                        showNotification('🎉 敬请期待');
+                        // 先弹窗
+                        modalTitle.textContent = '⏳ 即将跳转';
+                        modalBody.innerHTML = '正在前往分享页...';
+                        modalBtnContainer.innerHTML = '';
+                        modalOverlay.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                        showNotification('⏳ 即将跳转');
+
+                        // 3秒后跳转
+                        setTimeout(function() {
+                            window.location.href = 'index2.html';
+                        }, 3000);
                     });
                 }
 
+                // ★★★ 卡片8 — 第三页右侧（求同款） ★★★
                 const c8 = document.getElementById('card8');
                 if (c8) {
                     c8.addEventListener('click', function() {
@@ -2246,7 +2257,7 @@
             }
 
             // ================================================================
-            //  10. ★★★ 圆形按钮事件 ★★★
+            //  9. ★★★ 圆形按钮事件 ★★★
             // ================================================================
             function bindCircleButton() {
                 console.log('🔄 绑定圆形按钮...');
@@ -2279,7 +2290,7 @@
             }
 
             // ================================================================
-            //  11. 导航栏按钮
+            //  10. 导航栏按钮
             // ================================================================
             document.getElementById('homeBtn').addEventListener('click', function(e) {
                 e.preventDefault();
@@ -2288,6 +2299,7 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
+            // ★★★ 分享页按钮 ★★★
             document.getElementById('shareBtn').addEventListener('click', function(e) {
                 e.preventDefault();
                 if (isSharing) return;
@@ -2317,7 +2329,7 @@
             });
 
             // ================================================================
-            //  12. 滚动缩放卡片
+            //  11. 滚动缩放卡片
             // ================================================================
             const MIN_SCALE = 0.30;
             const NORMAL_SCALE = 1.0;
@@ -2375,7 +2387,7 @@
             }
 
             // ================================================================
-            //  13. 模糊覆盖层
+            //  12. 模糊覆盖层
             // ================================================================
             const blurOverlay = document.getElementById('blurOverlay');
             const heroSection = document.querySelector('.hero-section');
@@ -2409,7 +2421,7 @@
             setTimeout(updateBlurOverlay, 200);
 
             // ================================================================
-            //  14. Dock 栏
+            //  13. Dock 栏
             // ================================================================
             let dockVisible = false;
 
@@ -2450,7 +2462,7 @@
             });
 
             // ================================================================
-            //  15. 自适应字体大小
+            //  14. 自适应字体大小
             // ================================================================
             function adjustFontSize() {
                 const allCards = document.querySelectorAll('.card');
@@ -2554,7 +2566,7 @@
             });
 
             // ================================================================
-            //  16. 设备检测
+            //  15. 设备检测
             // ================================================================
             function detectDevice() {
                 const ua = navigator.userAgent;
@@ -2581,7 +2593,7 @@
             }
 
             // ================================================================
-            //  17. 背景切换
+            //  16. 背景切换
             // ================================================================
             let lastBgState = '';
 
@@ -2626,7 +2638,7 @@
             }
 
             // ================================================================
-            //  18. 全屏卡片入场动画
+            //  17. 全屏卡片入场动画
             // ================================================================
             function triggerFullpageAnimation() {
                 const rect = fullpageSection.getBoundingClientRect();
@@ -2682,7 +2694,7 @@
             }
 
             // ================================================================
-            //  19. 导航栏边缘过渡消除
+            //  18. 导航栏边缘过渡消除
             // ================================================================
             function onNavbarExpandEnd() {
                 navbarEl.classList.add('mask-done');
@@ -2701,7 +2713,7 @@
             }, 5000);
 
             // ================================================================
-            //  20. caillo~ 切换为随机诗句
+            //  19. caillo~ 切换为随机诗句
             // ================================================================
             let poemSwitched = false;
 
@@ -2757,7 +2769,7 @@
             }, 5500);
 
             // ================================================================
-            //  21. 通知容器位置自适应
+            //  20. 通知容器位置自适应
             // ================================================================
             function updateNotifPosition() {
                 const nav = document.getElementById('navbar');
@@ -2774,7 +2786,7 @@
             });
 
             // ================================================================
-            //  22. ★★★ 主初始化 ★★★
+            //  21. ★★★ 主初始化 ★★★
             // ================================================================
             function init() {
                 console.log('🚀 初始化页面...');
