@@ -31,7 +31,7 @@
         }
 
         /* ================================================================
-               左半背景模糊层（带羽化边缘）
+               左半背景模糊层（带羽化）
                ================================================================ */
         .left-blur {
             position: fixed;
@@ -44,7 +44,6 @@
             -webkit-backdrop-filter: blur(24px);
             z-index: 0;
             pointer-events: none;
-            /* 从左到右渐变透明，实现中间羽化 */
             -webkit-mask-image: linear-gradient(to right, black 0%, black 65%, transparent 100%);
             mask-image: linear-gradient(to right, black 0%, black 65%, transparent 100%);
             -webkit-mask-composite: source-over;
@@ -442,7 +441,7 @@
         }
 
         /* ================================================================
-               主布局 — 左对齐文字，无模糊框
+               主布局 — 左对齐文字 + 第二页卡片网格
                ================================================================ */
         .main-wrapper {
             position: relative;
@@ -451,10 +450,11 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            justify-content: center;
+            justify-content: flex-start;
             padding: 20px 40px 100px;
         }
 
+        /* 第一页内容 */
         .hero-section {
             width: 100%;
             max-width: 800px;
@@ -462,7 +462,10 @@
             flex-direction: column;
             align-items: flex-start;
             justify-content: center;
+            min-height: 100vh;          /* 新增：占满视口高度 */
             padding-top: 40px;
+            padding-bottom: 40px;       /* 新增：底部留白 */
+            margin-bottom: 0;           /* 去掉底部边距 */
             position: relative;
         }
 
@@ -497,6 +500,119 @@
         body.dark-mode .sub-text {
             color: rgba(255, 255, 255, 0.7);
             text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ===== 第二页：网页分享板块 ===== */
+        .share-section {
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 40px;
+            padding-top: 20px;
+        }
+
+        .share-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+            text-align: left;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 卡片网格 — 自适应列数 */
+        .share-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+
+        /* 卡片 — 4:3 比例，毛玻璃，固定宽高比 */
+        .share-card {
+            background: rgba(20, 20, 40, 0.35);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            /* 宽高比 4:3 */
+            aspect-ratio: 4 / 3;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .share-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .share-card:active {
+            transform: scale(0.97);
+        }
+
+        .share-card .card-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .share-card .card-body {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.5;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            white-space: pre-line;
+        }
+
+        /* 暗黑模式 */
+        body.dark-mode .share-card {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        body.dark-mode .share-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* ===== 响应式：手机一行2个，电脑一行4个 ===== */
+        @media (max-width: 600px) {
+            .share-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            .share-card .card-title {
+                font-size: 1.4rem;
+            }
+            .share-card .card-body {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (min-width: 601px) and (max-width: 1024px) {
+            .share-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1025px) {
+            .share-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
 
         /* ===== Dock 栏 ===== */
@@ -695,11 +811,31 @@
                 padding: 6px 18px;
                 font-size: 0.8rem;
             }
+
+            .share-title {
+                font-size: 2.2rem;
+            }
+            .share-card .card-title {
+                font-size: 1.4rem;
+            }
+            .share-card .card-body {
+                font-size: 0.9rem;
+            }
         }
 
         @media (max-width: 600px) {
             .nav-center {
                 display: none;
+            }
+            .share-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            .share-card .card-title {
+                font-size: 1.2rem;
+            }
+            .share-card .card-body {
+                font-size: 0.8rem;
             }
         }
 
@@ -770,6 +906,19 @@
                 padding: 5px 14px;
                 font-size: 0.7rem;
             }
+
+            .share-title {
+                font-size: 1.8rem;
+            }
+            .share-card .card-title {
+                font-size: 1.0rem;
+            }
+            .share-card .card-body {
+                font-size: 0.7rem;
+            }
+            .share-grid {
+                gap: 12px;
+            }
         }
 
         @media (max-width: 380px) {
@@ -811,6 +960,16 @@
                 padding: 4px 12px;
                 font-size: 0.6rem;
             }
+            .share-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .share-card .card-title {
+                font-size: 0.9rem;
+            }
+            .share-card .card-body {
+                font-size: 0.65rem;
+            }
         }
     </style>
 </head>
@@ -843,9 +1002,28 @@
     <!-- ===== 主体 ===== -->
     <div class="main-wrapper">
 
+        <!-- 第一页 -->
         <section class="hero-section">
             <div class="main-title">分享页</div>
             <div class="sub-text">赠人玫瑰</div>
+        </section>
+
+        <!-- 第二页：网页分享 -->
+        <section class="share-section" id="shareSection">
+            <div class="share-title">🌐 网页分享</div>
+            <div class="share-grid">
+                <!-- 卡片 1：云沙箱 -->
+                <div class="share-card" data-url="https://s.threatbook.com/">
+                    <div class="card-title">☁️ 云沙箱</div>
+                    <div class="card-body">免费测试500mb以下的文件<br/>赛博华佗帮你试试毒</div>
+                </div>
+                <!-- 卡片 2：4399小号机 -->
+                <div class="share-card" data-url="https://4399.nekoinsi.de">
+                    <div class="card-title">🎮 4399小号机</div>
+                    <div class="card-body">LOL</div>
+                </div>
+                <!-- 后续卡片可继续添加，自动适配网格 -->
+            </div>
         </section>
 
     </div>
@@ -869,7 +1047,7 @@
             'use strict';
 
             // ================================================================
-            //  1. 诗句列表
+            //  1. 诗句列表 (复用)
             // ================================================================
             const poems = [
                 '花季莫浅忆，雨季莫愁离',
@@ -955,15 +1133,16 @@
             }
 
             // ================================================================
-            //  5. 初始化欢迎通知（无背景模糊相关提示）
+            //  5. 初始化欢迎通知
             // ================================================================
             function initWelcomeNotifications() {
                 const welcomeMsg = [
                     '🎉 欢迎来到分享页',
                     '🔙 点击"回空间"返回',
-                    '🖼️ 点击"换壁纸"切换背景'
+                    '🖼️ 点击"换壁纸"切换背景',
+                    '🌐 下方有网页分享卡片'
                 ];
-                const delays = [200, 400, 600];
+                const delays = [200, 400, 600, 800];
 
                 welcomeMsg.forEach((msg, index) => {
                     setTimeout(function() {
@@ -1016,7 +1195,22 @@
             });
 
             // ================================================================
-            //  7. Dock 栏
+            //  7. ★★★ 卡片点击事件 ★★★
+            // ================================================================
+            document.querySelectorAll('.share-card').forEach(function(card) {
+                card.addEventListener('click', function(e) {
+                    const url = this.dataset.url;
+                    if (url) {
+                        window.open(url, '_blank');
+                        // 可触发通知（可选）
+                        const title = this.querySelector('.card-title')?.textContent || '链接';
+                        showNotification(`🔗 正在打开 ${title.trim()}`);
+                    }
+                });
+            });
+
+            // ================================================================
+            //  8. Dock 栏
             // ================================================================
             let dockVisible = false;
 
@@ -1057,7 +1251,7 @@
             });
 
             // ================================================================
-            //  8. 底部羽化模糊覆盖层
+            //  9. 底部羽化模糊覆盖层
             // ================================================================
             const blurOverlay = document.getElementById('blurOverlay');
             const heroSection = document.querySelector('.hero-section');
@@ -1091,7 +1285,7 @@
             setTimeout(updateBlurOverlay, 200);
 
             // ================================================================
-            //  9. 设备检测
+            //  10. 设备检测
             // ================================================================
             function detectDevice() {
                 const ua = navigator.userAgent;
@@ -1111,7 +1305,7 @@
             }
 
             // ================================================================
-            //  10. 导航栏边缘过渡消除
+            //  11. 导航栏边缘过渡消除
             // ================================================================
             function onNavbarExpandEnd() {
                 navbarEl.classList.add('mask-done');
@@ -1130,7 +1324,7 @@
             }, 5000);
 
             // ================================================================
-            //  11. caillo~ 切换为随机诗句
+            //  12. caillo~ 切换为随机诗句
             // ================================================================
             let poemSwitched = false;
 
@@ -1186,7 +1380,7 @@
             }, 5500);
 
             // ================================================================
-            //  12. 通知容器位置自适应
+            //  13. 通知容器位置自适应
             // ================================================================
             function updateNotifPosition() {
                 const nav = document.getElementById('navbar');
@@ -1203,7 +1397,7 @@
             });
 
             // ================================================================
-            //  13. 主初始化
+            //  14. 主初始化
             // ================================================================
             function init() {
                 console.log('🚀 初始化分享页...');
@@ -1219,6 +1413,5 @@
 
         })();
     </script>
-
 </body>
 </html>
