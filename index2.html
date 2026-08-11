@@ -451,10 +451,10 @@
             flex-direction: column;
             align-items: flex-start;
             justify-content: flex-start;
-            padding: 20px 40px 100px;
+            padding: 20px 40px 80px;
         }
 
-        /* 第一页内容 */
+        /* ===== 第一页 ===== */
         .hero-section {
             width: 100%;
             max-width: 800px;
@@ -462,10 +462,10 @@
             flex-direction: column;
             align-items: flex-start;
             justify-content: center;
-            min-height: 100vh;          /* 新增：占满视口高度 */
+            min-height: 100vh;
             padding-top: 40px;
-            padding-bottom: 40px;       /* 新增：底部留白 */
-            margin-bottom: 0;           /* 去掉底部边距 */
+            padding-bottom: 40px;
+            margin-bottom: 0;
             position: relative;
         }
 
@@ -506,8 +506,12 @@
         .share-section {
             width: 100%;
             max-width: 1200px;
-            margin-top: 40px;
-            padding-top: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
         }
 
         .share-title {
@@ -530,7 +534,7 @@
             width: 100%;
         }
 
-        /* 卡片 — 4:3 比例，毛玻璃，固定宽高比 */
+        /* 卡片 — 4:3 比例，毛玻璃 */
         .share-card {
             background: rgba(20, 20, 40, 0.35);
             backdrop-filter: blur(16px);
@@ -545,7 +549,6 @@
             flex-direction: column;
             justify-content: center;
             align-items: flex-start;
-            /* 宽高比 4:3 */
             aspect-ratio: 4 / 3;
             width: 100%;
             overflow: hidden;
@@ -589,7 +592,7 @@
             border-color: rgba(255, 255, 255, 0.15);
         }
 
-        /* ===== 响应式：手机一行2个，电脑一行4个 ===== */
+        /* ===== 响应式 ===== */
         @media (max-width: 600px) {
             .share-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -632,7 +635,6 @@
             align-items: center;
             justify-content: space-between;
             transform: translateY(100%);
-            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             opacity: 0;
             visibility: hidden;
             transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
@@ -768,8 +770,9 @@
             }
 
             .main-wrapper {
-                padding: 20px 24px 100px;
+                padding: 20px 24px 80px;
             }
+
             .main-title {
                 font-size: clamp(3rem, 10vw, 4.5rem);
             }
@@ -841,7 +844,7 @@
 
         @media (max-width: 480px) {
             .main-wrapper {
-                padding: 20px 16px 80px;
+                padding: 20px 16px 60px;
             }
             .main-title {
                 font-size: clamp(2.4rem, 8vw, 3.2rem);
@@ -1017,12 +1020,24 @@
                     <div class="card-title">☁️ 云沙箱</div>
                     <div class="card-body">免费测试500mb以下的文件<br/>赛博华佗帮你试试毒</div>
                 </div>
+
                 <!-- 卡片 2：4399小号机 -->
                 <div class="share-card" data-url="https://4399.nekoinsi.de">
                     <div class="card-title">🎮 4399小号机</div>
                     <div class="card-body">LOL</div>
                 </div>
-                <!-- 后续卡片可继续添加，自动适配网格 -->
+
+                <!-- ★★★ 卡片 3：ROG 壁纸 ★★★ -->
+                <div class="share-card" data-url="https://rog.asus.com/wallpapers/">
+                    <div class="card-title">🎯 ROG壁纸</div>
+                    <div class="card-body">点击跳伞至rog壁纸官网</div>
+                </div>
+
+                <!-- ★★★ 卡片 4：应用商城 ★★★ -->
+                <div class="share-card" data-url="https://lestore.lenovo.com/cate/soft?cid=1&tid=-1">
+                    <div class="card-title">📦 应用商城</div>
+                    <div class="card-body">联想应用商城免下载</div>
+                </div>
             </div>
         </section>
 
@@ -1047,7 +1062,7 @@
             'use strict';
 
             // ================================================================
-            //  1. 诗句列表 (复用)
+            //  1. 诗句列表
             // ================================================================
             const poems = [
                 '花季莫浅忆，雨季莫愁离',
@@ -1073,7 +1088,7 @@
             let isDarkMode = false;
 
             // ================================================================
-            //  3. ★★★ 随机跑马灯配色方案 ★★★
+            //  3. 随机配色
             // ================================================================
             const colorPalettes = [
                 ['#ff6b6b', '#feca57', '#48dbfb', '#a29bfe'],
@@ -1091,7 +1106,7 @@
             }
 
             // ================================================================
-            //  4. ★★★ 通知系统 ★★★
+            //  4. 通知系统
             // ================================================================
             function showNotification(text, duration) {
                 duration = duration || 5000;
@@ -1133,7 +1148,7 @@
             }
 
             // ================================================================
-            //  5. 初始化欢迎通知
+            //  5. 欢迎通知
             // ================================================================
             function initWelcomeNotifications() {
                 const welcomeMsg = [
@@ -1195,14 +1210,13 @@
             });
 
             // ================================================================
-            //  7. ★★★ 卡片点击事件 ★★★
+            //  7. 分享卡片点击
             // ================================================================
             document.querySelectorAll('.share-card').forEach(function(card) {
                 card.addEventListener('click', function(e) {
                     const url = this.dataset.url;
                     if (url) {
                         window.open(url, '_blank');
-                        // 可触发通知（可选）
                         const title = this.querySelector('.card-title')?.textContent || '链接';
                         showNotification(`🔗 正在打开 ${title.trim()}`);
                     }
@@ -1305,7 +1319,7 @@
             }
 
             // ================================================================
-            //  11. 导航栏边缘过渡消除
+            //  11. 导航栏动画
             // ================================================================
             function onNavbarExpandEnd() {
                 navbarEl.classList.add('mask-done');
@@ -1324,7 +1338,7 @@
             }, 5000);
 
             // ================================================================
-            //  12. caillo~ 切换为随机诗句
+            //  12. 诗句切换
             // ================================================================
             let poemSwitched = false;
 
@@ -1341,20 +1355,12 @@
 
                     const len = randomPoem.length;
                     let fontSize = 1.1;
-                    if (len > 20) {
-                        fontSize = 0.75;
-                    } else if (len > 14) {
-                        fontSize = 0.85;
-                    } else if (len > 8) {
-                        fontSize = 0.95;
-                    }
+                    if (len > 20) fontSize = 0.75;
+                    else if (len > 14) fontSize = 0.85;
+                    else if (len > 8) fontSize = 0.95;
                     const isWide = window.innerWidth >= 768;
-                    if (isWide) {
-                        fontSize = fontSize * 1.2;
-                    }
-                    if (window.innerWidth >= 1024) {
-                        fontSize = fontSize * 1.3;
-                    }
+                    if (isWide) fontSize *= 1.2;
+                    if (window.innerWidth >= 1024) fontSize *= 1.3;
                     fontSize = Math.min(Math.max(fontSize, 0.7), 1.6);
                     navTextEl.style.fontSize = fontSize + 'rem';
 
@@ -1380,7 +1386,7 @@
             }, 5500);
 
             // ================================================================
-            //  13. 通知容器位置自适应
+            //  13. 通知位置
             // ================================================================
             function updateNotifPosition() {
                 const nav = document.getElementById('navbar');
@@ -1397,7 +1403,7 @@
             });
 
             // ================================================================
-            //  14. 主初始化
+            //  14. 初始化
             // ================================================================
             function init() {
                 console.log('🚀 初始化分享页...');
