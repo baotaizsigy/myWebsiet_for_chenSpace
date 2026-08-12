@@ -744,6 +744,234 @@
             background: rgba(255, 255, 255, 0.4);
         }
 
+        /* ================================================================
+               模态框（弹窗）— 修复：去掉 !important
+               ================================================================ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 2000;
+            display: none;
+            /* 默认隐藏，由 JS 控制 */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: rgba(40, 40, 60, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+            padding: 40px 50px;
+            max-width: 480px;
+            width: 90%;
+            position: relative;
+            animation: modalBoxIn 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+            margin: 20px;
+        }
+
+        @keyframes modalBoxIn {
+            0% {
+                transform: scale(0.92) translateY(20px);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #ff1744;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(255, 23, 68, 0.3);
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            transform: scale(1.12);
+            box-shadow: 0 4px 16px rgba(255, 23, 68, 0.5);
+        }
+
+        .modal-close:active {
+            transform: scale(0.9);
+        }
+
+        .modal-close::before,
+        .modal-close::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 2px;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .modal-close::before {
+            transform: rotate(45deg);
+        }
+
+        .modal-close::after {
+            transform: rotate(-45deg);
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            padding-right: 30px;
+        }
+
+        .modal-body {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .modal-btn {
+            display: inline-block;
+            padding: 12px 36px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.03);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
+        }
+
+        .modal-btn:active {
+            transform: scale(0.96);
+        }
+
+        body.dark-mode .modal-box {
+            background: rgba(10, 10, 20, 0.9);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .modal-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        body.dark-mode .modal-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* ===== 搜索框样式（模态框内） ===== */
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        .search-container span {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+        .search-container input {
+            flex: 1;
+            min-width: 140px;
+            padding: 10px 14px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        .search-container input:focus {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        .search-container input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        .search-container button {
+            padding: 10px 24px;
+            border-radius: 30px;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .search-container button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.02);
+        }
+        .search-container button:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 480px) {
+            .search-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-container input {
+                min-width: unset;
+            }
+            .search-container button {
+                width: 100%;
+            }
+            .modal-box {
+                padding: 30px 24px;
+            }
+            .modal-title {
+                font-size: 1.4rem;
+            }
+            .modal-body {
+                font-size: 1rem;
+            }
+        }
+
         /* ===== 响应式 ===== */
         @media (max-width: 768px) {
             .navbar {
@@ -1027,16 +1255,28 @@
                     <div class="card-body">LOL</div>
                 </div>
 
-                <!-- ★★★ 卡片 3：ROG 壁纸 ★★★ -->
+                <!-- 卡片 3：ROG 壁纸 -->
                 <div class="share-card" data-url="https://rog.asus.com/wallpapers/">
                     <div class="card-title">🎯 ROG壁纸</div>
                     <div class="card-body">点击跳伞至rog壁纸官网</div>
                 </div>
 
-                <!-- ★★★ 卡片 4：应用商城 ★★★ -->
+                <!-- 卡片 4：应用商城 -->
                 <div class="share-card" data-url="https://lestore.lenovo.com/cate/soft?cid=1&tid=-1">
                     <div class="card-title">📦 应用商城</div>
                     <div class="card-body">联想应用商城免下载</div>
+                </div>
+
+                <!-- 卡片 5：巨硬翻译器 -->
+                <div class="share-card" data-url="https://cn.bing.com/translator?text=">
+                    <div class="card-title">🌍 巨硬翻译器</div>
+                    <div class="card-body">如标题所述</div>
+                </div>
+
+                <!-- ★★★ 卡片 6：海外搜索引擎 ★★★ -->
+                <div class="share-card" data-action="search">
+                    <div class="card-title">🌐 海外搜索引擎</div>
+                    <div class="card-body">平替Google的搜索引擎</div>
                 </div>
             </div>
         </section>
@@ -1054,6 +1294,16 @@
         </div>
         <div class="dock-right">
             <button class="dock-home-btn" id="dockHomeBtn">首页</button>
+        </div>
+    </div>
+
+    <!-- ===== 弹窗（模态框） ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+            <button class="modal-close" id="modalClose"></button>
+            <div class="modal-title" id="modalTitle">弹窗标题</div>
+            <div class="modal-body" id="modalBody">弹窗内容</div>
+            <div id="modalButtonContainer"></div>
         </div>
     </div>
 
@@ -1210,21 +1460,117 @@
             });
 
             // ================================================================
-            //  7. 分享卡片点击
+            //  7. ★★★ 模态框（弹窗）功能 — 正确控制显示 ★★★
+            // ================================================================
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalClose = document.getElementById('modalClose');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const modalBtnContainer = document.getElementById('modalButtonContainer');
+
+            function openModal(title, bodyHTML, buttonHTML) {
+                modalTitle.textContent = title;
+                modalBody.innerHTML = bodyHTML;
+                modalBtnContainer.innerHTML = buttonHTML || '';
+
+                // ★ 显示模态框
+                modalOverlay.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                modalOverlay.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+
+            modalClose.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', function(e) {
+                if (e.target === modalOverlay) {
+                    closeModal();
+                }
+            });
+
+            // 键盘 ESC 关闭
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modalOverlay.style.display === 'flex') {
+                    closeModal();
+                }
+            });
+
+            // ================================================================
+            //  8. ★★★ 分享卡片点击事件 ★★★
             // ================================================================
             document.querySelectorAll('.share-card').forEach(function(card) {
                 card.addEventListener('click', function(e) {
+                    // 检查是否有 data-url（直接跳转）
                     const url = this.dataset.url;
                     if (url) {
                         window.open(url, '_blank');
                         const title = this.querySelector('.card-title')?.textContent || '链接';
                         showNotification(`🔗 正在打开 ${title.trim()}`);
+                        return;
                     }
+
+                    // 检查是否有 data-action="search"（搜索弹窗）
+                    const action = this.dataset.action;
+                    if (action === 'search') {
+                        // 构造搜索弹窗内容
+                        const bodyHTML = `
+                            <div class="search-container">
+                                <span>搜索内容：</span>
+                                <input type="text" id="searchInput" placeholder="输入关键词" autofocus />
+                                <button id="searchBtn">🔍 搜索</button>
+                            </div>
+                        `;
+                        openModal('🌐 海外搜索引擎', bodyHTML, '');
+
+                        // 绑定搜索事件（需要等 DOM 渲染）
+                        setTimeout(function() {
+                            const searchInput = document.getElementById('searchInput');
+                            const searchBtn = document.getElementById('searchBtn');
+
+                            if (!searchInput || !searchBtn) return;
+
+                            const doSearch = function() {
+                                const text = searchInput.value.trim();
+                                if (text) {
+                                    window.open('https://yandex.com/search/?text=' + encodeURIComponent(
+                                        text), '_blank');
+                                    closeModal();
+                                } else {
+                                    showNotification('⚠️ 请输入搜索内容');
+                                    searchInput.focus();
+                                }
+                            };
+
+                            // 移除旧监听器，防止重复绑定
+                            searchBtn._listener && searchBtn.removeEventListener('click', searchBtn._listener);
+                            searchInput._listener && searchInput.removeEventListener('keydown', searchInput
+                            ._listener);
+
+                            searchBtn._listener = doSearch;
+                            searchInput._listener = function(e) {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    doSearch();
+                                }
+                            };
+
+                            searchBtn.addEventListener('click', searchBtn._listener);
+                            searchInput.addEventListener('keydown', searchInput._listener);
+
+                            // 聚焦输入框
+                            searchInput.focus();
+                        }, 150);
+                        return;
+                    }
+
+                    // 如果都没有，忽略
                 });
             });
 
             // ================================================================
-            //  8. Dock 栏
+            //  9. Dock 栏
             // ================================================================
             let dockVisible = false;
 
@@ -1265,7 +1611,7 @@
             });
 
             // ================================================================
-            //  9. 底部羽化模糊覆盖层
+            //  10. 底部羽化模糊覆盖层
             // ================================================================
             const blurOverlay = document.getElementById('blurOverlay');
             const heroSection = document.querySelector('.hero-section');
@@ -1299,7 +1645,7 @@
             setTimeout(updateBlurOverlay, 200);
 
             // ================================================================
-            //  10. 设备检测
+            //  11. 设备检测
             // ================================================================
             function detectDevice() {
                 const ua = navigator.userAgent;
@@ -1319,7 +1665,7 @@
             }
 
             // ================================================================
-            //  11. 导航栏动画
+            //  12. 导航栏动画
             // ================================================================
             function onNavbarExpandEnd() {
                 navbarEl.classList.add('mask-done');
@@ -1338,7 +1684,7 @@
             }, 5000);
 
             // ================================================================
-            //  12. 诗句切换
+            //  13. 诗句切换
             // ================================================================
             let poemSwitched = false;
 
@@ -1386,7 +1732,7 @@
             }, 5500);
 
             // ================================================================
-            //  13. 通知位置
+            //  14. 通知位置
             // ================================================================
             function updateNotifPosition() {
                 const nav = document.getElementById('navbar');
@@ -1403,7 +1749,7 @@
             });
 
             // ================================================================
-            //  14. 初始化
+            //  15. 初始化
             // ================================================================
             function init() {
                 console.log('🚀 初始化分享页...');
