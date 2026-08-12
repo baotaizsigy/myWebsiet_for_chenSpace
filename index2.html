@@ -526,11 +526,11 @@
             z-index: 1;
         }
 
-        /* 卡片网格 — 自适应列数 */
+        /* 固定4列，等比缩放 */
         .share-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: clamp(10px, 1.5vw, 30px);
             width: 100%;
         }
 
@@ -540,9 +540,9 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 24px;
+            border-radius: clamp(14px, 1.5vw, 24px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            padding: 20px;
+            padding: clamp(12px, 1.5vw, 24px);
             cursor: pointer;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
             display: flex;
@@ -566,7 +566,7 @@
         }
 
         .share-card .card-title {
-            font-size: 1.8rem;
+            font-size: clamp(0.9rem, 1.6vw, 1.8rem);
             font-weight: 700;
             color: #ffffff;
             margin-bottom: 8px;
@@ -575,7 +575,7 @@
         }
 
         .share-card .card-body {
-            font-size: 1rem;
+            font-size: clamp(0.65rem, 0.9vw, 1rem);
             color: rgba(255, 255, 255, 0.8);
             line-height: 1.5;
             text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
@@ -590,32 +590,6 @@
 
         body.dark-mode .share-card:hover {
             border-color: rgba(255, 255, 255, 0.15);
-        }
-
-        /* ===== 响应式 ===== */
-        @media (max-width: 600px) {
-            .share-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 20px;
-            }
-            .share-card .card-title {
-                font-size: 1.4rem;
-            }
-            .share-card .card-body {
-                font-size: 0.85rem;
-            }
-        }
-
-        @media (min-width: 601px) and (max-width: 1024px) {
-            .share-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (min-width: 1025px) {
-            .share-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
         }
 
         /* ===== Dock 栏 ===== */
@@ -745,7 +719,7 @@
         }
 
         /* ================================================================
-               模态框（弹窗）— 修复：去掉 !important
+               模态框（弹窗）
                ================================================================ */
         .modal-overlay {
             position: fixed;
@@ -758,7 +732,6 @@
             -webkit-backdrop-filter: blur(6px);
             z-index: 2000;
             display: none;
-            /* 默认隐藏，由 JS 控制 */
             align-items: center;
             justify-content: center;
         }
@@ -1047,26 +1020,19 @@
                 font-size: 2.2rem;
             }
             .share-card .card-title {
-                font-size: 1.4rem;
+                font-size: clamp(0.8rem, 1.6vw, 1.2rem);
             }
             .share-card .card-body {
-                font-size: 0.9rem;
+                font-size: clamp(0.6rem, 1vw, 0.85rem);
+            }
+            .share-grid {
+                gap: clamp(8px, 1.5vw, 16px);
             }
         }
 
         @media (max-width: 600px) {
             .nav-center {
                 display: none;
-            }
-            .share-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 16px;
-            }
-            .share-card .card-title {
-                font-size: 1.2rem;
-            }
-            .share-card .card-body {
-                font-size: 0.8rem;
             }
         }
 
@@ -1142,13 +1108,13 @@
                 font-size: 1.8rem;
             }
             .share-card .card-title {
-                font-size: 1.0rem;
+                font-size: clamp(0.7rem, 1.5vw, 1.0rem);
             }
             .share-card .card-body {
-                font-size: 0.7rem;
+                font-size: clamp(0.5rem, 1vw, 0.7rem);
             }
             .share-grid {
-                gap: 12px;
+                gap: clamp(6px, 1.2vw, 12px);
             }
         }
 
@@ -1192,14 +1158,13 @@
                 font-size: 0.6rem;
             }
             .share-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
+                gap: 6px;
             }
             .share-card .card-title {
-                font-size: 0.9rem;
+                font-size: 0.6rem;
             }
             .share-card .card-body {
-                font-size: 0.65rem;
+                font-size: 0.45rem;
             }
         }
     </style>
@@ -1273,10 +1238,46 @@
                     <div class="card-body">如标题所述</div>
                 </div>
 
-                <!-- ★★★ 卡片 6：海外搜索引擎 ★★★ -->
+                <!-- 卡片 6：海外搜索引擎 -->
                 <div class="share-card" data-action="search">
                     <div class="card-title">🌐 海外搜索引擎</div>
                     <div class="card-body">平替Google的搜索引擎</div>
+                </div>
+
+                <!-- 卡片 7：cps测试 -->
+                <div class="share-card" data-url="https://www.arealme.com/click-speed-test/cn/">
+                    <div class="card-title">⚡ cps测试</div>
+                    <div class="card-body">测试你的cps</div>
+                </div>
+
+                <!-- 卡片 8：ifixit -->
+                <div class="share-card" data-url="https://zh.ifixit.com/">
+                    <div class="card-title">🔧 ifixit</div>
+                    <div class="card-body">在家维修设备</div>
+                </div>
+
+                <!-- 卡片 9：FMHY -->
+                <div class="share-card" data-url="https://fmhy.net/">
+                    <div class="card-title">📚 FMHY</div>
+                    <div class="card-body">免费资源仓库</div>
+                </div>
+
+                <!-- 卡片 10：抠图助手 -->
+                <div class="share-card" data-url="https://remove.photos/zh-cn/">
+                    <div class="card-title">✂️ 抠图助手</div>
+                    <div class="card-body">ps里的魔棒扔了吧</div>
+                </div>
+
+                <!-- ★★★ 卡片 11：2048小游戏 ★★★ -->
+                <div class="share-card" data-url="https://www.arealme.com/xmas-2048/cn/">
+                    <div class="card-title">🕹️ 2048小游戏</div>
+                    <div class="card-body">LOL</div>
+                </div>
+
+                <!-- ★★★ 卡片 12：真正的资源😋 ★★★ -->
+                <div class="share-card" data-url="https://www.bilibili.com/video/BV1NkM66LEzF/?share_source=copy_web&vd_source=04e58fdb6c6c69a8b4a8d3040e0589ed">
+                    <div class="card-title">🎬 真正的资源😋</div>
+                    <div class="card-body">😋😋😋😋😋😋😋😋😋😋</div>
                 </div>
             </div>
         </section>
@@ -1752,7 +1753,7 @@
             //  15. 初始化
             // ================================================================
             function init() {
-                console.log('🚀 初始化分享页...');
+                console.log('🚀 初始化分享页（固定4列等比缩放）...');
                 setTimeout(initWelcomeNotifications, 800);
                 console.log('✅ 初始化完成');
             }
