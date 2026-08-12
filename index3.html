@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>壁纸API调试 · index3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #0d0d1a;
+            color: #e0e0e0;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 960px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+            color: #fff;
+        }
+        .sub {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #2a2a3a;
+            padding-bottom: 14px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #2a2a3e;
+            color: #ccc;
+            border: 1px solid #3a3a4e;
+            font-family: inherit;
+        }
+        .btn:hover {
+            background: #3a3a52;
+            transform: scale(1.02);
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: #4a6cf7;
+            color: #fff;
+            border-color: #4a6cf7;
+        }
+        .btn-primary:hover {
+            background: #5a7cff;
+            border-color: #5a7cff;
+        }
+
+        .btn-success {
+            background: #2ecc71;
+            color: #fff;
+            border-color: #2ecc71;
+        }
+        .btn-success:hover {
+            background: #3ddc84;
+            border-color: #3ddc84;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: #fff;
+            border-color: #f39c12;
+        }
+        .btn-warning:hover {
+            background: #f5b041;
+            border-color: #f5b041;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: #fff;
+            border-color: #e74c3c;
+        }
+        .btn-danger:hover {
+            background: #ff5e4a;
+            border-color: #ff5e4a;
+        }
+
+        .btn-purple {
+            background: #8e44ad;
+            color: #fff;
+            border-color: #8e44ad;
+        }
+        .btn-purple:hover {
+            background: #a569bd;
+            border-color: #a569bd;
+        }
+
+        .panel {
+            background: #141425;
+            border-radius: 16px;
+            border: 1px solid #2a2a3e;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        .panel-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 12px;
+        }
+
+        .preview-area {
+            min-height: 220px;
+            border-radius: 12px;
+            background: #0a0a16;
+            border: 2px dashed #2a2a3e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
+            background-size: cover;
+            background-position: center center;
+            transition: background-image 0.5s ease;
+        }
+        .preview-area.has-image {
+            border-color: #2ecc71;
+            border-style: solid;
+        }
+        .preview-area.has-error {
+            border-color: #e74c3c;
+            border-style: solid;
+        }
+
+        .preview-placeholder {
+            color: #555;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 20px;
+        }
+        .preview-placeholder span {
+            display: block;
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        .log-area {
+            background: #0a0a16;
+            border-radius: 10px;
+            padding: 14px 16px;
+            max-height: 520px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.78rem;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-all;
+            color: #b0b0c0;
+        }
+        .log-area .log-entry {
+            padding: 2px 0;
+            border-bottom: 1px solid #1a1a2e;
+        }
+        .log-area .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-area .time {
+            color: #555;
+            margin-right: 10px;
+        }
+        .log-area .info {
+            color: #6ab0f7;
+        }
+        .log-area .success {
+            color: #2ecc71;
+        }
+        .log-area .error {
+            color: #e74c3c;
+        }
+        .log-area .warn {
+            color: #f39c12;
+        }
+        .log-area .data {
+            color: #d4a0ff;
+        }
+        .log-area .url {
+            color: #5dade2;
+        }
+        .log-area .status-code {
+            color: #f7dc6f;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .status-badge.loading {
+            background: #f39c12;
+            color: #1a1a2e;
+        }
+        .status-badge.success {
+            background: #2ecc71;
+            color: #0a0a16;
+        }
+        .status-badge.fail {
+            background: #e74c3c;
+            color: #fff;
+        }
+        .status-badge.idle {
+            background: #2a2a3e;
+            color: #888;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .clear-log {
+            background: none;
+            border: none;
+            color: #555;
+            cursor: pointer;
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        .clear-log:hover {
+            background: #2a2a3e;
+            color: #ccc;
+        }
+
+        .log-area::-webkit-scrollbar {
+            width: 4px;
+        }
+        .log-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .log-area::-webkit-scrollbar-thumb {
+            background: #3a3a52;
+            border-radius: 10px;
+        }
+
+        .api-desc {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 600px) {
+            .btn-group .btn {
+                flex: 1 1 calc(50% - 6px);
+                text-align: center;
+                font-size: 0.75rem;
+                padding: 8px 12px;
+            }
+            .panel {
+                padding: 14px 16px;
+            }
+            .log-area {
+                font-size: 0.68rem;
+                max-height: 320px;
+            }
+            .preview-area {
+                min-height: 160px;
+            }
+        }
+
+        /* ==================== 登录弹窗样式 ==================== */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 22, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .login-modal {
+            background: linear-gradient(145deg, #1a1a2e, #0d0d1a);
+            border-radius: 20px;
+            padding: 36px 40px;
+            width: 340px;
+            max-width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            border: 1px solid #2a2a3e;
+            text-align: center;
+            color: #e0e0e0;
+        }
+
+        .login-modal h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .login-modal .subtitle {
+            font-size: 0.8rem;
+            color: #777;
+            margin-bottom: 24px;
+        }
+
+        .login-modal input {
+            width: 100%;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 12px;
+            border: 1px solid #3a3a4e;
+            background: #0a0a16;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .login-modal input:focus {
+            border-color: #4a6cf7;
+        }
+
+        .login-modal input::placeholder {
+            color: #555;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 30px;
+            border: none;
+            background: linear-gradient(135deg, #4a6cf7, #5a7cff);
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 2px;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(74, 108, 247, 0.4);
+        }
+
+        .login-btn:active {
+            transform: scale(0.97);
+        }
+
+        .login-msg {
+            margin-top: 14px;
+            font-size: 0.8rem;
+            color: #e74c3c;
+            min-height: 1.2em;
+            font-weight: 500;
+        }
+
+        /* 登录成功动画 */
+        .login-overlay.fade-out {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 600px) {
+            .login-modal {
+                padding: 28px 24px;
+                width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 壁纸 API 调试台</h1>
+        <div class="sub">
+            index3 · 完整测试所有壁纸 API · 支持 CORS 检测 · 图片预览
+        </div>
+
+        <!-- ===== 按钮区 ===== -->
+        <div class="btn-group">
+            <button class="btn btn-primary" id="testPicsum">📸 picsum.photos</button>
+            <button class="btn btn-success" id="testUnsplash">🌄 unsplash</button>
+            <button class="btn btn-warning" id="testBtstu">🖼️ btstu.cn</button>
+            <button class="btn btn-danger" id="testXjh">🎨 img.xjh.me</button>
+            <button class="btn btn-purple" id="testLoli">🌸 loli API</button>
+            <button class="btn" id="testAll">🔄 全部测试</button>
+            <button class="btn btn-danger" id="clearBtn">🗑️ 清空</button>
+        </div>
+
+        <!-- ===== 预览区 ===== -->
+        <div class="panel">
+            <div class="flex-between">
+                <span class="panel-title">🖼️ 图片预览</span>
+                <span class="status-badge idle" id="statusBadge">等待测试</span>
+            </div>
+            <div class="preview-area" id="previewArea">
+                <div class="preview-placeholder" id="placeholder">
+                    <span>🖼️</span>
+                    点击上方按钮测试 API<br/>
+                    成功加载的图片会显示在这里
+                </div>
+            </div>
+            <div style="margin-top:10px;font-size:0.75rem;color:#555;" id="imageInfo"></div>
+        </div>
+
+        <!-- ===== 日志区 ===== -->
+        <div class="panel">
+            <div class="flex-between">
+                <span class="panel-title">📋 控制台日志</span>
+                <button class="clear-log" id="clearLogBtn">清空</button>
+            </div>
+            <div class="log-area" id="logArea">
+                <div class="log-entry"><span class="time">[系统]</span> 等待操作...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ 管理员登录弹窗 ============ -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-modal">
+            <h2>🔐 管理员认证</h2>
+            <div class="subtitle">请输入用户名和密码</div>
+            <input type="text" id="loginUsername" placeholder="用户名" autocomplete="off" />
+            <input type="password" id="loginPassword" placeholder="密码" autocomplete="off" />
+            <button class="login-btn" id="loginBtn">登 录</button>
+            <div class="login-msg" id="loginMsg"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ================================================================
+            //  管理员登录验证
+            // ================================================================
+            const loginOverlay = document.getElementById('loginOverlay');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginUsername = document.getElementById('loginUsername');
+            const loginPassword = document.getElementById('loginPassword');
+            const loginMsg = document.getElementById('loginMsg');
+
+            // 登录按钮事件
+            loginBtn.addEventListener('click', handleLogin);
+            loginPassword.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') handleLogin();
+            });
+
+            function handleLogin() {
+                const user = loginUsername.value.trim();
+                const pass = loginPassword.value;
+                if (!user || !pass) {
+                    displayLoginMsg('请输入用户名和密码');
+                    return;
+                }
+
+                // 获取 user/text.txt 进行验证
+                fetch('user/text.txt', { cache: 'no-cache' })
+                    .then(response => {
+                        if (!response.ok) throw new Error('无法读取认证文件');
+                        return response.text();
+                    })
+                    .then(text => {
+                        const lines = text.split(/\r?\n/);
+                        const fileUser = (lines[0] || '').trim();
+                        const filePass = (lines[1] || '').trim();
+
+                        if (user === fileUser && pass === filePass) {
+                            // 登录成功，关闭弹窗
+                            loginOverlay.classList.add('fade-out');
+                            setTimeout(() => {
+                                loginOverlay.style.display = 'none';
+                            }, 400);
+                            // 等待动画完成后记录
+                            log('✅ 管理员验证成功，欢迎使用调试台！', 'success');
+                        } else {
+                            displayLoginMsg('用户名或密码错误');
+                            loginPassword.value = '';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('认证文件读取失败：', err);
+                        displayLoginMsg('认证服务不可用，请联系管理员');
+                    });
+            }
+
+            function displayLoginMsg(msg) {
+                loginMsg.textContent = msg;
+            }
+
+            // ================================================================
+            //  原有功能（日志、预览、测试等）
+            // ================================================================
+            const logArea = document.getElementById('logArea');
+            const previewArea = document.getElementById('previewArea');
+            const placeholder = document.getElementById('placeholder');
+            const statusBadge = document.getElementById('statusBadge');
+            const imageInfo = document.getElementById('imageInfo');
+
+            let currentObjectURL = null;
+
+            function log(message, type, extra) {
+                const time = new Date().toLocaleTimeString();
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+
+                let typeClass = 'info';
+                let typeLabel = 'INFO';
+                if (type === 'success') { typeClass = 'success';
+                    typeLabel = '✅'; }
+                if (type === 'error') { typeClass = 'error';
+                    typeLabel = '❌'; }
+                if (type === 'warn') { typeClass = 'warn';
+                    typeLabel = '⚠️'; }
+                if (type === 'data') { typeClass = 'data';
+                    typeLabel = '📦'; }
+                if (type === 'url') { typeClass = 'url';
+                    typeLabel = '🔗'; }
+                if (type === 'status') { typeClass = 'status-code';
+                    typeLabel = '📡'; }
+
+                let content = message;
+                if (extra) {
+                    content += ' ' + extra;
+                }
+
+                entry.innerHTML = `<span class="time">[${time}]</span><span class="${typeClass}">${typeLabel}</span> ${content}`;
+                logArea.appendChild(entry);
+                logArea.scrollTop = logArea.scrollHeight;
+            }
+
+            function clearLogs() {
+                logArea.innerHTML = '';
+                log('日志已清空', 'warn');
+            }
+
+            function setStatus(text, type) {
+                statusBadge.textContent = text;
+                statusBadge.className = 'status-badge ' + type;
+            }
+
+            function showImage(url, info) {
+                placeholder.style.display = 'none';
+                previewArea.style.backgroundImage = 'url("' + url + '")';
+                previewArea.classList.remove('has-error');
+                previewArea.classList.add('has-image');
+                setStatus('✅ 加载成功', 'success');
+                if (info) {
+                    imageInfo.textContent = info;
+                } else {
+                    imageInfo.textContent = '图片已加载';
+                }
+            }
+
+            function showError(text) {
+                placeholder.style.display = 'flex';
+                previewArea.style.backgroundImage = '';
+                previewArea.classList.remove('has-image');
+                previewArea.classList.add('has-error');
+                setStatus('❌ 加载失败', 'fail');
+                imageInfo.textContent = text || '加载失败';
+                placeholder.innerHTML = `
+                    <span>❌</span>
+                    ${text || '加载失败'}
+                `;
+            }
+
+            function showPlaceholder(text) {
+                placeholder.style.display = 'flex';
+                previewArea.style.backgroundImage = '';
+                previewArea.classList.remove('has-image', 'has-error');
+                setStatus('等待测试', 'idle');
+                imageInfo.textContent = '';
+                placeholder.innerHTML = `
+                    <span>🖼️</span>
+                    ${text || '点击上方按钮测试 API'}
+                `;
+            }
+
+            function revokeObjectURL() {
+                if (currentObjectURL) {
+                    URL.revokeObjectURL(currentObjectURL);
+                    currentObjectURL = null;
+                }
+            }
+
+            // ================================================================
+            //  测试函数
+            // ================================================================
+            function testApi(url, name, options) {
+                revokeObjectURL();
+                log(`开始测试: ${name}`, 'info');
+                log(`请求地址: ${url}`, 'url');
+                setStatus('加载中...', 'loading');
+                showPlaceholder('加载中...');
+
+                const startTime = Date.now();
+
+                fetch(url, {
+                        redirect: 'follow',
+                        mode: 'cors',
+                        cache: 'no-cache'
+                    })
+                    .then(response => {
+                        const elapsed = Date.now() - startTime;
+                        log(`响应状态: ${response.status} ${response.statusText} (${elapsed}ms)`, 'status');
+
+                        const headers = {};
+                        response.headers.forEach((value, key) => {
+                            headers[key] = value;
+                        });
+                        log(`响应头: ${JSON.stringify(headers, null, 2)}`, 'data');
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+
+                        const contentType = response.headers.get('content-type') || '';
+                        log(`Content-Type: ${contentType}`, 'data');
+
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const elapsed = Date.now() - startTime;
+                        log(`获取到 Blob: ${blob.size} bytes, type: ${blob.type} (${elapsed}ms)`, 'success');
+
+                        if (!blob.type.startsWith('image/')) {
+                            log(`⚠️ 返回的不是图片，是 ${blob.type}`, 'warn');
+                            return blob.text().then(text => {
+                                log(`返回内容预览: ${text.substring(0, 200)}...`, 'data');
+                                setStatus('非图片内容', 'fail');
+                                showError(`返回内容不是图片 (${blob.type})`);
+                                throw new Error('返回内容不是图片');
+                            });
+                        }
+
+                        const objectURL = URL.createObjectURL(blob);
+                        currentObjectURL = objectURL;
+                        const sizeKB = (blob.size / 1024).toFixed(1);
+                        showImage(objectURL, `${name} · ${sizeKB}KB · ${blob.type}`);
+                        log(`✅ ${name} 测试通过！(${sizeKB}KB)`, 'success');
+                    })
+                    .catch(err => {
+                        const elapsed = Date.now() - startTime;
+                        log(`❌ 请求失败: ${err.message} (${elapsed}ms)`, 'error');
+                        log(`错误详情: ${err.stack || err}`, 'error');
+                        setStatus('加载失败', 'fail');
+                        showError(`${name}: ${err.message}`);
+                    });
+            }
+
+            // ================================================================
+            //  各 API 定义
+            // ================================================================
+            const APIS = {
+                picsum: {
+                    name: 'picsum.photos',
+                    url: 'https://picsum.photos/1920/1080?t=' + Date.now(),
+                    desc: '稳定随机图，支持 CORS'
+                },
+                unsplash: {
+                    name: 'unsplash (source)',
+                    url: 'https://source.unsplash.com/1920x1080/?nature,wallpaper&t=' + Date.now(),
+                    desc: 'Unsplash 随机壁纸'
+                },
+                btstu: {
+                    name: 'btstu.cn (动漫)',
+                    url: 'https://api.btstu.cn/sjbz/api.php?lx=dongman&method=pc&format=images&t=' + Date.now(),
+                    desc: '动漫壁纸 API'
+                },
+                xjh: {
+                    name: 'img.xjh.me (岁月小筑)',
+                    url: 'https://img.xjh.me/random_img.php?type=bg&ctype=acg&return=302&t=' + Date.now(),
+                    desc: '302重定向，需跟随'
+                },
+                loli: {
+                    name: 'loli API (随机图)',
+                    url: 'https://api.lolicon.app/setu/v2?r18=0&num=1&size=original&t=' + Date.now(),
+                    desc: 'Lolicon API 随机图'
+                }
+            };
+
+            // ================================================================
+            //  绑定按钮事件
+            // ================================================================
+            document.getElementById('testPicsum').addEventListener('click', function() {
+                testApi(APIS.picsum.url, APIS.picsum.name);
+            });
+
+            document.getElementById('testUnsplash').addEventListener('click', function() {
+                testApi(APIS.unsplash.url, APIS.unsplash.name);
+            });
+
+            document.getElementById('testBtstu').addEventListener('click', function() {
+                testApi(APIS.btstu.url, APIS.btstu.name);
+            });
+
+            document.getElementById('testXjh').addEventListener('click', function() {
+                testApi(APIS.xjh.url, APIS.xjh.name);
+            });
+
+            document.getElementById('testLoli').addEventListener('click', function() {
+                testApi(APIS.loli.url, APIS.loli.name);
+            });
+
+            document.getElementById('testAll').addEventListener('click', function() {
+                log('=== 全部测试开始 ===', 'warn');
+                const keys = Object.keys(APIS);
+                keys.forEach((key, index) => {
+                    const api = APIS[key];
+                    setTimeout(() => {
+                        testApi(api.url, api.name);
+                    }, index * 800);
+                });
+            });
+
+            document.getElementById('clearBtn').addEventListener('click', function() {
+                revokeObjectURL();
+                clearLogs();
+                showPlaceholder('已清空');
+            });
+
+            document.getElementById('clearLogBtn').addEventListener('click', function() {
+                clearLogs();
+            });
+
+            // ================================================================
+            //  页面加载后提示（等登录成功后再显示核心日志）
+            // ================================================================
+            // 初始日志延迟到登录成功后显示
+            let initialLogged = false;
+
+            // 修改 loginSuccess 部分添加初始日志（在 handleLogin 中已经调用 log，但其他日志还未输出）
+            // 利用 MutationObserver 监听登录模态框隐藏，触发一次初始化日志
+            const observer = new MutationObserver(function() {
+                if (loginOverlay.style.display === 'none' && !initialLogged) {
+                    initialLogged = true;
+                    log('🔧 调试台已就绪，点击上方按钮测试 API', 'success');
+                    log('💡 支持多种壁纸 API，包含 CORS 检测', 'info');
+                    log('📋 所有结果会显示在日志中，可复制反馈', 'info');
+
+                    console.log('🖼️ 壁纸API调试台已启动');
+                    console.log('📌 各API说明:');
+                    Object.keys(APIS).forEach(key => {
+                        console.log(`  - ${APIS[key].name}: ${APIS[key].desc}`);
+                    });
+                }
+            });
+
+            observer.observe(loginOverlay, { attributes: true, attributeFilter: ['style'] });
+
+            // 如果登录弹窗一开始被手动移除（例如无登录需求），也可直接初始化
+            // 但此需求必须登录，所以无需额外处理
+        })();
+    </script>
+</body>
+</html>
