@@ -18,7 +18,7 @@
             color: white;
             overflow-x: hidden;
             background-color: #1a1a2e;
-            background-image: url('img5.jpg');
+            /* 背景由 JS 动态设置 */
             background-size: cover;
             background-position: center center;
             background-attachment: fixed;
@@ -1188,7 +1188,6 @@
         <div class="nav-buttons">
             <button class="nav-btn" id="homeBtn">🏠 首页</button>
             <button class="nav-btn" id="backBtn">🔙 回空间</button>
-            <button class="nav-btn" id="wallpaperBtn">🖼️ 换壁纸</button>
         </div>
     </nav>
 
@@ -1268,13 +1267,13 @@
                     <div class="card-body">ps里的魔棒扔了吧</div>
                 </div>
 
-                <!-- ★★★ 卡片 11：2048小游戏 ★★★ -->
+                <!-- 卡片 11：2048小游戏 -->
                 <div class="share-card" data-url="https://www.arealme.com/xmas-2048/cn/">
                     <div class="card-title">🕹️ 2048小游戏</div>
                     <div class="card-body">LOL</div>
                 </div>
 
-                <!-- ★★★ 卡片 12：真正的资源😋 ★★★ -->
+                <!-- 卡片 12：真正的资源😋 -->
                 <div class="share-card" data-url="https://www.bilibili.com/video/BV1NkM66LEzF/?share_source=copy_web&vd_source=04e58fdb6c6c69a8b4a8d3040e0589ed">
                     <div class="card-title">🎬 真正的资源😋</div>
                     <div class="card-body">😋😋😋😋😋😋😋😋😋😋</div>
@@ -1313,7 +1312,19 @@
             'use strict';
 
             // ================================================================
-            //  1. 诗句列表
+            //  1. 设置随机壁纸（使用 picsum.photos，稳定可靠）
+            // ================================================================
+            function setRandomWallpaper() {
+                // 1920x1080 随机图，加时间戳防缓存
+                const apiUrl = 'https://picsum.photos/1920/1080?t=' + Date.now();
+                document.body.style.backgroundImage = 'url("' + apiUrl + '")';
+            }
+
+            // 页面加载时设置壁纸
+            setRandomWallpaper();
+
+            // ================================================================
+            //  2. 诗句列表
             // ================================================================
             const poems = [
                 '花季莫浅忆，雨季莫愁离',
@@ -1325,7 +1336,7 @@
             ];
 
             // ================================================================
-            //  2. DOM 引用 & 状态
+            //  3. DOM 引用 & 状态
             // ================================================================
             const bodyEl = document.body;
             const dockBar = document.getElementById('dockBar');
@@ -1334,12 +1345,10 @@
             const navTextEl = document.getElementById('navText');
             const notifContainer = document.getElementById('notificationContainer');
 
-            const wallpapers = ['img.jpg', 'img5.jpg', 'img6.jpg'];
-            let currentWallpaperIndex = 0;
             let isDarkMode = false;
 
             // ================================================================
-            //  3. 随机配色
+            //  4. 随机配色
             // ================================================================
             const colorPalettes = [
                 ['#ff6b6b', '#feca57', '#48dbfb', '#a29bfe'],
@@ -1357,7 +1366,7 @@
             }
 
             // ================================================================
-            //  4. 通知系统
+            //  5. 通知系统
             // ================================================================
             function showNotification(text, duration) {
                 duration = duration || 5000;
@@ -1399,16 +1408,15 @@
             }
 
             // ================================================================
-            //  5. 欢迎通知
+            //  6. 欢迎通知
             // ================================================================
             function initWelcomeNotifications() {
                 const welcomeMsg = [
                     '🎉 欢迎来到分享页',
                     '🔙 点击"回空间"返回',
-                    '🖼️ 点击"换壁纸"切换背景',
                     '🌐 下方有网页分享卡片'
                 ];
-                const delays = [200, 400, 600, 800];
+                const delays = [200, 400, 600];
 
                 welcomeMsg.forEach((msg, index) => {
                     setTimeout(function() {
@@ -1418,7 +1426,7 @@
             }
 
             // ================================================================
-            //  6. 导航栏按钮
+            //  7. 导航栏按钮
             // ================================================================
             document.getElementById('homeBtn').addEventListener('click', function(e) {
                 e.preventDefault();
@@ -1434,34 +1442,8 @@
                 window.location.href = 'index.html';
             });
 
-            document.getElementById('wallpaperBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                this.style.transform = 'scale(0.94)';
-                setTimeout(() => { this.style.transform = ''; }, 150);
-
-                if (isDarkMode) {
-                    isDarkMode = false;
-                    bodyEl.classList.remove('dark-mode');
-                }
-
-                let newIndex;
-                if (wallpapers.length <= 1) {
-                    newIndex = 0;
-                } else {
-                    do {
-                        newIndex = Math.floor(Math.random() * wallpapers.length);
-                    } while (newIndex === currentWallpaperIndex);
-                }
-
-                currentWallpaperIndex = newIndex;
-                const wallpaper = wallpapers[currentWallpaperIndex];
-                bodyEl.style.backgroundImage = `url('${wallpaper}')`;
-
-                showNotification('🖼️ 已切换壁纸');
-            });
-
             // ================================================================
-            //  7. ★★★ 模态框（弹窗）功能 — 正确控制显示 ★★★
+            //  8. 模态框（弹窗）功能
             // ================================================================
             const modalOverlay = document.getElementById('modalOverlay');
             const modalClose = document.getElementById('modalClose');
@@ -1474,7 +1456,6 @@
                 modalBody.innerHTML = bodyHTML;
                 modalBtnContainer.innerHTML = buttonHTML || '';
 
-                // ★ 显示模态框
                 modalOverlay.style.display = 'flex';
                 document.body.style.overflow = 'hidden';
             }
@@ -1491,7 +1472,6 @@
                 }
             });
 
-            // 键盘 ESC 关闭
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && modalOverlay.style.display === 'flex') {
                     closeModal();
@@ -1499,11 +1479,10 @@
             });
 
             // ================================================================
-            //  8. ★★★ 分享卡片点击事件 ★★★
+            //  9. 分享卡片点击事件
             // ================================================================
             document.querySelectorAll('.share-card').forEach(function(card) {
                 card.addEventListener('click', function(e) {
-                    // 检查是否有 data-url（直接跳转）
                     const url = this.dataset.url;
                     if (url) {
                         window.open(url, '_blank');
@@ -1512,10 +1491,8 @@
                         return;
                     }
 
-                    // 检查是否有 data-action="search"（搜索弹窗）
                     const action = this.dataset.action;
                     if (action === 'search') {
-                        // 构造搜索弹窗内容
                         const bodyHTML = `
                             <div class="search-container">
                                 <span>搜索内容：</span>
@@ -1525,7 +1502,6 @@
                         `;
                         openModal('🌐 海外搜索引擎', bodyHTML, '');
 
-                        // 绑定搜索事件（需要等 DOM 渲染）
                         setTimeout(function() {
                             const searchInput = document.getElementById('searchInput');
                             const searchBtn = document.getElementById('searchBtn');
@@ -1544,7 +1520,6 @@
                                 }
                             };
 
-                            // 移除旧监听器，防止重复绑定
                             searchBtn._listener && searchBtn.removeEventListener('click', searchBtn._listener);
                             searchInput._listener && searchInput.removeEventListener('keydown', searchInput
                             ._listener);
@@ -1559,19 +1534,15 @@
 
                             searchBtn.addEventListener('click', searchBtn._listener);
                             searchInput.addEventListener('keydown', searchInput._listener);
-
-                            // 聚焦输入框
                             searchInput.focus();
                         }, 150);
                         return;
                     }
-
-                    // 如果都没有，忽略
                 });
             });
 
             // ================================================================
-            //  9. Dock 栏
+            //  10. Dock 栏
             // ================================================================
             let dockVisible = false;
 
@@ -1612,7 +1583,7 @@
             });
 
             // ================================================================
-            //  10. 底部羽化模糊覆盖层
+            //  11. 底部羽化模糊覆盖层
             // ================================================================
             const blurOverlay = document.getElementById('blurOverlay');
             const heroSection = document.querySelector('.hero-section');
@@ -1646,7 +1617,7 @@
             setTimeout(updateBlurOverlay, 200);
 
             // ================================================================
-            //  11. 设备检测
+            //  12. 设备检测
             // ================================================================
             function detectDevice() {
                 const ua = navigator.userAgent;
@@ -1666,7 +1637,7 @@
             }
 
             // ================================================================
-            //  12. 导航栏动画
+            //  13. 导航栏动画
             // ================================================================
             function onNavbarExpandEnd() {
                 navbarEl.classList.add('mask-done');
@@ -1685,7 +1656,7 @@
             }, 5000);
 
             // ================================================================
-            //  13. 诗句切换
+            //  14. 诗句切换
             // ================================================================
             let poemSwitched = false;
 
@@ -1733,7 +1704,7 @@
             }, 5500);
 
             // ================================================================
-            //  14. 通知位置
+            //  15. 通知位置
             // ================================================================
             function updateNotifPosition() {
                 const nav = document.getElementById('navbar');
@@ -1750,10 +1721,10 @@
             });
 
             // ================================================================
-            //  15. 初始化
+            //  16. 初始化
             // ================================================================
             function init() {
-                console.log('🚀 初始化分享页（固定4列等比缩放）...');
+                console.log('🚀 初始化分享页（picsum.photos 随机壁纸）...');
                 setTimeout(initWelcomeNotifications, 800);
                 console.log('✅ 初始化完成');
             }
