@@ -18,7 +18,7 @@
             color: white;
             overflow-x: hidden;
             background-color: #1a1a2e;
-            background-image: url('https://picsum.photos/1920/1080?t=1');
+            /* 背景由 JS 动态设置，先显示纯色，让卡片优先渲染 */
             background-size: cover;
             background-position: center center;
             background-attachment: fixed;
@@ -1206,78 +1206,8 @@
         <!-- 第二页：网页分享 -->
         <section class="share-section" id="shareSection">
             <div class="share-title">🌐 网页分享</div>
-            <div class="share-grid">
-                <!-- 卡片 1：云沙箱 -->
-                <div class="share-card" data-url="https://s.threatbook.com/">
-                    <div class="card-title">☁️ 云沙箱</div>
-                    <div class="card-body">免费测试500mb以下的文件<br/>赛博华佗帮你试试毒</div>
-                </div>
-
-                <!-- 卡片 2：4399小号机 -->
-                <div class="share-card" data-url="https://4399.nekoinsi.de">
-                    <div class="card-title">🎮 4399小号机</div>
-                    <div class="card-body">LOL</div>
-                </div>
-
-                <!-- 卡片 3：ROG 壁纸 -->
-                <div class="share-card" data-url="https://rog.asus.com/wallpapers/">
-                    <div class="card-title">🎯 ROG壁纸</div>
-                    <div class="card-body">点击跳伞至rog壁纸官网</div>
-                </div>
-
-                <!-- 卡片 4：应用商城 -->
-                <div class="share-card" data-url="https://lestore.lenovo.com/cate/soft?cid=1&tid=-1">
-                    <div class="card-title">📦 应用商城</div>
-                    <div class="card-body">联想应用商城免下载</div>
-                </div>
-
-                <!-- 卡片 5：巨硬翻译器 -->
-                <div class="share-card" data-url="https://cn.bing.com/translator?text=">
-                    <div class="card-title">🌍 巨硬翻译器</div>
-                    <div class="card-body">如标题所述</div>
-                </div>
-
-                <!-- 卡片 6：海外搜索引擎 -->
-                <div class="share-card" data-action="search">
-                    <div class="card-title">🌐 海外搜索引擎</div>
-                    <div class="card-body">平替Google的搜索引擎</div>
-                </div>
-
-                <!-- 卡片 7：cps测试 -->
-                <div class="share-card" data-url="https://www.arealme.com/click-speed-test/cn/">
-                    <div class="card-title">⚡ cps测试</div>
-                    <div class="card-body">测试你的cps</div>
-                </div>
-
-                <!-- 卡片 8：ifixit -->
-                <div class="share-card" data-url="https://zh.ifixit.com/">
-                    <div class="card-title">🔧 ifixit</div>
-                    <div class="card-body">在家维修设备</div>
-                </div>
-
-                <!-- 卡片 9：FMHY -->
-                <div class="share-card" data-url="https://fmhy.net/">
-                    <div class="card-title">📚 FMHY</div>
-                    <div class="card-body">免费资源仓库</div>
-                </div>
-
-                <!-- 卡片 10：抠图助手 -->
-                <div class="share-card" data-url="https://remove.photos/zh-cn/">
-                    <div class="card-title">✂️ 抠图助手</div>
-                    <div class="card-body">ps里的魔棒扔了吧</div>
-                </div>
-
-                <!-- 卡片 11：2048小游戏 -->
-                <div class="share-card" data-url="https://www.arealme.com/xmas-2048/cn/">
-                    <div class="card-title">🕹️ 2048小游戏</div>
-                    <div class="card-body">LOL</div>
-                </div>
-
-                <!-- 卡片 12：真正的资源😋 -->
-                <div class="share-card" data-url="https://www.bilibili.com/video/BV1NkM66LEzF/?share_source=copy_web&vd_source=04e58fdb6c6c69a8b4a8d3040e0589ed">
-                    <div class="card-title">🎬 真正的资源😋</div>
-                    <div class="card-body">😋😋😋😋😋😋😋😋😋😋</div>
-                </div>
+            <div class="share-grid" id="shareGrid">
+                <!-- 卡片由 JavaScript 动态生成 -->
             </div>
         </section>
 
@@ -1312,17 +1242,65 @@
             'use strict';
 
             // ================================================================
-            //  1. 设置随机壁纸（使用 picsum.photos，稳定可靠）
+            //  1. ★★★ 卡片数据 — 在这里添加/删除/修改卡片 ★★★
+            //  格式: ["标题", "描述", "跳转链接"]
+            //  特殊: 如果链接是 "search"，则触发搜索弹窗
+            // ================================================================
+            const cardsData = [
+                ["☁️ 云沙箱", "免费测试500mb以下的文件\n赛博华佗帮你试试毒", "https://s.threatbook.com/"],
+                ["🎮 4399小号机", "LOL", "https://4399.nekoinsi.de"],
+                ["🎯 ROG壁纸", "点击跳伞至rog壁纸官网", "https://rog.asus.com/wallpapers/"],
+                ["📦 应用商城", "联想应用商城免下载", "https://lestore.lenovo.com/cate/soft?cid=1&tid=-1"],
+                ["🌍 巨硬翻译器", "如标题所述", "https://cn.bing.com/translator?text="],
+                ["🌐 海外搜索引擎", "平替Google的搜索引擎", "search"],
+                ["⚡ cps测试", "测试你的cps", "https://www.arealme.com/click-speed-test/cn/"],
+                ["🔧 ifixit", "在家维修设备", "https://zh.ifixit.com/"],
+                ["📚 FMHY", "免费资源仓库", "https://fmhy.net/"],
+                ["✂️ 抠图助手", "ps里的魔棒扔了吧", "https://remove.photos/zh-cn/"],
+                ["🕹️ 2048小游戏", "LOL", "https://www.arealme.com/xmas-2048/cn/"],
+                ["🎬 真正的资源😋", "😋😋😋😋😋😋😋😋😋😋", "https://www.bilibili.com/video/BV1NkM66LEzF/?share_source=copy_web&vd_source=04e58fdb6c6c69a8b4a8d3040e0589ed"]
+            ];
+
+            // ================================================================
+            //  2. 渲染卡片（优先执行，不依赖任何网络请求）
+            // ================================================================
+            function renderCards() {
+                const grid = document.getElementById('shareGrid');
+                if (!grid) return;
+                grid.innerHTML = '';
+                cardsData.forEach(function(card) {
+                    const title = card[0];
+                    const body = card[1];
+                    const url = card[2];
+
+                    const div = document.createElement('div');
+                    div.className = 'share-card';
+
+                    if (url === 'search') {
+                        div.dataset.action = 'search';
+                    } else {
+                        div.dataset.url = url;
+                    }
+
+                    div.innerHTML = `
+                        <div class="card-title">${title}</div>
+                        <div class="card-body">${body}</div>
+                    `;
+
+                    grid.appendChild(div);
+                });
+            }
+
+            // ================================================================
+            //  3. 设置随机壁纸（使用 picsum.photos，异步加载不阻塞）
             // ================================================================
             function setRandomWallpaper() {
                 const apiUrl = 'https://picsum.photos/1920/1080?t=' + Date.now();
                 document.body.style.backgroundImage = 'url("' + apiUrl + '")';
             }
 
-            setRandomWallpaper();
-
             // ================================================================
-            //  2. 诗句列表
+            //  4. 诗句列表
             // ================================================================
             const poems = [
                 '花季莫浅忆，雨季莫愁离',
@@ -1334,7 +1312,7 @@
             ];
 
             // ================================================================
-            //  3. DOM 引用 & 状态
+            //  5. DOM 引用 & 状态
             // ================================================================
             const bodyEl = document.body;
             const dockBar = document.getElementById('dockBar');
@@ -1346,7 +1324,7 @@
             let isDarkMode = false;
 
             // ================================================================
-            //  4. 随机配色
+            //  6. 随机配色
             // ================================================================
             const colorPalettes = [
                 ['#ff6b6b', '#feca57', '#48dbfb', '#a29bfe'],
@@ -1364,7 +1342,7 @@
             }
 
             // ================================================================
-            //  5. 通知系统
+            //  7. 通知系统
             // ================================================================
             function showNotification(text, duration) {
                 duration = duration || 5000;
@@ -1406,7 +1384,7 @@
             }
 
             // ================================================================
-            //  6. 欢迎通知
+            //  8. 欢迎通知
             // ================================================================
             function initWelcomeNotifications() {
                 const welcomeMsg = [
@@ -1424,7 +1402,7 @@
             }
 
             // ================================================================
-            //  7. 导航栏按钮
+            //  9. 导航栏按钮
             // ================================================================
             document.getElementById('homeBtn').addEventListener('click', function(e) {
                 e.preventDefault();
@@ -1441,7 +1419,7 @@
             });
 
             // ================================================================
-            //  8. 模态框（弹窗）功能
+            //  10. 模态框（弹窗）功能
             // ================================================================
             const modalOverlay = document.getElementById('modalOverlay');
             const modalClose = document.getElementById('modalClose');
@@ -1477,84 +1455,79 @@
             });
 
             // ================================================================
-            //  9. ★★★ 分享卡片点击事件（点击后延迟2秒跳转）★★★
+            //  11. ★★★ 卡片点击事件（事件委托）★★★
             // ================================================================
-            document.querySelectorAll('.share-card').forEach(function(card) {
-                card.addEventListener('click', function(e) {
-                    // 检查是否是搜索卡片（data-action="search"）
-                    const action = this.dataset.action;
-                    if (action === 'search') {
-                        // 搜索卡片：打开模态框（不变）
-                        const bodyHTML = `
-                            <div class="search-container">
-                                <span>搜索内容：</span>
-                                <input type="text" id="searchInput" placeholder="输入关键词" autofocus />
-                                <button id="searchBtn">🔍 搜索</button>
-                            </div>
-                        `;
-                        openModal('🌐 海外搜索引擎', bodyHTML, '');
+            document.getElementById('shareGrid').addEventListener('click', function(e) {
+                const card = e.target.closest('.share-card');
+                if (!card) return;
 
-                        setTimeout(function() {
-                            const searchInput = document.getElementById('searchInput');
-                            const searchBtn = document.getElementById('searchBtn');
+                // 搜索卡片
+                if (card.dataset.action === 'search') {
+                    const bodyHTML = `
+                        <div class="search-container">
+                            <span>搜索内容：</span>
+                            <input type="text" id="searchInput" placeholder="输入关键词" autofocus />
+                            <button id="searchBtn">🔍 搜索</button>
+                        </div>
+                    `;
+                    openModal('🌐 海外搜索引擎', bodyHTML, '');
 
-                            if (!searchInput || !searchBtn) return;
+                    setTimeout(function() {
+                        const searchInput = document.getElementById('searchInput');
+                        const searchBtn = document.getElementById('searchBtn');
 
-                            const doSearch = function() {
-                                const text = searchInput.value.trim();
-                                if (text) {
-                                    window.open('https://yandex.com/search/?text=' + encodeURIComponent(
-                                        text), '_blank');
-                                    closeModal();
-                                } else {
-                                    showNotification('⚠️ 请输入搜索内容');
-                                    searchInput.focus();
-                                }
-                            };
+                        if (!searchInput || !searchBtn) return;
 
-                            searchBtn._listener && searchBtn.removeEventListener('click', searchBtn._listener);
-                            searchInput._listener && searchInput.removeEventListener('keydown', searchInput
-                            ._listener);
+                        const doSearch = function() {
+                            const text = searchInput.value.trim();
+                            if (text) {
+                                window.open('https://yandex.com/search/?text=' + encodeURIComponent(text),
+                                    '_blank');
+                                closeModal();
+                            } else {
+                                showNotification('⚠️ 请输入搜索内容');
+                                searchInput.focus();
+                            }
+                        };
 
-                            searchBtn._listener = doSearch;
-                            searchInput._listener = function(e) {
-                                if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    doSearch();
-                                }
-                            };
+                        searchBtn._listener && searchBtn.removeEventListener('click', searchBtn._listener);
+                        searchInput._listener && searchInput.removeEventListener('keydown', searchInput
+                        ._listener);
 
-                            searchBtn.addEventListener('click', searchBtn._listener);
-                            searchInput.addEventListener('keydown', searchInput._listener);
-                            searchInput.focus();
-                        }, 150);
-                        return;
-                    }
+                        searchBtn._listener = doSearch;
+                        searchInput._listener = function(e) {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                doSearch();
+                            }
+                        };
 
-                    // ★★★ 普通卡片：延迟 2 秒后跳转 ★★★
-                    const url = this.dataset.url;
-                    if (url) {
-                        const title = this.querySelector('.card-title')?.textContent || '链接';
-                        // 显示通知：即将跳转
-                        showNotification(`⏳ 即将跳转至 ${title.trim()}...`, 2000);
+                        searchBtn.addEventListener('click', searchBtn._listener);
+                        searchInput.addEventListener('keydown', searchInput._listener);
+                        searchInput.focus();
+                    }, 150);
+                    return;
+                }
 
-                        // 禁用卡片点击，防止重复点击
-                        this.style.pointerEvents = 'none';
-                        this.style.opacity = '0.6';
+                // 普通卡片：延迟2秒跳转
+                const url = card.dataset.url;
+                if (url) {
+                    const title = card.querySelector('.card-title')?.textContent || '链接';
+                    showNotification(`⏳ 即将跳转至 ${title.trim()}...`, 2000);
 
-                        // 2秒后执行跳转
-                        setTimeout(() => {
-                            window.open(url, '_blank');
-                            // 恢复卡片点击
-                            this.style.pointerEvents = '';
-                            this.style.opacity = '';
-                        }, 2000);
-                    }
-                });
+                    card.style.pointerEvents = 'none';
+                    card.style.opacity = '0.6';
+
+                    setTimeout(() => {
+                        window.open(url, '_blank');
+                        card.style.pointerEvents = '';
+                        card.style.opacity = '';
+                    }, 2000);
+                }
             });
 
             // ================================================================
-            //  10. Dock 栏
+            //  12. Dock 栏
             // ================================================================
             let dockVisible = false;
 
@@ -1595,7 +1568,7 @@
             });
 
             // ================================================================
-            //  11. 底部羽化模糊覆盖层
+            //  13. 底部羽化模糊覆盖层
             // ================================================================
             const blurOverlay = document.getElementById('blurOverlay');
             const heroSection = document.querySelector('.hero-section');
@@ -1629,7 +1602,7 @@
             setTimeout(updateBlurOverlay, 200);
 
             // ================================================================
-            //  12. 设备检测
+            //  14. 设备检测
             // ================================================================
             function detectDevice() {
                 const ua = navigator.userAgent;
@@ -1649,7 +1622,7 @@
             }
 
             // ================================================================
-            //  13. 导航栏动画
+            //  15. 导航栏动画
             // ================================================================
             function onNavbarExpandEnd() {
                 navbarEl.classList.add('mask-done');
@@ -1668,7 +1641,7 @@
             }, 5000);
 
             // ================================================================
-            //  14. 诗句切换
+            //  16. 诗句切换
             // ================================================================
             let poemSwitched = false;
 
@@ -1716,7 +1689,7 @@
             }, 5500);
 
             // ================================================================
-            //  15. 通知位置
+            //  17. 通知位置
             // ================================================================
             function updateNotifPosition() {
                 const nav = document.getElementById('navbar');
@@ -1733,11 +1706,20 @@
             });
 
             // ================================================================
-            //  16. 初始化
+            //  18. ★★★ 初始化（卡片优先，背景延后，通知最后）★★★
             // ================================================================
             function init() {
-                console.log('🚀 初始化分享页（picsum.photos 随机壁纸 + 2秒延迟跳转）...');
+                console.log('🚀 初始化分享页（数据驱动卡片）...');
+
+                // 第一步：立即渲染卡片（不依赖任何网络请求）
+                renderCards();
+
+                // 第二步：设置背景（异步加载，不阻塞页面）
+                setRandomWallpaper();
+
+                // 第三步：通知延迟弹出（等卡片显示后再弹）
                 setTimeout(initWelcomeNotifications, 800);
+
                 console.log('✅ 初始化完成');
             }
 
