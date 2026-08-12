@@ -18,7 +18,7 @@
             color: white;
             overflow-x: hidden;
             background-color: #1a1a2e;
-            /* 背景由 JS 动态设置 */
+            background-image: url('https://picsum.photos/1920/1080?t=1');
             background-size: cover;
             background-position: center center;
             background-attachment: fixed;
@@ -1315,12 +1315,10 @@
             //  1. 设置随机壁纸（使用 picsum.photos，稳定可靠）
             // ================================================================
             function setRandomWallpaper() {
-                // 1920x1080 随机图，加时间戳防缓存
                 const apiUrl = 'https://picsum.photos/1920/1080?t=' + Date.now();
                 document.body.style.backgroundImage = 'url("' + apiUrl + '")';
             }
 
-            // 页面加载时设置壁纸
             setRandomWallpaper();
 
             // ================================================================
@@ -1479,20 +1477,14 @@
             });
 
             // ================================================================
-            //  9. 分享卡片点击事件
+            //  9. ★★★ 分享卡片点击事件（点击后延迟2秒跳转）★★★
             // ================================================================
             document.querySelectorAll('.share-card').forEach(function(card) {
                 card.addEventListener('click', function(e) {
-                    const url = this.dataset.url;
-                    if (url) {
-                        window.open(url, '_blank');
-                        const title = this.querySelector('.card-title')?.textContent || '链接';
-                        showNotification(`🔗 正在打开 ${title.trim()}`);
-                        return;
-                    }
-
+                    // 检查是否是搜索卡片（data-action="search"）
                     const action = this.dataset.action;
                     if (action === 'search') {
+                        // 搜索卡片：打开模态框（不变）
                         const bodyHTML = `
                             <div class="search-container">
                                 <span>搜索内容：</span>
@@ -1537,6 +1529,26 @@
                             searchInput.focus();
                         }, 150);
                         return;
+                    }
+
+                    // ★★★ 普通卡片：延迟 2 秒后跳转 ★★★
+                    const url = this.dataset.url;
+                    if (url) {
+                        const title = this.querySelector('.card-title')?.textContent || '链接';
+                        // 显示通知：即将跳转
+                        showNotification(`⏳ 即将跳转至 ${title.trim()}...`, 2000);
+
+                        // 禁用卡片点击，防止重复点击
+                        this.style.pointerEvents = 'none';
+                        this.style.opacity = '0.6';
+
+                        // 2秒后执行跳转
+                        setTimeout(() => {
+                            window.open(url, '_blank');
+                            // 恢复卡片点击
+                            this.style.pointerEvents = '';
+                            this.style.opacity = '';
+                        }, 2000);
                     }
                 });
             });
@@ -1724,7 +1736,7 @@
             //  16. 初始化
             // ================================================================
             function init() {
-                console.log('🚀 初始化分享页（picsum.photos 随机壁纸）...');
+                console.log('🚀 初始化分享页（picsum.photos 随机壁纸 + 2秒延迟跳转）...');
                 setTimeout(initWelcomeNotifications, 800);
                 console.log('✅ 初始化完成');
             }
