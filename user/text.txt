@@ -1,2 +1,1 @@
-admin
-password_for_chen
+YWRtaW4KcGFzc3dvcmRfZm9yX2NoZW4=
