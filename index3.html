@@ -255,7 +255,6 @@
             color: #555;
         }
 
-        /* ★★★ 用户数据表格 ★★★ */
         .user-table-wrap {
             overflow-x: auto;
             margin-top: 8px;
@@ -305,7 +304,6 @@
             border: 1px solid rgba(46,204,113,0.2);
         }
 
-        /* 登录弹窗 */
         .login-overlay {
             position: fixed;
             top: 0;
@@ -448,7 +446,7 @@
             index3 · 支持自定义 URL · 延迟检测 · 日志导出 · 管理员后台
         </div>
 
-        <!-- ===== 按钮区 ===== -->
+        <!-- 按钮区 -->
         <div class="btn-group">
             <button class="btn btn-primary" id="testPicsum">📸 picsum.photos</button>
             <button class="btn btn-success" id="testUnsplash">🌄 unsplash</button>
@@ -462,14 +460,14 @@
             <button class="btn btn-danger" id="clearBtn">🗑️ 清空</button>
         </div>
 
-        <!-- ===== 高级工具按钮 ===== -->
+        <!-- 高级工具 -->
         <div class="btn-group" style="border-top: 1px solid #2a2a3a; padding-top: 12px;">
             <button class="btn btn-outline" id="testDelay">⏱️ 延迟检测</button>
             <button class="btn btn-outline" id="exportLog">💾 导出日志</button>
             <button class="btn btn-outline" id="clearLogBtn">🧹 清日志</button>
         </div>
 
-        <!-- ===== 自定义 URL 测试 ===== -->
+        <!-- 自定义 URL -->
         <div class="panel" style="padding: 16px 20px;">
             <div class="custom-url-row">
                 <input type="text" id="customUrlInput" placeholder="输入图片 URL，例如 https://example.com/image.jpg" />
@@ -477,7 +475,7 @@
             </div>
         </div>
 
-        <!-- ===== 预览区 ===== -->
+        <!-- 图片预览 -->
         <div class="panel">
             <div class="flex-between">
                 <span class="panel-title">🖼️ 图片预览</span>
@@ -493,11 +491,11 @@
             <div style="margin-top:10px;font-size:0.75rem;color:#555;" id="imageInfo"></div>
         </div>
 
-        <!-- ===== ★★★ 后端平台测试面板 ★★★ ===== -->
+        <!-- 用户监控面板 -->
         <div class="panel" id="userPanel" style="display:none;">
             <div class="flex-between">
                 <span class="panel-title">👥 后端平台测试</span>
-                <span class="online-count-badge" id="onlineCountBadge">🟢 在线: <span id="onlineCount">0</span> 人</span>
+                <span class="online-count-badge">🟢 在线: <span id="onlineCount">0</span> 人</span>
             </div>
             <div class="user-table-wrap">
                 <table class="user-table" id="userTable">
@@ -521,7 +519,7 @@
             </div>
         </div>
 
-        <!-- ===== 日志区 ===== -->
+        <!-- 日志 -->
         <div class="panel">
             <div class="flex-between">
                 <span class="panel-title">📋 控制台日志</span>
@@ -533,7 +531,7 @@
         </div>
     </div>
 
-    <!-- ============ 管理员登录弹窗 ============ -->
+    <!-- 管理员登录弹窗 -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-modal">
             <h2>🔐 管理员认证</h2>
@@ -550,7 +548,7 @@
             'use strict';
 
             // ================================================================
-            //  管理员登录验证（Base64 解码）
+            //  管理员登录验证
             // ================================================================
             const loginOverlay = document.getElementById('loginOverlay');
             const loginBtn = document.getElementById('loginBtn');
@@ -592,19 +590,10 @@
                             setTimeout(() => {
                                 loginOverlay.style.display = 'none';
                             }, 400);
-                            // 登录成功后显示用户面板并初始化
                             if (!initialLogged) {
                                 initialLogged = true;
                                 log('✅ 管理员验证成功，欢迎使用调试台！', 'success');
-                                log('🔧 调试台已就绪，点击上方按钮测试 API', 'success');
-                                log('💡 支持多种壁纸 API，包含 CORS 检测', 'info');
-                                log('📋 所有结果会显示在日志中，可复制反馈', 'info');
-                                console.log('🖼️ 壁纸API调试台已启动');
-                                console.log('📌 各API说明:');
-                                Object.keys(APIS).forEach(key => {
-                                    console.log(`  - ${APIS[key].name}: ${APIS[key].desc}`);
-                                });
-                                // 显示用户面板并加载数据
+                                log('🔧 调试台已就绪', 'success');
                                 document.getElementById('userPanel').style.display = 'block';
                                 initOnlineCounter();
                             }
@@ -635,7 +624,6 @@
             let currentObjectURL = null;
             let initialLogged = false;
 
-            // 日志函数
             function log(message, type, extra) {
                 const time = new Date().toLocaleTimeString();
                 const entry = document.createElement('div');
@@ -651,9 +639,7 @@
                 if (type === 'status') { typeClass = 'status-code'; typeLabel = '📡'; }
 
                 let content = message;
-                if (extra) {
-                    content += ' ' + extra;
-                }
+                if (extra) { content += ' ' + extra; }
 
                 entry.innerHTML = `<span class="time">[${time}]</span><span class="${typeClass}">${typeLabel}</span> ${content}`;
                 logArea.appendChild(entry);
@@ -676,11 +662,7 @@
                 previewArea.classList.remove('has-error');
                 previewArea.classList.add('has-image');
                 setStatus('✅ 加载成功', 'success');
-                if (info) {
-                    imageInfo.textContent = info;
-                } else {
-                    imageInfo.textContent = '图片已加载';
-                }
+                imageInfo.textContent = info || '图片已加载';
             }
 
             function showError(text) {
@@ -690,10 +672,7 @@
                 previewArea.classList.add('has-error');
                 setStatus('❌ 加载失败', 'fail');
                 imageInfo.textContent = text || '加载失败';
-                placeholder.innerHTML = `
-                    <span>❌</span>
-                    ${text || '加载失败'}
-                `;
+                placeholder.innerHTML = `<span>❌</span>${text || '加载失败'}`;
             }
 
             function showPlaceholder(text) {
@@ -702,10 +681,7 @@
                 previewArea.classList.remove('has-image', 'has-error');
                 setStatus('等待测试', 'idle');
                 imageInfo.textContent = '';
-                placeholder.innerHTML = `
-                    <span>🖼️</span>
-                    ${text || '点击上方按钮测试 API'}
-                `;
+                placeholder.innerHTML = `<span>🖼️</span>${text || '点击上方按钮测试 API'}`;
             }
 
             function revokeObjectURL() {
@@ -716,9 +692,9 @@
             }
 
             // ================================================================
-            //  测试函数
+            //  API 测试
             // ================================================================
-            function testApi(url, name, options) {
+            function testApi(url, name) {
                 revokeObjectURL();
                 log(`开始测试: ${name}`, 'info');
                 log(`请求地址: ${url}`, 'url');
@@ -727,28 +703,11 @@
 
                 const startTime = Date.now();
 
-                fetch(url, {
-                        redirect: 'follow',
-                        mode: 'cors',
-                        cache: 'no-cache'
-                    })
+                fetch(url, { redirect: 'follow', mode: 'cors', cache: 'no-cache' })
                     .then(response => {
                         const elapsed = Date.now() - startTime;
                         log(`响应状态: ${response.status} ${response.statusText} (${elapsed}ms)`, 'status');
-
-                        const headers = {};
-                        response.headers.forEach((value, key) => {
-                            headers[key] = value;
-                        });
-                        log(`响应头: ${JSON.stringify(headers, null, 2)}`, 'data');
-
-                        if (!response.ok) {
-                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                        }
-
-                        const contentType = response.headers.get('content-type') || '';
-                        log(`Content-Type: ${contentType}`, 'data');
-
+                        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                         return response.blob();
                     })
                     .then(blob => {
@@ -757,12 +716,9 @@
 
                         if (!blob.type.startsWith('image/')) {
                             log(`⚠️ 返回的不是图片，是 ${blob.type}`, 'warn');
-                            return blob.text().then(text => {
-                                log(`返回内容预览: ${text.substring(0, 200)}...`, 'data');
-                                setStatus('非图片内容', 'fail');
-                                showError(`返回内容不是图片 (${blob.type})`);
-                                throw new Error('返回内容不是图片');
-                            });
+                            setStatus('非图片内容', 'fail');
+                            showError(`返回内容不是图片 (${blob.type})`);
+                            throw new Error('返回内容不是图片');
                         }
 
                         const objectURL = URL.createObjectURL(blob);
@@ -783,66 +739,27 @@
                     .catch(err => {
                         const elapsed = Date.now() - startTime;
                         log(`❌ 请求失败: ${err.message} (${elapsed}ms)`, 'error');
-                        log(`错误详情: ${err.stack || err}`, 'error');
                         setStatus('加载失败', 'fail');
                         showError(`${name}: ${err.message}`);
                     });
             }
 
-            // ================================================================
-            //  各 API 定义
-            // ================================================================
             const APIS = {
-                picsum: {
-                    name: 'picsum.photos',
-                    url: 'https://picsum.photos/1920/1080?t=' + Date.now(),
-                    desc: '稳定随机图，支持 CORS'
-                },
-                unsplash: {
-                    name: 'unsplash (source)',
-                    url: 'https://source.unsplash.com/1920x1080/?nature,wallpaper&t=' + Date.now(),
-                    desc: 'Unsplash 随机壁纸'
-                },
-                btstu: {
-                    name: 'btstu.cn (动漫)',
-                    url: 'https://api.btstu.cn/sjbz/api.php?lx=dongman&method=pc&format=images&t=' + Date.now(),
-                    desc: '动漫壁纸 API'
-                },
-                xjh: {
-                    name: 'img.xjh.me (岁月小筑)',
-                    url: 'https://img.xjh.me/random_img.php?type=bg&ctype=acg&return=302&t=' + Date.now(),
-                    desc: '302重定向，需跟随'
-                },
-                loli: {
-                    name: 'loli API (随机图)',
-                    url: 'https://api.lolicon.app/setu/v2?r18=0&num=1&size=original&t=' + Date.now(),
-                    desc: 'Lolicon API 随机图'
-                },
-                loremflickr: {
-                    name: 'loremflickr',
-                    url: 'https://loremflickr.com/1920/1080?random=' + Date.now(),
-                    desc: 'Lorem Flickr 随机图'
-                },
-                waifu: {
-                    name: 'waifu.pics',
-                    url: 'https://api.waifu.pics/sfw/wallpaper?t=' + Date.now(),
-                    desc: '二次元壁纸 (JSON)'
-                },
-                bing: {
-                    name: 'Bing每日壁纸',
-                    url: 'https://api.btstu.cn/bing/api.php?format=images&t=' + Date.now(),
-                    desc: 'Bing 每日壁纸 (btstu 代理)'
-                }
+                picsum: { name: 'picsum.photos', url: 'https://picsum.photos/1920/1080?t=' + Date.now() },
+                unsplash: { name: 'unsplash (source)', url: 'https://source.unsplash.com/1920x1080/?nature,wallpaper&t=' + Date.now() },
+                btstu: { name: 'btstu.cn (动漫)', url: 'https://api.btstu.cn/sjbz/api.php?lx=dongman&method=pc&format=images&t=' + Date.now() },
+                xjh: { name: 'img.xjh.me', url: 'https://img.xjh.me/random_img.php?type=bg&ctype=acg&return=302&t=' + Date.now() },
+                loli: { name: 'loli API', url: 'https://api.lolicon.app/setu/v2?r18=0&num=1&size=original&t=' + Date.now() },
+                loremflickr: { name: 'loremflickr', url: 'https://loremflickr.com/1920/1080?random=' + Date.now() },
+                waifu: { name: 'waifu.pics', url: 'https://api.waifu.pics/sfw/wallpaper?t=' + Date.now() },
+                bing: { name: 'Bing每日壁纸', url: 'https://api.btstu.cn/bing/api.php?format=images&t=' + Date.now() }
             };
 
             // ================================================================
-            //  ★★★ 全局变量：存储在线用户 ID ★★★
+            //  ★★★ 用户在线监控（修复版） ★★★
             // ================================================================
             let onlineUserIds = [];
 
-            // ================================================================
-            //  ★★★ 加载用户数据 ★★★
-            // ================================================================
             async function loadUserData() {
                 const tbody = document.getElementById('userTableBody');
                 if (!tbody) return;
@@ -850,16 +767,11 @@
 
                 try {
                     const response = await fetch('/api/users');
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     const data = await response.json();
-                    if (data.error) {
-                        throw new Error(data.error);
-                    }
+                    if (data.error) throw new Error(data.error);
 
                     const users = data.users || [];
-
                     if (users.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#555;">暂无用户</td></tr>';
                         return;
@@ -867,7 +779,6 @@
 
                     let html = '';
                     users.forEach(user => {
-                        // ★★★ 使用全局 onlineUserIds 判断在线状态 ★★★
                         const isOnline = onlineUserIds.includes(user.id);
                         const lastSeen = user.last_seen ? new Date(user.last_seen).toLocaleString('zh-CN') : '从未';
                         const loginCount = user.login_count || 0;
@@ -885,25 +796,18 @@
                         `;
                     });
                     tbody.innerHTML = html;
-
                 } catch (err) {
                     tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#e74c3c;">加载失败: ${err.message}</td></tr>`;
                     log(`❌ 加载用户数据失败: ${err.message}`, 'error');
                 }
             }
 
-            // 简单的防 XSS 函数
             function escapeHtml(text) {
                 if (!text) return '';
                 const div = document.createElement('div');
                 div.textContent = text;
                 return div.innerHTML;
             }
-
-            // ================================================================
-            //  ★★★ 在线人数（Supabase Presence）- 修复版 ★★★
-            // ================================================================
-            let onlineChannel = null;
 
             async function initOnlineCounter() {
                 try {
@@ -928,19 +832,14 @@
                     const onlineCountEl = document.getElementById('onlineCount');
                     if (!onlineCountEl) return;
 
-                    // ★★★ 监听 Presence 同步事件 ★★★
                     channel.on('presence', { event: 'sync' }, () => {
                         const state = channel.presenceState();
-                        // ★★★ 关键修复：更新全局 onlineUserIds ★★★
                         onlineUserIds = Object.keys(state);
-                        const count = onlineUserIds.length;
-                        onlineCountEl.textContent = count || 0;
-                        // ★★★ 同步刷新表格 ★★★
+                        onlineCountEl.textContent = onlineUserIds.length || 0;
                         loadUserData();
-                        log(`👥 在线人数更新: ${count} 人，在线ID: ${onlineUserIds.join(', ') || '无'}`, 'info');
+                        log(`👥 在线人数更新: ${onlineUserIds.length} 人`, 'info');
                     });
 
-                    // ★★★ 用户加入事件 ★★★
                     channel.on('presence', { event: 'join' }, () => {
                         setTimeout(() => {
                             const state = channel.presenceState();
@@ -950,7 +849,6 @@
                         }, 150);
                     });
 
-                    // ★★★ 用户离开事件 ★★★
                     channel.on('presence', { event: 'leave' }, () => {
                         setTimeout(() => {
                             const state = channel.presenceState();
@@ -961,15 +859,10 @@
                     });
 
                     await channel.subscribe();
-                    onlineChannel = channel;
-
-                    // 首次加载用户数据
                     setTimeout(() => loadUserData(), 500);
-
-                    // 每 30 秒刷新一次用户列表
                     setInterval(() => loadUserData(), 30000);
 
-                    log('👥 在线人数统计已启动（实时同步）', 'success');
+                    log('👥 在线人数统计已启动', 'success');
                 } catch (err) {
                     console.warn('在线人数功能不可用:', err.message);
                     document.getElementById('onlineCount').textContent = '--';
@@ -978,98 +871,59 @@
             }
 
             // ================================================================
-            //  绑定事件
+            //  事件绑定
             // ================================================================
-            document.getElementById('testPicsum').addEventListener('click', function() {
-                testApi(APIS.picsum.url, APIS.picsum.name);
-            });
-            document.getElementById('testUnsplash').addEventListener('click', function() {
-                testApi(APIS.unsplash.url, APIS.unsplash.name);
-            });
-            document.getElementById('testBtstu').addEventListener('click', function() {
-                testApi(APIS.btstu.url, APIS.btstu.name);
-            });
-            document.getElementById('testXjh').addEventListener('click', function() {
-                testApi(APIS.xjh.url, APIS.xjh.name);
-            });
-            document.getElementById('testLoli').addEventListener('click', function() {
-                testApi(APIS.loli.url, APIS.loli.name);
-            });
-            document.getElementById('testLoremFlickr').addEventListener('click', function() {
-                testApi(APIS.loremflickr.url, APIS.loremflickr.name);
-            });
-            document.getElementById('testWaifu').addEventListener('click', function() {
-                testApi(APIS.waifu.url, APIS.waifu.name);
-            });
-            document.getElementById('testBing').addEventListener('click', function() {
-                testApi(APIS.bing.url, APIS.bing.name);
-            });
+            document.getElementById('testPicsum').addEventListener('click', function() { testApi(APIS.picsum.url, APIS.picsum.name); });
+            document.getElementById('testUnsplash').addEventListener('click', function() { testApi(APIS.unsplash.url, APIS.unsplash.name); });
+            document.getElementById('testBtstu').addEventListener('click', function() { testApi(APIS.btstu.url, APIS.btstu.name); });
+            document.getElementById('testXjh').addEventListener('click', function() { testApi(APIS.xjh.url, APIS.xjh.name); });
+            document.getElementById('testLoli').addEventListener('click', function() { testApi(APIS.loli.url, APIS.loli.name); });
+            document.getElementById('testLoremFlickr').addEventListener('click', function() { testApi(APIS.loremflickr.url, APIS.loremflickr.name); });
+            document.getElementById('testWaifu').addEventListener('click', function() { testApi(APIS.waifu.url, APIS.waifu.name); });
+            document.getElementById('testBing').addEventListener('click', function() { testApi(APIS.bing.url, APIS.bing.name); });
 
             document.getElementById('testAll').addEventListener('click', function() {
                 log('=== 全部测试开始 ===', 'warn');
                 const keys = Object.keys(APIS);
                 keys.forEach((key, index) => {
-                    const api = APIS[key];
-                    setTimeout(() => {
-                        testApi(api.url, api.name);
-                    }, index * 800);
+                    setTimeout(() => testApi(APIS[key].url, APIS[key].name), index * 800);
                 });
             });
 
             document.getElementById('testCustomUrl').addEventListener('click', function() {
                 const url = document.getElementById('customUrlInput').value.trim();
-                if (!url) {
-                    log('⚠️ 请输入有效的图片 URL', 'warn');
-                    return;
-                }
-                try {
-                    new URL(url);
-                } catch (e) {
-                    log('❌ 无效的 URL 格式', 'error');
-                    return;
-                }
+                if (!url) { log('⚠️ 请输入有效的图片 URL', 'warn'); return; }
+                try { new URL(url); } catch (e) { log('❌ 无效的 URL 格式', 'error'); return; }
                 testApi(url, '自定义URL');
             });
+
             document.getElementById('customUrlInput').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    document.getElementById('testCustomUrl').click();
-                }
+                if (e.key === 'Enter') document.getElementById('testCustomUrl').click();
             });
 
             document.getElementById('testDelay').addEventListener('click', function() {
                 log('⏱️ 开始延迟检测...', 'warn');
                 const keys = Object.keys(APIS);
                 let completed = 0;
-                const total = keys.length;
-                keys.forEach((key) => {
-                    const api = APIS[key];
+                keys.forEach(key => {
                     const start = Date.now();
-                    fetch(api.url, { mode: 'no-cors' })
+                    fetch(APIS[key].url, { mode: 'no-cors' })
                         .then(() => {
-                            const elapsed = Date.now() - start;
-                            log(`${api.name} 延迟: ${elapsed}ms`, 'status');
+                            log(`${APIS[key].name} 延迟: ${Date.now() - start}ms`, 'status');
                             completed++;
-                            if (completed === total) {
-                                log('✅ 延迟检测完成', 'success');
-                            }
+                            if (completed === keys.length) log('✅ 延迟检测完成', 'success');
                         })
                         .catch(() => {
-                            const elapsed = Date.now() - start;
-                            log(`${api.name} 超时/失败 (${elapsed}ms)`, 'error');
+                            log(`${APIS[key].name} 超时/失败 (${Date.now() - start}ms)`, 'error');
                             completed++;
-                            if (completed === total) {
-                                log('✅ 延迟检测完成（部分失败）', 'warn');
-                            }
+                            if (completed === keys.length) log('✅ 延迟检测完成（部分失败）', 'warn');
                         });
                 });
             });
 
             document.getElementById('exportLog').addEventListener('click', function() {
                 const logs = logArea.innerText;
-                if (!logs.trim()) {
-                    log('⚠️ 日志为空，无法导出', 'warn');
-                    return;
-                }
+                if (!logs.trim()) { log('⚠️ 日志为空，无法导出', 'warn'); return; }
                 const blob = new Blob([logs], { type: 'text/plain;charset=utf-8' });
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
@@ -1088,7 +942,6 @@
                 showPlaceholder('已清空');
             });
 
-            // ★★★ 刷新用户数据按钮 ★★★
             document.getElementById('refreshUsersBtn').addEventListener('click', function() {
                 loadUserData();
                 log('🔄 用户数据已刷新', 'info');
