@@ -1730,6 +1730,7 @@
             <button class="nav-btn" id="homeBtn">🏠 首页</button>
             <button class="nav-btn" id="shareBtn">🔗 分享页</button>
             <button class="nav-btn" id="themeBtn">🎨 主题切换</button>
+            <button class="nav-btn" id="aboutBtn">📖 关于</button>
         </div>
     </nav>
 
@@ -2326,6 +2327,14 @@
                     stopTypingAndSetText('质疑我审美？😡', true);
                     circleBtn.textContent = '变回来';
                 }
+            });
+
+            // ★★★ 关于按钮 — 跳转 index4.html ★★★
+            document.getElementById('aboutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+                window.location.href = 'index4.html';
             });
 
             // ================================================================
