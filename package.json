@@ -1,0 +1,6 @@
+{
+  "name": "chen-space",
+  "scripts": {
+    "build": "node build.js"
+  }
+}

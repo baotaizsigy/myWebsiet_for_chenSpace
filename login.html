@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>登录 · chen_space</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ===== 重置 ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            color: white;
+            background-color: #0a1220;
+            background-image: url('img5.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+        .bg-blur {
+            position: fixed;
+            inset: 0;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        /* ===== 导航栏 ===== */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 700px;
+            padding: 12px 24px;
+            background: rgba(10,10,30,0.35);
+            backdrop-filter: blur(16px);
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%);
+            -webkit-mask-size: 0% 100%;
+            mask-size: 0% 100%;
+            -webkit-mask-position: center;
+            mask-position: center;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            opacity: 0;
+            animation: navbarExpand 1s cubic-bezier(0.23,1,0.32,1) forwards;
+            animation-delay: 0.05s;
+            animation-fill-mode: forwards;
+            overflow: hidden;
+        }
+        .navbar::before {
+            content: '';
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(from var(--angle,0deg) at 50% 50%, transparent 0%, rgba(255,255,255,0.04) 15%, rgba(255,255,255,0.08) 30%, rgba(255,255,255,0.04) 45%, transparent 60%, transparent 100%);
+            animation: rotateGloss 8s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes rotateGloss { 0% { --angle: 0deg; } 100% { --angle: 360deg; } }
+        @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+        .navbar.mask-done { -webkit-mask-image: none !important; mask-image: none !important; }
+        @keyframes navbarExpand {
+            0% { -webkit-mask-size: 0% 100%; mask-size: 0% 100%; opacity: 0; }
+            60% { opacity: 1; }
+            100% { -webkit-mask-size: 100% 100%; mask-size: 100% 100%; opacity: 1; }
+        }
+        .nav-left { display: flex; align-items: center; gap: 10px; z-index: 2; }
+        .nav-title { font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.9); letter-spacing: 0.8px; white-space: nowrap; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .nav-buttons { display: flex; gap: 12px; z-index: 2; }
+        .nav-btn {
+            padding: 6px 22px; border: none; border-radius: 30px; font-size: 0.9rem;
+            font-weight: 500; cursor: pointer; transition: all 0.25s ease;
+            background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85);
+            backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.06);
+            letter-spacing: 0.5px; font-family: inherit; white-space: nowrap;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.18); transform: scale(1.04); border-color: rgba(255,255,255,0.2); color: white; }
+        .nav-btn:active { transform: scale(0.96); }
+        @media (max-width: 480px) { .nav-btn { padding: 4px 14px; font-size: 0.75rem; } .nav-title { font-size: 0.9rem; } }
+
+        /* ===== 登录卡片 ===== */
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+            animation: containerIn 0.8s cubic-bezier(0.23,1,0.32,1) forwards;
+            opacity: 0;
+            transform: translateY(40px) scale(0.96);
+        }
+        @keyframes containerIn { 0% { opacity: 0; transform: translateY(40px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        .login-card {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(48px);
+            -webkit-backdrop-filter: blur(48px);
+            border-radius: 32px;
+            border: 1.5px solid rgba(255,255,255,0.15);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.04), 0 0 60px rgba(100,180,255,0.05);
+            padding: 40px 36px 44px;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-card::before {
+            content: '';
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(from var(--gloss-angle,0deg) at 50% 50%, transparent 0%, rgba(255,255,255,0.02) 10%, rgba(255,255,255,0.05) 20%, rgba(255,255,255,0.07) 30%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.02) 50%, transparent 60%, transparent 100%);
+            animation: liquidGloss 12s cubic-bezier(0.45,0.05,0.55,0.95) infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes liquidGloss { 0% { --gloss-angle: 0deg; transform: rotate(0deg) scale(1); } 50% { --gloss-angle: 180deg; transform: rotate(8deg) scale(1.02); } 100% { --gloss-angle: 360deg; transform: rotate(0deg) scale(1); } }
+        @property --gloss-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+        .login-card .border-glow {
+            position: absolute;
+            inset: -2px;
+            border-radius: 34px;
+            background: conic-gradient(from var(--border-angle,0deg), transparent 0%, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0.08) 60%, transparent 80%, transparent 100%);
+            animation: borderFlow 8s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.6;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            padding: 2px;
+        }
+        @keyframes borderFlow { 0% { --border-angle: 0deg; } 100% { --border-angle: 360deg; } }
+        @property --border-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+        .login-card::after {
+            content: '';
+            position: absolute;
+            inset: -100%;
+            background: radial-gradient(ellipse at var(--mouse-x,50%) var(--mouse-y,50%), rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 30%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            transition: background 0.8s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .login-card>* { position: relative; z-index: 1; }
+
+        .login-header { text-align: center; margin-bottom: 28px; }
+        .login-header .icon { font-size: 36px; color: rgba(255,255,255,0.15); margin-bottom: 4px; display: block; }
+        .login-header h1 { font-size: 1.6rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+        .login-header p { font-size: 0.85rem; color: rgba(255,255,255,0.35); margin-top: 2px; }
+
+        .tabs {
+            display: flex;
+            background: rgba(255,255,255,0.04);
+            border-radius: 40px;
+            padding: 4px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px 0;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            background: transparent;
+            color: rgba(255,255,255,0.4);
+            font-family: inherit;
+            letter-spacing: 0.5px;
+        }
+        .tab-btn.active { background: rgba(255,255,255,0.10); color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+        .tab-btn:hover:not(.active) { color: rgba(255,255,255,0.7); }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: rgba(255,255,255,0.4); margin-bottom: 4px; letter-spacing: 0.5px; }
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.04);
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        .form-group input:focus { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); }
+        .form-group input::placeholder { color: rgba(255,255,255,0.2); }
+        .form-group input.error { border-color: #ff5f57; }
+        .form-group .error-msg { font-size: 0.75rem; color: #ff5f57; margin-top: 4px; display: none; }
+        .form-group .error-msg.show { display: block; }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.85);
+            border: 1px solid rgba(255,255,255,0.06);
+            font-family: inherit;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+            position: relative;
+        }
+        .submit-btn:hover { background: rgba(255,255,255,0.16); transform: scale(1.02); border-color: rgba(255,255,255,0.2); color: #fff; }
+        .submit-btn:active { transform: scale(0.97); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .submit-btn .spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto; }
+        .submit-btn.loading .spinner { display: block; }
+        .submit-btn.loading .btn-text { display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .form-footer { text-align: center; margin-top: 16px; font-size: 0.8rem; color: rgba(255,255,255,0.25); }
+        .form-footer a { color: rgba(255,255,255,0.5); text-decoration: none; cursor: pointer; transition: color 0.2s; }
+        .form-footer a:hover { color: #fff; }
+
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 32px;
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+            background: rgba(20,25,40,0.85);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 500;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+            transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+            pointer-events: none;
+            max-width: 90vw;
+            text-align: center;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.error { border-color: rgba(255,95,87,0.3); background: rgba(40,20,25,0.9); }
+        .toast.success { border-color: rgba(46,204,113,0.3); background: rgba(20,40,30,0.9); }
+
+        @media (max-width: 480px) {
+            .login-card { padding: 28px 20px 32px; border-radius: 24px; }
+            .login-header h1 { font-size: 1.3rem; }
+            .tab-btn { font-size: 0.8rem; padding: 8px 0; }
+            .form-group input { padding: 10px 14px; font-size: 0.9rem; }
+            .submit-btn { padding: 12px; font-size: 0.9rem; }
+            .toast { top: 72px; padding: 10px 20px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-blur"></div>
+
+    <!-- ===== 导航栏 ===== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-left">
+            <span class="nav-title">✦ chen的空间</span>
+        </div>
+        <div class="nav-buttons">
+            <button class="nav-btn" id="backHome">🏠 首页</button>
+        </div>
+    </nav>
+
+    <!-- ===== Toast ===== -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ===== 登录卡片 ===== -->
+    <div class="login-container">
+        <div class="login-card" id="loginCard">
+            <div class="border-glow"></div>
+
+            <div class="login-header">
+                <span class="icon"><i class="fas fa-lock"></i></span>
+                <h1 id="pageTitle">登录</h1>
+                <p id="pageSub">欢迎回来，请登录你的账号</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="login" id="tabLogin">登录</button>
+                <button class="tab-btn" data-tab="register" id="tabRegister">注册</button>
+            </div>
+
+            <!-- 登录表单 -->
+            <form id="loginForm" autocomplete="off">
+                <div class="form-group">
+                    <label><i class="fas fa-envelope" style="margin-right:4px;"></i> 邮箱</label>
+                    <input type="email" id="loginEmail" placeholder="请输入邮箱" required />
+                    <div class="error-msg" id="loginEmailError">请输入有效的邮箱地址</div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-key" style="margin-right:4px;"></i> 密码</label>
+                    <input type="password" id="loginPassword" placeholder="请输入密码" required />
+                    <div class="error-msg" id="loginPasswordError">密码至少6位</div>
+                </div>
+                <button type="submit" class="submit-btn" id="loginBtn">
+                    <span class="btn-text">登 录</span>
+                    <span class="spinner"></span>
+                </button>
+                <div class="form-footer">
+                    还没有账号？<a id="switchToRegister">立即注册</a>
+                </div>
+            </form>
+
+            <!-- 注册表单 -->
+            <form id="registerForm" autocomplete="off" style="display:none;">
+                <div class="form-group">
+                    <label><i class="fas fa-user" style="margin-right:4px;"></i> 昵称</label>
+                    <input type="text" id="regUsername" placeholder="设置一个昵称" required />
+                    <div class="error-msg" id="regUsernameError">昵称至少2个字符</div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope" style="margin-right:4px;"></i> 邮箱</label>
+                    <input type="email" id="regEmail" placeholder="请输入邮箱" required />
+                    <div class="error-msg" id="regEmailError">请输入有效的邮箱地址</div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-key" style="margin-right:4px;"></i> 密码</label>
+                    <input type="password" id="regPassword" placeholder="至少6位" required />
+                    <div class="error-msg" id="regPasswordError">密码至少6位</div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-check-circle" style="margin-right:4px;"></i> 确认密码</label>
+                    <input type="password" id="regConfirm" placeholder="再次输入密码" required />
+                    <div class="error-msg" id="regConfirmError">两次密码不一致</div>
+                </div>
+                <button type="submit" class="submit-btn" id="registerBtn">
+                    <span class="btn-text">注 册</span>
+                    <span class="spinner"></span>
+                </button>
+                <div class="form-footer">
+                    已有账号？<a id="switchToLogin">去登录</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        // ================================================================
+        // 1. 加载 Supabase SDK
+        // ================================================================
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        // ================================================================
+        // 2. 配置（占位符，构建时由 Cloudflare Pages 替换）
+        // ================================================================
+        const SUPABASE_URL = '___PUBLIC_SUPABASE_URL___';
+        const SUPABASE_ANON_KEY = '___PUBLIC_SUPABASE_ANON_KEY___';
+
+        // 如果占位符未被替换（本地开发时），使用你复制到的密钥直接测试
+        // ★★★ 提交到 Git 前，请把下面的硬编码删掉或注释掉，只保留占位符 ★★★
+        const finalUrl = SUPABASE_URL.startsWith('___') 
+            ? 'https://dpzztlxwxxxyfiwcfcir.supabase.co'
+            : SUPABASE_URL;
+        const finalKey = SUPABASE_ANON_KEY.startsWith('___')
+            ? 'sb_publishable_IE7xGpNRnyig7Tz_rUI-dw_9PuBLS52'
+            : SUPABASE_ANON_KEY;
+
+        // 初始化 Supabase 客户端
+        const supabase = createClient(finalUrl, finalKey);
+        console.log('🔐 Supabase 已初始化, URL:', finalUrl);
+
+        // ================================================================
+        // 3. 核心认证函数
+        // ================================================================
+        async function registerUser(username, email, password) {
+            const { data, error } = await supabase.auth.signUp({
+                email: email.trim(),
+                password: password,
+                options: {
+                    data: { username: username.trim() },
+                },
+            });
+            if (error) throw new Error(error.message);
+            if (data.session) {
+                localStorage.setItem('chen_session', JSON.stringify(data.session));
+            }
+            return data;
+        }
+
+        async function loginUser(email, password) {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email.trim(),
+                password: password,
+            });
+            if (error) throw new Error(error.message);
+            if (data.session) {
+                localStorage.setItem('chen_session', JSON.stringify(data.session));
+            }
+            return data;
+        }
+
+        async function getCurrentUser() {
+            const { data, error } = await supabase.auth.getSession();
+            if (error || !data.session) return null;
+            return data.session.user;
+        }
+
+        async function logoutUser() {
+            await supabase.auth.signOut();
+            localStorage.removeItem('chen_session');
+        }
+
+        // 导出到全局，供其他脚本使用
+        window.__supabase = { supabase, registerUser, loginUser, getCurrentUser, logoutUser };
+
+        // ================================================================
+        // 4. UI 控制
+        // ================================================================
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + (type || '') + ' show';
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => { toast.classList.remove('show'); }, 3500);
+        }
+
+        function setLoading(btn, loading) {
+            if (loading) { btn.classList.add('loading'); btn.disabled = true; } 
+            else { btn.classList.remove('loading'); btn.disabled = false; }
+        }
+
+        function validateEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const tabLogin = document.getElementById('tabLogin');
+        const tabRegister = document.getElementById('tabRegister');
+        const switchToRegister = document.getElementById('switchToRegister');
+        const switchToLogin = document.getElementById('switchToLogin');
+        const pageTitle = document.getElementById('pageTitle');
+        const pageSub = document.getElementById('pageSub');
+
+        function switchTab(tab) {
+            if (tab === 'login') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                tabLogin.classList.add('active');
+                tabRegister.classList.remove('active');
+                pageTitle.textContent = '登录';
+                pageSub.textContent = '欢迎回来，请登录你的账号';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                tabRegister.classList.add('active');
+                tabLogin.classList.remove('active');
+                pageTitle.textContent = '注册';
+                pageSub.textContent = '创建一个新账号，加入我们';
+            }
+            document.querySelectorAll('.form-group input').forEach(el => el.classList.remove('error'));
+            document.querySelectorAll('.error-msg').forEach(el => el.classList.remove('show'));
+        }
+
+        tabLogin.addEventListener('click', () => switchTab('login'));
+        tabRegister.addEventListener('click', () => switchTab('register'));
+        switchToRegister.addEventListener('click', (e) => { e.preventDefault(); switchTab('register'); });
+        switchToLogin.addEventListener('click', (e) => { e.preventDefault(); switchTab('login'); });
+
+        document.getElementById('backHome').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        // ================================================================
+        // 5. 登录提交
+        // ================================================================
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail');
+            const password = document.getElementById('loginPassword');
+            const emailError = document.getElementById('loginEmailError');
+            const passwordError = document.getElementById('loginPasswordError');
+            const btn = document.getElementById('loginBtn');
+
+            let valid = true;
+            email.classList.remove('error'); emailError.classList.remove('show');
+            password.classList.remove('error'); passwordError.classList.remove('show');
+            if (!validateEmail(email.value)) { email.classList.add('error'); emailError.classList.add('show'); valid = false; }
+            if (password.value.length < 6) { password.classList.add('error'); passwordError.classList.add('show'); valid = false; }
+            if (!valid) return;
+
+            setLoading(btn, true);
+            try {
+                const result = await loginUser(email.value, password.value);
+                if (result.user) {
+                    showToast('🎉 登录成功！', 'success');
+                    setTimeout(() => { window.location.href = 'index.html'; }, 600);
+                }
+            } catch (err) {
+                showToast('❌ ' + err.message, 'error');
+                setLoading(btn, false);
+            }
+        });
+
+        // ================================================================
+        // 6. 注册提交
+        // ================================================================
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('regUsername');
+            const email = document.getElementById('regEmail');
+            const password = document.getElementById('regPassword');
+            const confirm = document.getElementById('regConfirm');
+            const usernameError = document.getElementById('regUsernameError');
+            const emailError = document.getElementById('regEmailError');
+            const passwordError = document.getElementById('regPasswordError');
+            const confirmError = document.getElementById('regConfirmError');
+            const btn = document.getElementById('registerBtn');
+
+            let valid = true;
+            [username, email, password, confirm].forEach(el => el.classList.remove('error'));
+            [usernameError, emailError, passwordError, confirmError].forEach(el => el.classList.remove('show'));
+
+            if (username.value.trim().length < 2) { username.classList.add('error'); usernameError.classList.add('show'); valid = false; }
+            if (!validateEmail(email.value)) { email.classList.add('error'); emailError.classList.add('show'); valid = false; }
+            if (password.value.length < 6) { password.classList.add('error'); passwordError.classList.add('show'); valid = false; }
+            if (password.value !== confirm.value) { confirm.classList.add('error'); confirmError.classList.add('show'); valid = false; }
+            if (!valid) return;
+
+            setLoading(btn, true);
+            try {
+                const result = await registerUser(username.value, email.value, password.value);
+                if (result.user) {
+                    showToast('🎉 注册成功！已自动登录', 'success');
+                    setTimeout(() => { window.location.href = 'index.html'; }, 600);
+                }
+            } catch (err) {
+                showToast('❌ ' + err.message, 'error');
+                setLoading(btn, false);
+            }
+        });
+
+        // ================================================================
+        // 7. 检查是否已登录
+        // ================================================================
+        async function checkAlreadyLoggedIn() {
+            const user = await getCurrentUser();
+            if (user) {
+                // 已登录，跳转首页
+                window.location.href = 'index.html';
+            }
+        }
+        checkAlreadyLoggedIn();
+
+        // ================================================================
+        // 8. 鼠标跟随光晕
+        // ================================================================
+        const card = document.getElementById('loginCard');
+        card.addEventListener('mousemove', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width * 100);
+            const y = ((e.clientY - rect.top) / rect.height * 100);
+            this.style.setProperty('--mouse-x', Math.min(100, Math.max(0, x)) + '%');
+            this.style.setProperty('--mouse-y', Math.min(100, Math.max(0, y)) + '%');
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.setProperty('--mouse-x', '50%');
+            this.style.setProperty('--mouse-y', '50%');
+        });
+
+        // ================================================================
+        // 9. 导航栏动画
+        // ================================================================
+        const navbar = document.getElementById('navbar');
+        navbar.addEventListener('animationend', function(e) {
+            if (e.animationName === 'navbarExpand') this.classList.add('mask-done');
+        });
+        setTimeout(() => { if (!navbar.classList.contains('mask-done')) navbar.classList.add('mask-done'); }, 5000);
+
+        console.log('🔐 登录系统已启动 (Supabase 模式)');
+    </script>
+</body>
+</html>
