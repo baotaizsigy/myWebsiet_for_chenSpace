@@ -69,9 +69,7 @@
             mask-image: none !important;
         }
 
-        /* ================================================================
-               导航栏
-               ================================================================ */
+        /* ===== 导航栏 ===== */
         .navbar {
             position: fixed;
             top: 20px;
@@ -149,7 +147,6 @@
             z-index: 2;
         }
 
-        /* ★★★ 用户状态样式 ★★★ */
         .user-status {
             display: flex;
             align-items: center;
@@ -341,9 +338,7 @@
             }
         }
 
-        /* ================================================================
-               通知系统 — 滑入动画 + 跑马灯 + 自适应宽度
-               ================================================================ */
+        /* ===== 通知系统 ===== */
         .notification-container {
             position: fixed;
             right: 20px;
@@ -995,9 +990,7 @@
             text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
         }
 
-        /* ================================================================
-               弹窗
-               ================================================================ */
+        /* ===== 弹窗 ===== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -1194,6 +1187,28 @@
         .dock-email-icon {
             font-size: 0.85rem;
             opacity: 0.7;
+        }
+
+        .dock-online {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-left: 12px;
+            padding-left: 12px;
+            border-left: 1px solid rgba(255, 255, 255, 0.06);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .dock-online i {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        @media (max-width: 480px) {
+            .dock-online { font-size: 0.6rem; margin-left: 6px; padding-left: 6px; }
         }
 
         .dock-center {
@@ -1754,7 +1769,6 @@
     <!-- ===== 导航栏 ===== -->
     <nav class="navbar" id="navbar">
         <div class="nav-left">
-            <!-- ★★★ 左上角用户状态 ★★★ -->
             <span class="user-status" id="userStatus">
                 <i class="fas fa-user-circle"></i>
                 <span class="username-text" id="userNameDisplay">加载中...</span>
@@ -1876,6 +1890,10 @@
         <div class="dock-left">
             <span class="dock-email-icon">📧</span>
             <span class="dock-email">反馈邮箱：3836729616@qq.com</span>
+            <span class="dock-online">
+                <i class="fas fa-circle" style="color: #2ecc71; font-size: 0.5rem;"></i>
+                <span id="onlineCount">0</span> 人在线
+            </span>
         </div>
         <div class="dock-center">
             <span class="dock-text">🏁 到底了</span>
@@ -1896,69 +1914,12 @@
     </div>
 
     <script>
-        // ================================================================
-        //  ★★★ 用户登录状态（Supabase 集成） ★★★
-        // ================================================================
-
-        async function getSupabaseUser() {
-            if (window.__supabase) {
-                try {
-                    const user = await window.__supabase.getCurrentUser();
-                    return user;
-                } catch { return null; }
-            }
-            try {
-                const session = JSON.parse(localStorage.getItem('chen_session'));
-                return session?.user || null;
-            } catch {
-                return null;
-            }
-        }
-
-        async function getUserName() {
-            const user = await getSupabaseUser();
-            return user?.user_metadata?.username || user?.email?.split('@')[0] || null;
-        }
-
-        async function isLoggedIn() {
-            return !!(await getSupabaseUser());
-        }
-
-        async function updateUserStatus() {
-            const statusEl = document.getElementById('userStatus');
-            const nameEl = document.getElementById('userNameDisplay');
-            if (!statusEl || !nameEl) return;
-
-            const loggedIn = await isLoggedIn();
-            if (loggedIn) {
-                const name = await getUserName();
-                nameEl.textContent = name || '用户';
-                statusEl.style.borderColor = 'rgba(46, 204, 113, 0.3)';
-                statusEl.style.background = 'rgba(46, 204, 113, 0.08)';
-                // 点击跳转 index5（个人中心，暂未创建）
-                statusEl.onclick = function(e) {
-                    e.preventDefault();
-                    window.location.href = 'index5.html';
-                };
-            } else {
-                nameEl.textContent = '登录';
-                statusEl.style.borderColor = 'rgba(255, 255, 255, 0.06)';
-                statusEl.style.background = 'rgba(255, 255, 255, 0.06)';
-                statusEl.onclick = function(e) {
-                    e.preventDefault();
-                    window.location.href = 'login.html';
-                };
-            }
-        }
-
-        // ================================================================
-        //  原有逻辑（保持不变，但确保不冲突）
-        // ================================================================
-
         (function() {
             'use strict';
 
-            // 诗句列表
+            // ================================================================
+            //  1. 诗句列表
+            // ================================================================
             const poems = [
                 '花季莫浅忆，雨季莫愁离',
                 '汴水流，泗水流，流到瓜州古渡头。吴山点点愁',
@@ -1968,7 +1929,9 @@
                 '物是人非事事休，欲语泪先流'
             ];
 
-            // 打字机动画
+            // ================================================================
+            //  2. 打字机动画
+            // ================================================================
             const textEl = document.getElementById('typingText');
             const words = ['welcome', '你好', '欢迎来到我的空间', '无限进步'];
             let currentIndex = 0;
@@ -2107,7 +2070,9 @@
                 clearTimer();
             });
 
-            // DOM 引用
+            // ================================================================
+            //  3. DOM 引用 & 状态
+            // ================================================================
             const circleBtn = document.getElementById('circleBtn');
             const bodyEl = document.body;
             const cards = document.querySelectorAll('.card');
@@ -2136,7 +2101,9 @@
             let isCard2Clicked = false;
             let isSharing = false;
 
-            // 随机配色
+            // ================================================================
+            //  4. 随机配色
+            // ================================================================
             const colorPalettes = [
                 ['#ff6b6b', '#feca57', '#48dbfb', '#a29bfe'],
                 ['#fd79a8', '#fdcb6e', '#00cec9', '#6c5ce7'],
@@ -2152,7 +2119,9 @@
                 return colorPalettes[Math.floor(Math.random() * colorPalettes.length)];
             }
 
-            // 通知系统
+            // ================================================================
+            //  5. 通知系统
+            // ================================================================
             function showNotification(text, duration) {
                 duration = duration || 5000;
 
@@ -2192,7 +2161,9 @@
                 return item;
             }
 
-            // 初始化欢迎通知
+            // ================================================================
+            //  6. 初始化欢迎通知
+            // ================================================================
             function initWelcomeNotifications() {
                 const welcomeMsg = ['🎉 欢迎来到chen_space', '🖱️ 上下滑动浏览更多', '👆 部分卡片可点击',
                     '顶部分享页可切换页面'
@@ -2206,7 +2177,9 @@
                 });
             }
 
-            // 弹窗功能
+            // ================================================================
+            //  7. 弹窗功能
+            // ================================================================
             function openModal(title, bodyHTML, buttonHTML) {
                 modalTitle.textContent = title;
                 modalBody.innerHTML = bodyHTML;
@@ -2239,7 +2212,9 @@
                 }
             });
 
-            // 卡片事件绑定
+            // ================================================================
+            //  8. 卡片事件绑定
+            // ================================================================
             function bindAllCardEvents() {
                 console.log('🔄 绑定所有卡片事件...');
 
@@ -2325,7 +2300,9 @@
                 console.log('✅ 所有卡片事件绑定完成');
             }
 
-            // 圆形按钮事件
+            // ================================================================
+            //  9. 圆形按钮事件
+            // ================================================================
             function bindCircleButton() {
                 console.log('🔄 绑定圆形按钮...');
 
@@ -2356,7 +2333,9 @@
                 console.log('✅ 圆形按钮绑定完成');
             }
 
-            // 导航栏按钮
+            // ================================================================
+            //  10. 导航栏按钮
+            // ================================================================
             document.getElementById('homeBtn').addEventListener('click', function(e) {
                 e.preventDefault();
                 this.style.transform = 'scale(0.94)';
@@ -2399,7 +2378,9 @@
                 window.location.href = 'index4.html';
             });
 
-            // 滚动缩放卡片
+            // ================================================================
+            //  11. 滚动缩放卡片
+            // ================================================================
             const MIN_SCALE = 0.30;
             const NORMAL_SCALE = 1.0;
             const THRESHOLD_TOP = 0.70;
@@ -2455,7 +2436,9 @@
                 });
             }
 
-            // 模糊覆盖层
+            // ================================================================
+            //  12. 模糊覆盖层
+            // ================================================================
             const blurOverlay = document.getElementById('blurOverlay');
             const heroSection = document.querySelector('.hero-section');
 
@@ -2487,7 +2470,9 @@
             window.addEventListener('resize', updateBlurOverlay, { passive: true });
             setTimeout(updateBlurOverlay, 200);
 
-            // Dock 栏
+            // ================================================================
+            //  13. Dock 栏
+            // ================================================================
             let dockVisible = false;
 
             function checkDockVisibility() {
@@ -2526,7 +2511,9 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
-            // 自适应字体大小
+            // ================================================================
+            //  14. 自适应字体大小
+            // ================================================================
             function adjustFontSize() {
                 const allCards = document.querySelectorAll('.card');
                 allCards.forEach(function(card) {
@@ -2628,7 +2615,9 @@
                 setTimeout(adjustFontSize, 300);
             });
 
-            // 设备检测
+            // ================================================================
+            //  15. 设备检测
+            // ================================================================
             function detectDevice() {
                 const ua = navigator.userAgent;
                 const isPhone = /Mobi|Android|iPhone|iPod/i.test(ua) && !/iPad/i.test(ua);
@@ -2653,7 +2642,9 @@
                 window.addEventListener('load', detectDevice);
             }
 
-            // 背景切换
+            // ================================================================
+            //  16. 背景切换
+            // ================================================================
             let lastBgState = '';
 
             function updateBackground() {
@@ -2696,7 +2687,9 @@
                 }
             }
 
-            // 全屏卡片入场动画
+            // ================================================================
+            //  17. 全屏卡片入场动画
+            // ================================================================
             function triggerFullpageAnimation() {
                 const rect = fullpageSection.getBoundingClientRect();
                 const windowHeight = window.innerHeight;
@@ -2750,7 +2743,9 @@
                 });
             }
 
-            // 导航栏边缘过渡消除
+            // ================================================================
+            //  18. 导航栏边缘过渡消除
+            // ================================================================
             function onNavbarExpandEnd() {
                 navbarEl.classList.add('mask-done');
             }
@@ -2767,7 +2762,9 @@
                 }
             }, 5000);
 
-            // caillo~ 切换为随机诗句
+            // ================================================================
+            //  19. caillo~ 切换为随机诗句
+            // ================================================================
             let poemSwitched = false;
 
             function switchToPoem() {
@@ -2821,7 +2818,9 @@
                 }
             }, 5500);
 
-            // 通知容器位置自适应
+            // ================================================================
+            //  20. 通知容器位置自适应
+            // ================================================================
             function updateNotifPosition() {
                 const nav = document.getElementById('navbar');
                 const container = document.getElementById('notificationContainer');
@@ -2836,12 +2835,136 @@
                 setTimeout(updateNotifPosition, 300);
             });
 
-            // 初始化
+            // ================================================================
+            //  21. 用户状态更新
+            // ================================================================
+            async function getSupabaseUser() {
+                if (window.__supabase) {
+                    try {
+                        const user = await window.__supabase.getCurrentUser();
+                        return user;
+                    } catch { return null; }
+                }
+                try {
+                    const session = JSON.parse(localStorage.getItem('chen_session'));
+                    return session?.user || null;
+                } catch {
+                    return null;
+                }
+            }
+
+            async function getUserName() {
+                const user = await getSupabaseUser();
+                return user?.user_metadata?.username || user?.email?.split('@')[0] || null;
+            }
+
+            async function isLoggedIn() {
+                return !!(await getSupabaseUser());
+            }
+
+            async function updateUserStatus() {
+                const statusEl = document.getElementById('userStatus');
+                const nameEl = document.getElementById('userNameDisplay');
+                if (!statusEl || !nameEl) return;
+
+                const loggedIn = await isLoggedIn();
+                if (loggedIn) {
+                    const name = await getUserName();
+                    nameEl.textContent = name || '用户';
+                    statusEl.style.borderColor = 'rgba(46, 204, 113, 0.3)';
+                    statusEl.style.background = 'rgba(46, 204, 113, 0.08)';
+                    statusEl.onclick = function(e) {
+                        e.preventDefault();
+                        window.location.href = 'index5.html';
+                    };
+                } else {
+                    nameEl.textContent = '登录';
+                    statusEl.style.borderColor = 'rgba(255, 255, 255, 0.06)';
+                    statusEl.style.background = 'rgba(255, 255, 255, 0.06)';
+                    statusEl.onclick = function(e) {
+                        e.preventDefault();
+                        window.location.href = 'login.html';
+                    };
+                }
+            }
+
+            // ================================================================
+            //  22. ★★★ 在线人数（Supabase Presence） ★★★
+            // ================================================================
+            async function initOnlineCounter() {
+                try {
+                    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+
+                    const SUPABASE_URL = '___PUBLIC_SUPABASE_URL___';
+                    const SUPABASE_ANON_KEY = '___PUBLIC_SUPABASE_ANON_KEY___';
+
+                    const finalUrl = SUPABASE_URL.startsWith('___')
+                        ? 'https://dpzztlxwxxxyfiwcfcir.supabase.co'
+                        : SUPABASE_URL;
+                    const finalKey = SUPABASE_ANON_KEY.startsWith('___')
+                        ? 'sb_publishable_IE7xGpNRnyig7Tz_rUI-dw_9PuBLS52'
+                        : SUPABASE_ANON_KEY;
+
+                    const supabase = createClient(finalUrl, finalKey);
+
+                    let userId = null;
+                    try {
+                        const session = JSON.parse(localStorage.getItem('chen_session'));
+                        userId = session?.user?.id || null;
+                    } catch { /* ignore */ }
+
+                    const channel = supabase.channel('online-users', {
+                        config: { presence: { key: 'user_id' } }
+                    });
+
+                    const onlineCountEl = document.getElementById('onlineCount');
+                    if (!onlineCountEl) return;
+
+                    channel.on('presence', { event: 'sync' }, () => {
+                        const state = channel.presenceState();
+                        const count = Object.keys(state).length;
+                        onlineCountEl.textContent = count || 0;
+                    });
+
+                    await channel.subscribe(async (status) => {
+                        if (status === 'SUBSCRIBED' && userId) {
+                            await channel.track({
+                                user_id: userId,
+                                online_at: new Date().toISOString(),
+                            });
+                        }
+                    });
+
+                    window.addEventListener('beforeunload', async () => {
+                        try {
+                            await channel.untrack();
+                            await channel.unsubscribe();
+                        } catch { /* ignore */ }
+                    });
+
+                    if (!userId) {
+                        onlineCountEl.textContent = '?';
+                        onlineCountEl.style.opacity = '0.5';
+                    }
+
+                    console.log('👥 在线人数统计已启动');
+                } catch (err) {
+                    console.warn('在线人数功能不可用:', err.message);
+                    const el = document.getElementById('onlineCount');
+                    if (el) el.textContent = '--';
+                }
+            }
+
+            // ================================================================
+            //  23. 初始化
+            // ================================================================
             function init() {
                 console.log('🚀 初始化页面...');
                 setTimeout(initWelcomeNotifications, 800);
                 bindAllCardEvents();
                 bindCircleButton();
+                setTimeout(updateUserStatus, 300);
+                setTimeout(initOnlineCounter, 500);
                 console.log('✅ 初始化完成');
             }
 
@@ -2852,15 +2975,6 @@
             }
 
         })();
-
-        // ★★★ 在页面加载完成后更新用户状态 ★★★
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            setTimeout(updateUserStatus, 300);
-        } else {
-            document.addEventListener('DOMContentLoaded', function() {
-                setTimeout(updateUserStatus, 300);
-            });
-        }
     </script>
 
 </body>
