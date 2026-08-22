@@ -308,9 +308,6 @@
             animation-delay: 0.2s;
             opacity: 0;
         }
-        #windowWrapper.dragging {
-            transition: none !important;
-        }
 
         @keyframes windowEnter {
             0% {
@@ -331,20 +328,16 @@
             margin-top: 24px;
         }
 
-        /* ===== ★★★ 主窗口 — 增强模糊玻璃 ★★★ ===== */
+        /* ===== ★★★ 主窗口 — 纯磨砂模糊（无光泽、无光晕、无拖拽） ★★★ ===== */
         #app {
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.02);
-            /* 更透的玻璃 */
-            backdrop-filter: blur(64px) saturate(1.4);
-            -webkit-backdrop-filter: blur(64px) saturate(1.4);
+            background: rgba(10, 10, 30, 0.25);
+            backdrop-filter: blur(56px);
+            -webkit-backdrop-filter: blur(56px);
             border-radius: 32px;
-            border: 1.5px solid rgba(255, 255, 255, 0.12);
-            box-shadow:
-                0 30px 80px rgba(0, 0, 0, 0.6),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.03),
-                0 0 100px rgba(100, 180, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -352,78 +345,6 @@
             position: relative;
             z-index: 1;
             cursor: default;
-        }
-
-        #app::before {
-            content: '';
-            position: absolute;
-            inset: -50%;
-            background: conic-gradient(from var(--gloss-angle, 0deg) at 50% 50%,
-                    transparent 0%,
-                    rgba(255, 255, 255, 0.02) 10%,
-                    rgba(255, 255, 255, 0.05) 20%,
-                    rgba(255, 255, 255, 0.08) 30%,
-                    rgba(255, 255, 255, 0.05) 40%,
-                    rgba(255, 255, 255, 0.02) 50%,
-                    transparent 60%,
-                    transparent 100%);
-            animation: liquidGloss 12s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-        @keyframes liquidGloss {
-            0% { --gloss-angle: 0deg; transform: rotate(0deg) scale(1); }
-            50% { --gloss-angle: 180deg; transform: rotate(8deg) scale(1.02); }
-            100% { --gloss-angle: 360deg; transform: rotate(0deg) scale(1); }
-        }
-        @property --gloss-angle {
-            syntax: '<angle>';
-            initial-value: 0deg;
-            inherits: false;
-        }
-
-        #app::after {
-            content: '';
-            position: absolute;
-            inset: -100%;
-            background: radial-gradient(ellipse at var(--mouse-x, 50%) var(--mouse-y, 50%),
-                    rgba(255, 255, 255, 0.08) 0%,
-                    rgba(255, 255, 255, 0.02) 30%,
-                    transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-            transition: background 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        #app .border-glow {
-            position: absolute;
-            inset: -2px;
-            border-radius: 34px;
-            background: conic-gradient(from var(--border-angle, 0deg),
-                    transparent 0%,
-                    rgba(255, 255, 255, 0.08) 20%,
-                    rgba(255, 255, 255, 0.15) 40%,
-                    rgba(255, 255, 255, 0.08) 60%,
-                    transparent 80%,
-                    transparent 100%);
-            animation: borderFlow 8s linear infinite;
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0.6;
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            padding: 2px;
-        }
-        @keyframes borderFlow {
-            0% { --border-angle: 0deg; }
-            100% { --border-angle: 360deg; }
-        }
-        @property --border-angle {
-            syntax: '<angle>';
-            initial-value: 0deg;
-            inherits: false;
         }
 
         /* ===== 标题栏 ===== */
@@ -437,12 +358,8 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             gap: 16px;
             min-height: 52px;
-            cursor: grab;
             position: relative;
             z-index: 10;
-        }
-        .win-titlebar:active {
-            cursor: grabbing;
         }
 
         .win-titlebar-left {
@@ -538,31 +455,6 @@
             align-items: center;
             overflow: hidden;
             position: relative;
-        }
-
-        .win-nav::before {
-            content: '';
-            position: absolute;
-            inset: -50%;
-            background: conic-gradient(from var(--nav-angle, 0deg) at 50% 50%,
-                    transparent 0%,
-                    rgba(255, 255, 255, 0.03) 20%,
-                    rgba(255, 255, 255, 0.06) 40%,
-                    rgba(255, 255, 255, 0.03) 60%,
-                    transparent 80%,
-                    transparent 100%);
-            animation: navGloss 10s linear infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-        @keyframes navGloss {
-            0% { --nav-angle: 0deg; }
-            100% { --nav-angle: 360deg; }
-        }
-        @property --nav-angle {
-            syntax: '<angle>';
-            initial-value: 0deg;
-            inherits: false;
         }
 
         .win-avatar {
@@ -1188,10 +1080,9 @@
     <!-- ===== 窗口 ===== -->
     <div id="windowWrapper">
         <div id="app">
-            <div class="border-glow"></div>
 
             <!-- 标题栏 -->
-            <div class="win-titlebar" id="dragHandle">
+            <div class="win-titlebar">
                 <div class="win-titlebar-left">
                     <div class="win-controls">
                         <span class="red-btn" id="redBtn" title="关闭"></span>
@@ -1223,7 +1114,6 @@
                         <button class="win-nav-link" data-page="settings"><i class="fas fa-cog"></i><span>设置</span></button>
                     </div>
                     <div class="win-nav-footer">
-                        <!-- ★★★ 侧边栏虚拟退出按钮 ★★★ -->
                         <button class="win-nav-link danger" id="logoutBtn">
                             <i class="fas fa-sign-out-alt"></i><span>退出登录</span>
                         </button>
@@ -1345,7 +1235,6 @@
                                     <div class="setting-label" style="color:#ff5f57;">退出登录</div>
                                     <div class="setting-desc">退出后需要重新登录</div>
                                 </div>
-                                <!-- ★★★ 设置页虚拟退出按钮 ★★★ -->
                                 <button class="btn-virtual" id="logoutBtn2">
                                     <i class="fas fa-sign-out-alt"></i> 退出
                                 </button>
@@ -1621,84 +1510,22 @@
         }
 
         // ================================================================
-        // 11. ★★★ 窗口拖拽（增强版 - 排除所有按钮） ★★★
+        // 11. 窗口控制（无拖拽）
         // ================================================================
-        const wrapper = document.getElementById('windowWrapper');
-        const dragHandle = document.getElementById('dragHandle');
-        let isDragging = false;
-        let dragStartX = 0, dragStartY = 0;
-        let currentTranslateX = 0, currentTranslateY = 0;
-
-        function getCurrentTranslate() {
-            const style = window.getComputedStyle(wrapper);
-            const transform = style.transform;
-            if (transform === 'none') return { x: 0, y: 0 };
-            const matrix = transform.match(/matrix.*\((.+)\)/);
-            if (matrix) {
-                const values = matrix[1].split(', ');
-                if (values.length === 6) {
-                    return { x: parseFloat(values[4]) || 0, y: parseFloat(values[5]) || 0 };
-                }
-            }
-            return { x: 0, y: 0 };
-        }
-
-        dragHandle.addEventListener('mousedown', function(e) {
-            // 如果点击的是控制按钮或任何按钮，不拖拽
-            if (e.target.closest('.win-controls')) return;
-            if (e.target.closest('button')) return;
-            if (wrapper.classList.contains('maximized')) return;
-
-            isDragging = true;
-            const pos = getCurrentTranslate();
-            currentTranslateX = pos.x;
-            currentTranslateY = pos.y;
-            dragStartX = e.clientX - currentTranslateX;
-            dragStartY = e.clientY - currentTranslateY;
-
-            wrapper.classList.add('dragging');
-            wrapper.style.transition = 'none';
-            wrapper.style.marginLeft = 'auto';
-            wrapper.style.marginRight = 'auto';
-
-            e.preventDefault();
-        });
-
-        document.addEventListener('mousemove', function(e) {
-            if (!isDragging) return;
-            currentTranslateX = e.clientX - dragStartX;
-            currentTranslateY = e.clientY - dragStartY;
-            wrapper.style.transform = `translate(${currentTranslateX}px, ${currentTranslateY}px)`;
-            e.preventDefault();
-        });
-
-        document.addEventListener('mouseup', function() {
-            if (isDragging) {
-                isDragging = false;
-                wrapper.classList.remove('dragging');
-                wrapper.style.transition = '';
-                wrapper.style.transform = `translate(${currentTranslateX}px, ${currentTranslateY}px)`;
-                wrapper.dataset.hasCustomPosition = 'true';
-            }
-        });
-
-        // 窗口控制按钮
         document.getElementById('redBtn').addEventListener('click', function() {
             window.location.href = 'index.html';
         });
 
         let isMaximized = false;
+        const wrapper = document.getElementById('windowWrapper');
         document.getElementById('yellowBtn').addEventListener('click', function() {
             if (isMaximized) {
                 isMaximized = false;
                 wrapper.classList.remove('maximized');
                 wrapper.style.marginLeft = 'auto';
                 wrapper.style.marginRight = 'auto';
-                wrapper.style.transform = `translate(${currentTranslateX}px, ${currentTranslateY}px)`;
+                wrapper.style.transform = '';
             } else {
-                const pos = getCurrentTranslate();
-                currentTranslateX = pos.x;
-                currentTranslateY = pos.y;
                 isMaximized = true;
                 wrapper.classList.add('maximized');
                 wrapper.style.transform = '';
@@ -1722,31 +1549,8 @@
             }
         });
 
-        // 双击标题栏最大化/还原
-        document.querySelector('.win-titlebar').addEventListener('dblclick', function(e) {
-            if (e.target.closest('.win-controls')) return;
-            if (e.target.closest('button')) return;
-            document.getElementById('yellowBtn').click();
-        });
-
         // ================================================================
-        // 12. 鼠标跟随光晕
-        // ================================================================
-        const appEl = document.getElementById('app');
-        document.addEventListener('mousemove', function(e) {
-            const rect = appEl.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width * 100);
-            const y = ((e.clientY - rect.top) / rect.height * 100);
-            appEl.style.setProperty('--mouse-x', Math.min(100, Math.max(0, x)) + '%');
-            appEl.style.setProperty('--mouse-y', Math.min(100, Math.max(0, y)) + '%');
-        });
-        appEl.addEventListener('mouseleave', function() {
-            appEl.style.setProperty('--mouse-x', '50%');
-            appEl.style.setProperty('--mouse-y', '50%');
-        });
-
-        // ================================================================
-        // 13. 导航栏按钮
+        // 12. 导航栏按钮
         // ================================================================
         document.getElementById('homeBtn').addEventListener('click', function() {
             window.location.href = 'index.html';
@@ -1756,7 +1560,7 @@
         });
 
         // ================================================================
-        // 14. 设备检测 & 诗句
+        // 13. 设备检测 & 诗句
         // ================================================================
         function detectDevice() {
             const ua = navigator.userAgent;
@@ -1792,7 +1596,7 @@
         setTimeout(switchToPoem, 3000);
 
         // ================================================================
-        // 15. 主题切换
+        // 14. 主题切换
         // ================================================================
         document.getElementById('themeToggleBtn').addEventListener('click', function() {
             isDarkMode = !isDarkMode;
@@ -1802,7 +1606,7 @@
         });
 
         // ================================================================
-        // 16. 绑定事件
+        // 15. 绑定事件
         // ================================================================
         // 导航链接点击切换页面
         document.querySelectorAll('.win-nav-link[data-page]').forEach(link => {
@@ -1834,7 +1638,7 @@
         });
 
         // ================================================================
-        // 17. 导航栏展开动画
+        // 16. 导航栏展开动画
         // ================================================================
         const navbarEl = document.getElementById('navbar');
         navbarEl.addEventListener('animationend', function(e) {
@@ -1849,7 +1653,7 @@
         }, 5000);
 
         // ================================================================
-        // 18. 初始化
+        // 17. 初始化
         // ================================================================
         console.log('👤 加载个人中心页面...');
         await loadUserData();
