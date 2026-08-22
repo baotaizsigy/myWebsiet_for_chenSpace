@@ -290,6 +290,7 @@
         }
         .user-table .online-dot.online {
             background: #2ecc71;
+            box-shadow: 0 0 8px rgba(46, 204, 113, 0.4);
         }
         .user-table .online-dot.offline {
             background: #555;
@@ -461,14 +462,14 @@
             <button class="btn btn-danger" id="clearBtn">🗑️ 清空</button>
         </div>
 
-        <!-- ===== 高级工具 ===== -->
+        <!-- ===== 高级工具按钮 ===== -->
         <div class="btn-group" style="border-top: 1px solid #2a2a3a; padding-top: 12px;">
             <button class="btn btn-outline" id="testDelay">⏱️ 延迟检测</button>
             <button class="btn btn-outline" id="exportLog">💾 导出日志</button>
             <button class="btn btn-outline" id="clearLogBtn">🧹 清日志</button>
         </div>
 
-        <!-- ===== 自定义 URL ===== -->
+        <!-- ===== 自定义 URL 测试 ===== -->
         <div class="panel" style="padding: 16px 20px;">
             <div class="custom-url-row">
                 <input type="text" id="customUrlInput" placeholder="输入图片 URL，例如 https://example.com/image.jpg" />
@@ -532,7 +533,7 @@
         </div>
     </div>
 
-    <!-- ===== 管理员登录弹窗 ===== -->
+    <!-- ============ 管理员登录弹窗 ============ -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-modal">
             <h2>🔐 管理员认证</h2>
@@ -591,6 +592,7 @@
                             setTimeout(() => {
                                 loginOverlay.style.display = 'none';
                             }, 400);
+                            // 登录成功后显示用户面板并初始化
                             if (!initialLogged) {
                                 initialLogged = true;
                                 log('✅ 管理员验证成功，欢迎使用调试台！', 'success');
@@ -602,9 +604,8 @@
                                 Object.keys(APIS).forEach(key => {
                                     console.log(`  - ${APIS[key].name}: ${APIS[key].desc}`);
                                 });
+                                // 显示用户面板并加载数据
                                 document.getElementById('userPanel').style.display = 'block';
-                                // 先加载用户数据，再启动在线监听
-                                loadUserData();
                                 initOnlineCounter();
                             }
                         } else {
@@ -717,7 +718,7 @@
             // ================================================================
             //  测试函数
             // ================================================================
-            function testApi(url, name) {
+            function testApi(url, name, options) {
                 revokeObjectURL();
                 log(`开始测试: ${name}`, 'info');
                 log(`请求地址: ${url}`, 'url');
@@ -789,7 +790,7 @@
             }
 
             // ================================================================
-            //  API 定义
+            //  各 API 定义
             // ================================================================
             const APIS = {
                 picsum: {
@@ -866,6 +867,7 @@
 
                     let html = '';
                     users.forEach(user => {
+                        // ★★★ 使用全局 onlineUserIds 判断在线状态 ★★★
                         const isOnline = onlineUserIds.includes(user.id);
                         const lastSeen = user.last_seen ? new Date(user.last_seen).toLocaleString('zh-CN') : '从未';
                         const loginCount = user.login_count || 0;
@@ -890,7 +892,7 @@
                 }
             }
 
-            // 简单的防 XSS
+            // 简单的防 XSS 函数
             function escapeHtml(text) {
                 if (!text) return '';
                 const div = document.createElement('div');
@@ -899,7 +901,7 @@
             }
 
             // ================================================================
-            //  ★★★ 在线人数（Supabase Presence） ★★★
+            //  ★★★ 在线人数（Supabase Presence）- 修复版 ★★★
             // ================================================================
             let onlineChannel = null;
 
@@ -926,15 +928,19 @@
                     const onlineCountEl = document.getElementById('onlineCount');
                     if (!onlineCountEl) return;
 
-                    // Presence 同步
+                    // ★★★ 监听 Presence 同步事件 ★★★
                     channel.on('presence', { event: 'sync' }, () => {
                         const state = channel.presenceState();
+                        // ★★★ 关键修复：更新全局 onlineUserIds ★★★
                         onlineUserIds = Object.keys(state);
-                        onlineCountEl.textContent = onlineUserIds.length || 0;
+                        const count = onlineUserIds.length;
+                        onlineCountEl.textContent = count || 0;
+                        // ★★★ 同步刷新表格 ★★★
                         loadUserData();
+                        log(`👥 在线人数更新: ${count} 人，在线ID: ${onlineUserIds.join(', ') || '无'}`, 'info');
                     });
 
-                    // 用户加入
+                    // ★★★ 用户加入事件 ★★★
                     channel.on('presence', { event: 'join' }, () => {
                         setTimeout(() => {
                             const state = channel.presenceState();
@@ -944,7 +950,7 @@
                         }, 150);
                     });
 
-                    // 用户离开
+                    // ★★★ 用户离开事件 ★★★
                     channel.on('presence', { event: 'leave' }, () => {
                         setTimeout(() => {
                             const state = channel.presenceState();
@@ -957,10 +963,10 @@
                     await channel.subscribe();
                     onlineChannel = channel;
 
-                    // 首次加载
+                    // 首次加载用户数据
                     setTimeout(() => loadUserData(), 500);
 
-                    // 每 30 秒刷新基本信息
+                    // 每 30 秒刷新一次用户列表
                     setInterval(() => loadUserData(), 30000);
 
                     log('👥 在线人数统计已启动（实时同步）', 'success');
@@ -1082,6 +1088,7 @@
                 showPlaceholder('已清空');
             });
 
+            // ★★★ 刷新用户数据按钮 ★★★
             document.getElementById('refreshUsersBtn').addEventListener('click', function() {
                 loadUserData();
                 log('🔄 用户数据已刷新', 'info');
