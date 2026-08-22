@@ -158,6 +158,40 @@
             z-index: 2;
         }
 
+        /* ★★★ 用户状态样式 ★★★ */
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 4px 12px 4px 8px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.85);
+            white-space: nowrap;
+        }
+        .user-status:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: scale(1.03);
+        }
+        .user-status i {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .user-status .username-text {
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        @media (max-width: 480px) {
+            .user-status { padding: 3px 8px 3px 6px; font-size: 0.7rem; }
+            .user-status .username-text { max-width: 50px; }
+        }
+
         .device-indicator {
             font-size: 0.75rem;
             font-weight: 500;
@@ -1234,13 +1268,17 @@
     <!-- ===== 导航栏（含按钮） ===== -->
     <nav class="navbar" id="navbar">
         <div class="nav-left">
+            <!-- ★★★ 左上角用户状态 ★★★ -->
+            <span class="user-status" id="userStatus">
+                <i class="fas fa-user-circle"></i>
+                <span class="username-text" id="userNameDisplay">加载中...</span>
+            </span>
             <span class="device-indicator" id="deviceIndicator">💻</span>
             <span class="nav-title">✦ chen的空间</span>
         </div>
         <div class="nav-center">
             <span class="nav-text" id="navText">caillo~</span>
         </div>
-        <!-- ★★★ 按钮已加回 ★★★ -->
         <div class="nav-buttons">
             <button class="nav-btn" id="homeBtn">🏠 首页</button>
             <button class="nav-btn" id="backBtn">🔙 回空间</button>
@@ -1302,6 +1340,75 @@
     </div>
 
     <script>
+        // ★★★ 确保 Font Awesome 可用 ★★★
+        (function() {
+            // 如果 Font Awesome 没加载，手动添加
+            if (!document.querySelector('link[href*="font-awesome"]')) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
+                document.head.appendChild(link);
+            }
+        })();
+
+        // ================================================================
+        //  ★★★ 用户登录状态（Supabase 集成） ★★★
+        // ================================================================
+
+        async function getSupabaseUser() {
+            if (window.__supabase) {
+                try {
+                    const user = await window.__supabase.getCurrentUser();
+                    return user;
+                } catch { return null; }
+            }
+            try {
+                const session = JSON.parse(localStorage.getItem('chen_session'));
+                return session?.user || null;
+            } catch {
+                return null;
+            }
+        }
+
+        async function getUserName() {
+            const user = await getSupabaseUser();
+            return user?.user_metadata?.username || user?.email?.split('@')[0] || null;
+        }
+
+        async function isLoggedIn() {
+            return !!(await getSupabaseUser());
+        }
+
+        async function updateUserStatus() {
+            const statusEl = document.getElementById('userStatus');
+            const nameEl = document.getElementById('userNameDisplay');
+            if (!statusEl || !nameEl) return;
+
+            const loggedIn = await isLoggedIn();
+            if (loggedIn) {
+                const name = await getUserName();
+                nameEl.textContent = name || '用户';
+                statusEl.style.borderColor = 'rgba(46, 204, 113, 0.3)';
+                statusEl.style.background = 'rgba(46, 204, 113, 0.08)';
+                statusEl.onclick = function(e) {
+                    e.preventDefault();
+                    window.location.href = 'index5.html';
+                };
+            } else {
+                nameEl.textContent = '登录';
+                statusEl.style.borderColor = 'rgba(255, 255, 255, 0.06)';
+                statusEl.style.background = 'rgba(255, 255, 255, 0.06)';
+                statusEl.onclick = function(e) {
+                    e.preventDefault();
+                    window.location.href = 'login.html';
+                };
+            }
+        }
+
+        // ================================================================
+        //  原有脚本
+        // ================================================================
+
         (function() {
             'use strict';
 
@@ -1388,7 +1495,7 @@
             }
 
             // ================================================================
-            //  5. ★★★ 卡片滚动缩放效果 — 整个卡片一起缩放（像 index1）★★★
+            //  5. ★★★ 卡片滚动缩放效果 — 整个卡片一起缩放 ★★★
             // ================================================================
             const MIN_SCALE = 0.30;
             const NORMAL_SCALE = 1.0;
@@ -1870,7 +1977,7 @@
             //  21. ★★★ 初始化 ★★★
             // ================================================================
             function init() {
-                console.log('🚀 初始化分享页（合并版 + 整卡缩放）...');
+                console.log('🚀 初始化分享页...');
 
                 renderCards();
                 renderLzCards();
@@ -1889,6 +1996,15 @@
             }
 
         })();
+
+        // ★★★ 在页面加载完成后更新用户状态 ★★★
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(updateUserStatus, 300);
+        } else {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(updateUserStatus, 300);
+            });
+        }
     </script>
 </body>
 </html>
