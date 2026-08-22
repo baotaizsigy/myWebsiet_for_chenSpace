@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>壁纸API调试 · index3</title>
+    <title>后台调试 · index3</title>
     <style>
         * {
             margin: 0;
@@ -22,7 +22,7 @@
         }
 
         .container {
-            max-width: 960px;
+            max-width: 1100px;
             width: 100%;
         }
 
@@ -43,7 +43,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .btn {
@@ -67,55 +67,29 @@
             transform: scale(0.97);
         }
 
-        .btn-primary {
-            background: #4a6cf7;
-            color: #fff;
-            border-color: #4a6cf7;
-        }
-        .btn-primary:hover {
-            background: #5a7cff;
-            border-color: #5a7cff;
-        }
+        .btn-primary { background: #4a6cf7; color: #fff; border-color: #4a6cf7; }
+        .btn-primary:hover { background: #5a7cff; border-color: #5a7cff; }
 
-        .btn-success {
-            background: #2ecc71;
-            color: #fff;
-            border-color: #2ecc71;
-        }
-        .btn-success:hover {
-            background: #3ddc84;
-            border-color: #3ddc84;
-        }
+        .btn-success { background: #2ecc71; color: #fff; border-color: #2ecc71; }
+        .btn-success:hover { background: #3ddc84; border-color: #3ddc84; }
 
-        .btn-warning {
-            background: #f39c12;
-            color: #fff;
-            border-color: #f39c12;
-        }
-        .btn-warning:hover {
-            background: #f5b041;
-            border-color: #f5b041;
-        }
+        .btn-warning { background: #f39c12; color: #fff; border-color: #f39c12; }
+        .btn-warning:hover { background: #f5b041; border-color: #f5b041; }
 
-        .btn-danger {
-            background: #e74c3c;
-            color: #fff;
-            border-color: #e74c3c;
-        }
-        .btn-danger:hover {
-            background: #ff5e4a;
-            border-color: #ff5e4a;
-        }
+        .btn-danger { background: #e74c3c; color: #fff; border-color: #e74c3c; }
+        .btn-danger:hover { background: #ff5e4a; border-color: #ff5e4a; }
 
-        .btn-purple {
-            background: #8e44ad;
-            color: #fff;
-            border-color: #8e44ad;
-        }
-        .btn-purple:hover {
-            background: #a569bd;
-            border-color: #a569bd;
-        }
+        .btn-purple { background: #8e44ad; color: #fff; border-color: #8e44ad; }
+        .btn-purple:hover { background: #a569bd; border-color: #a569bd; }
+
+        .btn-teal { background: #1abc9c; color: #fff; border-color: #1abc9c; }
+        .btn-teal:hover { background: #48c9b0; border-color: #48c9b0; }
+
+        .btn-pink { background: #e84393; color: #fff; border-color: #e84393; }
+        .btn-pink:hover { background: #fd79a8; border-color: #fd79a8; }
+
+        .btn-outline { background: transparent; border-color: #4a6cf7; color: #4a6cf7; }
+        .btn-outline:hover { background: #4a6cf7; color: #fff; }
 
         .panel {
             background: #141425;
@@ -173,7 +147,7 @@
             background: #0a0a16;
             border-radius: 10px;
             padding: 14px 16px;
-            max-height: 520px;
+            max-height: 480px;
             overflow-y: auto;
             font-family: 'JetBrains Mono', 'Fira Code', monospace;
             font-size: 0.78rem;
@@ -194,27 +168,13 @@
             color: #555;
             margin-right: 10px;
         }
-        .log-area .info {
-            color: #6ab0f7;
-        }
-        .log-area .success {
-            color: #2ecc71;
-        }
-        .log-area .error {
-            color: #e74c3c;
-        }
-        .log-area .warn {
-            color: #f39c12;
-        }
-        .log-area .data {
-            color: #d4a0ff;
-        }
-        .log-area .url {
-            color: #5dade2;
-        }
-        .log-area .status-code {
-            color: #f7dc6f;
-        }
+        .log-area .info { color: #6ab0f7; }
+        .log-area .success { color: #2ecc71; }
+        .log-area .error { color: #e74c3c; }
+        .log-area .warn { color: #f39c12; }
+        .log-area .data { color: #d4a0ff; }
+        .log-area .url { color: #5dade2; }
+        .log-area .status-code { color: #f7dc6f; }
 
         .status-badge {
             display: inline-block;
@@ -224,22 +184,10 @@
             font-weight: 600;
             margin-left: 10px;
         }
-        .status-badge.loading {
-            background: #f39c12;
-            color: #1a1a2e;
-        }
-        .status-badge.success {
-            background: #2ecc71;
-            color: #0a0a16;
-        }
-        .status-badge.fail {
-            background: #e74c3c;
-            color: #fff;
-        }
-        .status-badge.idle {
-            background: #2a2a3e;
-            color: #888;
-        }
+        .status-badge.loading { background: #f39c12; color: #1a1a2e; }
+        .status-badge.success { background: #2ecc71; color: #0a0a16; }
+        .status-badge.fail { background: #e74c3c; color: #fff; }
+        .status-badge.idle { background: #2a2a3e; color: #888; }
 
         .flex-between {
             display: flex;
@@ -281,26 +229,82 @@
             margin-top: 2px;
         }
 
-        @media (max-width: 600px) {
-            .btn-group .btn {
-                flex: 1 1 calc(50% - 6px);
-                text-align: center;
-                font-size: 0.75rem;
-                padding: 8px 12px;
-            }
-            .panel {
-                padding: 14px 16px;
-            }
-            .log-area {
-                font-size: 0.68rem;
-                max-height: 320px;
-            }
-            .preview-area {
-                min-height: 160px;
-            }
+        .custom-url-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 6px;
+        }
+        .custom-url-row input {
+            flex: 1;
+            padding: 8px 14px;
+            border-radius: 30px;
+            border: 1px solid #3a3a4e;
+            background: #0a0a16;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+            min-width: 200px;
+        }
+        .custom-url-row input:focus {
+            border-color: #4a6cf7;
+        }
+        .custom-url-row input::placeholder {
+            color: #555;
         }
 
-        /* ==================== 登录弹窗样式 ==================== */
+        /* ★★★ 新增：用户数据表格 ★★★ */
+        .user-table-wrap {
+            overflow-x: auto;
+            margin-top: 8px;
+        }
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .user-table th {
+            text-align: left;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.04);
+            color: #888;
+            font-weight: 600;
+            border-bottom: 1px solid #2a2a3e;
+        }
+        .user-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #1a1a2e;
+            color: #ccc;
+        }
+        .user-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+        .user-table .online-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .user-table .online-dot.online {
+            background: #2ecc71;
+        }
+        .user-table .online-dot.offline {
+            background: #555;
+        }
+
+        .online-count-badge {
+            background: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(46,204,113,0.2);
+        }
+
+        /* 登录弹窗样式保持不变 */
         .login-overlay {
             position: fixed;
             top: 0;
@@ -395,27 +399,52 @@
             font-weight: 500;
         }
 
-        /* 登录成功动画 */
         .login-overlay.fade-out {
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.5s ease;
         }
 
-        /* 移动端适配 */
         @media (max-width: 600px) {
+            .btn-group .btn {
+                flex: 1 1 calc(50% - 6px);
+                text-align: center;
+                font-size: 0.75rem;
+                padding: 8px 12px;
+            }
+            .panel {
+                padding: 14px 16px;
+            }
+            .log-area {
+                font-size: 0.68rem;
+                max-height: 320px;
+            }
+            .preview-area {
+                min-height: 160px;
+            }
             .login-modal {
                 padding: 28px 24px;
                 width: 300px;
+            }
+            .custom-url-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .custom-url-row input {
+                min-width: auto;
+            }
+            .user-table th, .user-table td {
+                padding: 6px 8px;
+                font-size: 0.75rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🧪 壁纸 API 调试台</h1>
+        <h1>🧪 壁纸 API 调试台 + 后端监控</h1>
         <div class="sub">
-            index3 · 完整测试所有壁纸 API · 支持 CORS 检测 · 图片预览
+            index3 · 支持自定义 URL · 延迟检测 · 日志导出 · 管理员后台
         </div>
 
         <!-- ===== 按钮区 ===== -->
@@ -425,8 +454,26 @@
             <button class="btn btn-warning" id="testBtstu">🖼️ btstu.cn</button>
             <button class="btn btn-danger" id="testXjh">🎨 img.xjh.me</button>
             <button class="btn btn-purple" id="testLoli">🌸 loli API</button>
+            <button class="btn btn-teal" id="testLoremFlickr">📷 loremflickr</button>
+            <button class="btn btn-pink" id="testWaifu">🌸 waifu.pics</button>
+            <button class="btn btn-outline" id="testBing">🌅 Bing每日</button>
             <button class="btn" id="testAll">🔄 全部测试</button>
             <button class="btn btn-danger" id="clearBtn">🗑️ 清空</button>
+        </div>
+
+        <!-- ===== 高级工具按钮 ===== -->
+        <div class="btn-group" style="border-top: 1px solid #2a2a3a; padding-top: 12px;">
+            <button class="btn btn-outline" id="testDelay">⏱️ 延迟检测</button>
+            <button class="btn btn-outline" id="exportLog">💾 导出日志</button>
+            <button class="btn btn-outline" id="clearLogBtn">🧹 清日志</button>
+        </div>
+
+        <!-- ===== 自定义 URL 测试 ===== -->
+        <div class="panel" style="padding: 16px 20px;">
+            <div class="custom-url-row">
+                <input type="text" id="customUrlInput" placeholder="输入图片 URL，例如 https://example.com/image.jpg" />
+                <button class="btn btn-primary" id="testCustomUrl">🚀 加载</button>
+            </div>
         </div>
 
         <!-- ===== 预览区 ===== -->
@@ -445,11 +492,39 @@
             <div style="margin-top:10px;font-size:0.75rem;color:#555;" id="imageInfo"></div>
         </div>
 
+        <!-- ===== ★★★ 新增：后端平台测试面板 ★★★ ===== -->
+        <div class="panel" id="userPanel" style="display:none;">
+            <div class="flex-between">
+                <span class="panel-title">👥 后端平台测试</span>
+                <span class="online-count-badge" id="onlineCountBadge">🟢 在线: <span id="onlineCount">0</span> 人</span>
+            </div>
+            <div class="user-table-wrap">
+                <table class="user-table" id="userTable">
+                    <thead>
+                        <tr>
+                            <th>用户名</th>
+                            <th>邮箱</th>
+                            <th>登录次数</th>
+                            <th>最后上线</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        <tr><td colspan="5" style="text-align:center;color:#555;">加载中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top:12px;font-size:0.75rem;color:#555;">
+                <i class="fas fa-sync-alt" style="margin-right:6px;"></i>数据实时更新
+                <button class="btn btn-outline" id="refreshUsersBtn" style="margin-left:12px;padding:4px 16px;font-size:0.7rem;">🔄 刷新</button>
+            </div>
+        </div>
+
         <!-- ===== 日志区 ===== -->
         <div class="panel">
             <div class="flex-between">
                 <span class="panel-title">📋 控制台日志</span>
-                <button class="clear-log" id="clearLogBtn">清空</button>
+                <button class="clear-log" id="clearLogBtn2">清空</button>
             </div>
             <div class="log-area" id="logArea">
                 <div class="log-entry"><span class="time">[系统]</span> 等待操作...</div>
@@ -474,7 +549,7 @@
             'use strict';
 
             // ================================================================
-            //  管理员登录验证
+            //  管理员登录验证（Base64 解码）
             // ================================================================
             const loginOverlay = document.getElementById('loginOverlay');
             const loginBtn = document.getElementById('loginBtn');
@@ -482,7 +557,6 @@
             const loginPassword = document.getElementById('loginPassword');
             const loginMsg = document.getElementById('loginMsg');
 
-            // 登录按钮事件
             loginBtn.addEventListener('click', handleLogin);
             loginPassword.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') handleLogin();
@@ -496,32 +570,51 @@
                     return;
                 }
 
-                // 获取 user/text.txt 进行验证
                 fetch('user/text.txt', { cache: 'no-cache' })
                     .then(response => {
                         if (!response.ok) throw new Error('无法读取认证文件');
                         return response.text();
                     })
-                    .then(text => {
-                        const lines = text.split(/\r?\n/);
+                    .then(encoded => {
+                        let decoded;
+                        try {
+                            decoded = atob(encoded.trim());
+                        } catch (e) {
+                            throw new Error('Base64 解码失败');
+                        }
+                        const lines = decoded.split(/\r?\n/);
                         const fileUser = (lines[0] || '').trim();
                         const filePass = (lines[1] || '').trim();
 
                         if (user === fileUser && pass === filePass) {
-                            // 登录成功，关闭弹窗
                             loginOverlay.classList.add('fade-out');
                             setTimeout(() => {
                                 loginOverlay.style.display = 'none';
                             }, 400);
-                            // 等待动画完成后记录
-                            log('✅ 管理员验证成功，欢迎使用调试台！', 'success');
+                            // 登录成功后显示用户面板并初始化
+                            if (!initialLogged) {
+                                initialLogged = true;
+                                log('✅ 管理员验证成功，欢迎使用调试台！', 'success');
+                                log('🔧 调试台已就绪，点击上方按钮测试 API', 'success');
+                                log('💡 支持多种壁纸 API，包含 CORS 检测', 'info');
+                                log('📋 所有结果会显示在日志中，可复制反馈', 'info');
+                                console.log('🖼️ 壁纸API调试台已启动');
+                                console.log('📌 各API说明:');
+                                Object.keys(APIS).forEach(key => {
+                                    console.log(`  - ${APIS[key].name}: ${APIS[key].desc}`);
+                                });
+                                // ★★★ 显示用户面板并加载数据 ★★★
+                                document.getElementById('userPanel').style.display = 'block';
+                                loadUserData();
+                                initOnlineCounter();
+                            }
                         } else {
                             displayLoginMsg('用户名或密码错误');
                             loginPassword.value = '';
                         }
                     })
                     .catch(err => {
-                        console.error('认证文件读取失败：', err);
+                        console.error('认证失败：', err);
                         displayLoginMsg('认证服务不可用，请联系管理员');
                     });
             }
@@ -531,7 +624,7 @@
             }
 
             // ================================================================
-            //  原有功能（日志、预览、测试等）
+            //  核心功能
             // ================================================================
             const logArea = document.getElementById('logArea');
             const previewArea = document.getElementById('previewArea');
@@ -540,7 +633,9 @@
             const imageInfo = document.getElementById('imageInfo');
 
             let currentObjectURL = null;
+            let initialLogged = false;
 
+            // 日志函数
             function log(message, type, extra) {
                 const time = new Date().toLocaleTimeString();
                 const entry = document.createElement('div');
@@ -548,18 +643,12 @@
 
                 let typeClass = 'info';
                 let typeLabel = 'INFO';
-                if (type === 'success') { typeClass = 'success';
-                    typeLabel = '✅'; }
-                if (type === 'error') { typeClass = 'error';
-                    typeLabel = '❌'; }
-                if (type === 'warn') { typeClass = 'warn';
-                    typeLabel = '⚠️'; }
-                if (type === 'data') { typeClass = 'data';
-                    typeLabel = '📦'; }
-                if (type === 'url') { typeClass = 'url';
-                    typeLabel = '🔗'; }
-                if (type === 'status') { typeClass = 'status-code';
-                    typeLabel = '📡'; }
+                if (type === 'success') { typeClass = 'success'; typeLabel = '✅'; }
+                if (type === 'error') { typeClass = 'error'; typeLabel = '❌'; }
+                if (type === 'warn') { typeClass = 'warn'; typeLabel = '⚠️'; }
+                if (type === 'data') { typeClass = 'data'; typeLabel = '📦'; }
+                if (type === 'url') { typeClass = 'url'; typeLabel = '🔗'; }
+                if (type === 'status') { typeClass = 'status-code'; typeLabel = '📡'; }
 
                 let content = message;
                 if (extra) {
@@ -679,8 +768,17 @@
                         const objectURL = URL.createObjectURL(blob);
                         currentObjectURL = objectURL;
                         const sizeKB = (blob.size / 1024).toFixed(1);
-                        showImage(objectURL, `${name} · ${sizeKB}KB · ${blob.type}`);
-                        log(`✅ ${name} 测试通过！(${sizeKB}KB)`, 'success');
+                        const img = new Image();
+                        img.onload = function() {
+                            const dim = `${img.naturalWidth}x${img.naturalHeight}`;
+                            showImage(objectURL, `${name} · ${dim} · ${sizeKB}KB · ${blob.type}`);
+                            log(`✅ ${name} 测试通过！(${sizeKB}KB, ${dim})`, 'success');
+                        };
+                        img.onerror = function() {
+                            showImage(objectURL, `${name} · ${sizeKB}KB · ${blob.type}`);
+                            log(`✅ ${name} 测试通过！(${sizeKB}KB)`, 'success');
+                        };
+                        img.src = objectURL;
                     })
                     .catch(err => {
                         const elapsed = Date.now() - startTime;
@@ -719,30 +817,154 @@
                     name: 'loli API (随机图)',
                     url: 'https://api.lolicon.app/setu/v2?r18=0&num=1&size=original&t=' + Date.now(),
                     desc: 'Lolicon API 随机图'
+                },
+                loremflickr: {
+                    name: 'loremflickr',
+                    url: 'https://loremflickr.com/1920/1080?random=' + Date.now(),
+                    desc: 'Lorem Flickr 随机图'
+                },
+                waifu: {
+                    name: 'waifu.pics',
+                    url: 'https://api.waifu.pics/sfw/wallpaper?t=' + Date.now(),
+                    desc: '二次元壁纸 (JSON)'
+                },
+                bing: {
+                    name: 'Bing每日壁纸',
+                    url: 'https://api.btstu.cn/bing/api.php?format=images&t=' + Date.now(),
+                    desc: 'Bing 每日壁纸 (btstu 代理)'
                 }
             };
 
             // ================================================================
-            //  绑定按钮事件
+            //  ★★★ 后端平台测试 - 用户数据加载 ★★★
+            // ================================================================
+            async function loadUserData() {
+                const tbody = document.getElementById('userTableBody');
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#555;">加载中...</td></tr>';
+
+                try {
+                    // 调用 Cloudflare Pages Function 代理
+                    const response = await fetch('/api/users');
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    const data = await response.json();
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    const users = data.users || [];
+                    const onlineIds = data.onlineIds || [];
+
+                    if (users.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#555;">暂无用户</td></tr>';
+                        return;
+                    }
+
+                    let html = '';
+                    users.forEach(user => {
+                        const isOnline = onlineIds.includes(user.id);
+                        const lastSeen = user.last_seen ? new Date(user.last_seen).toLocaleString('zh-CN') : '从未';
+                        const loginCount = user.login_count || 0;
+                        html += `
+                            <tr>
+                                <td>${user.username || '未命名'}</td>
+                                <td>${user.email}</td>
+                                <td>${loginCount}</td>
+                                <td>${lastSeen}</td>
+                                <td>
+                                    <span class="online-dot ${isOnline ? 'online' : 'offline'}"></span>
+                                    ${isOnline ? '在线' : '离线'}
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = html;
+                    log(`✅ 已加载 ${users.length} 位用户`, 'success');
+
+                } catch (err) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#e74c3c;">加载失败: ${err.message}</td></tr>`;
+                    log(`❌ 加载用户数据失败: ${err.message}`, 'error');
+                }
+            }
+
+            // ================================================================
+            //  ★★★ 在线人数（Supabase Presence） ★★★
+            // ================================================================
+            let onlineChannel = null;
+
+            async function initOnlineCounter() {
+                try {
+                    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+
+                    const SUPABASE_URL = '___PUBLIC_SUPABASE_URL___';
+                    const SUPABASE_ANON_KEY = '___PUBLIC_SUPABASE_ANON_KEY___';
+
+                    const finalUrl = SUPABASE_URL.startsWith('___')
+                        ? 'https://dpzztlxwxxxyfiwcfcir.supabase.co'
+                        : SUPABASE_URL;
+                    const finalKey = SUPABASE_ANON_KEY.startsWith('___')
+                        ? 'sb_publishable_IE7xGpNRnyig7Tz_rUI-dw_9PuBLS52'
+                        : SUPABASE_ANON_KEY;
+
+                    const supabase = createClient(finalUrl, finalKey);
+
+                    const channel = supabase.channel('online-users', {
+                        config: { presence: { key: 'user_id' } }
+                    });
+
+                    const onlineCountEl = document.getElementById('onlineCount');
+                    if (!onlineCountEl) return;
+
+                    channel.on('presence', { event: 'sync' }, () => {
+                        const state = channel.presenceState();
+                        const count = Object.keys(state).length;
+                        onlineCountEl.textContent = count || 0;
+                        // 同时更新用户表格中的在线状态（我们会在loadUserData中传入在线ID列表）
+                        // 这里我们只更新计数，表格会在刷新时更新
+                    });
+
+                    await channel.subscribe();
+                    onlineChannel = channel;
+
+                    // 初始加载后每30秒刷新一次用户列表（包括在线状态）
+                    setInterval(() => {
+                        loadUserData();
+                    }, 30000);
+
+                    log('👥 在线人数统计已启动', 'success');
+                } catch (err) {
+                    console.warn('在线人数功能不可用:', err.message);
+                    document.getElementById('onlineCount').textContent = '--';
+                }
+            }
+
+            // ================================================================
+            //  绑定事件
             // ================================================================
             document.getElementById('testPicsum').addEventListener('click', function() {
                 testApi(APIS.picsum.url, APIS.picsum.name);
             });
-
             document.getElementById('testUnsplash').addEventListener('click', function() {
                 testApi(APIS.unsplash.url, APIS.unsplash.name);
             });
-
             document.getElementById('testBtstu').addEventListener('click', function() {
                 testApi(APIS.btstu.url, APIS.btstu.name);
             });
-
             document.getElementById('testXjh').addEventListener('click', function() {
                 testApi(APIS.xjh.url, APIS.xjh.name);
             });
-
             document.getElementById('testLoli').addEventListener('click', function() {
                 testApi(APIS.loli.url, APIS.loli.name);
+            });
+            document.getElementById('testLoremFlickr').addEventListener('click', function() {
+                testApi(APIS.loremflickr.url, APIS.loremflickr.name);
+            });
+            document.getElementById('testWaifu').addEventListener('click', function() {
+                testApi(APIS.waifu.url, APIS.waifu.name);
+            });
+            document.getElementById('testBing').addEventListener('click', function() {
+                testApi(APIS.bing.url, APIS.bing.name);
             });
 
             document.getElementById('testAll').addEventListener('click', function() {
@@ -756,43 +978,84 @@
                 });
             });
 
+            document.getElementById('testCustomUrl').addEventListener('click', function() {
+                const url = document.getElementById('customUrlInput').value.trim();
+                if (!url) {
+                    log('⚠️ 请输入有效的图片 URL', 'warn');
+                    return;
+                }
+                try {
+                    new URL(url);
+                } catch (e) {
+                    log('❌ 无效的 URL 格式', 'error');
+                    return;
+                }
+                testApi(url, '自定义URL');
+            });
+            document.getElementById('customUrlInput').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('testCustomUrl').click();
+                }
+            });
+
+            document.getElementById('testDelay').addEventListener('click', function() {
+                log('⏱️ 开始延迟检测...', 'warn');
+                const keys = Object.keys(APIS);
+                let completed = 0;
+                const total = keys.length;
+                keys.forEach((key) => {
+                    const api = APIS[key];
+                    const start = Date.now();
+                    fetch(api.url, { mode: 'no-cors' })
+                        .then(() => {
+                            const elapsed = Date.now() - start;
+                            log(`${api.name} 延迟: ${elapsed}ms`, 'status');
+                            completed++;
+                            if (completed === total) {
+                                log('✅ 延迟检测完成', 'success');
+                            }
+                        })
+                        .catch(() => {
+                            const elapsed = Date.now() - start;
+                            log(`${api.name} 超时/失败 (${elapsed}ms)`, 'error');
+                            completed++;
+                            if (completed === total) {
+                                log('✅ 延迟检测完成（部分失败）', 'warn');
+                            }
+                        });
+                });
+            });
+
+            document.getElementById('exportLog').addEventListener('click', function() {
+                const logs = logArea.innerText;
+                if (!logs.trim()) {
+                    log('⚠️ 日志为空，无法导出', 'warn');
+                    return;
+                }
+                const blob = new Blob([logs], { type: 'text/plain;charset=utf-8' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `log_${new Date().toISOString().slice(0,10)}.txt`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+                log('📁 日志已导出', 'success');
+            });
+
+            document.getElementById('clearLogBtn').addEventListener('click', clearLogs);
+            document.getElementById('clearLogBtn2').addEventListener('click', clearLogs);
+
             document.getElementById('clearBtn').addEventListener('click', function() {
                 revokeObjectURL();
                 clearLogs();
                 showPlaceholder('已清空');
             });
 
-            document.getElementById('clearLogBtn').addEventListener('click', function() {
-                clearLogs();
+            // ★★★ 刷新用户数据按钮 ★★★
+            document.getElementById('refreshUsersBtn').addEventListener('click', function() {
+                loadUserData();
+                log('🔄 用户数据已刷新', 'info');
             });
 
-            // ================================================================
-            //  页面加载后提示（等登录成功后再显示核心日志）
-            // ================================================================
-            // 初始日志延迟到登录成功后显示
-            let initialLogged = false;
-
-            // 修改 loginSuccess 部分添加初始日志（在 handleLogin 中已经调用 log，但其他日志还未输出）
-            // 利用 MutationObserver 监听登录模态框隐藏，触发一次初始化日志
-            const observer = new MutationObserver(function() {
-                if (loginOverlay.style.display === 'none' && !initialLogged) {
-                    initialLogged = true;
-                    log('🔧 调试台已就绪，点击上方按钮测试 API', 'success');
-                    log('💡 支持多种壁纸 API，包含 CORS 检测', 'info');
-                    log('📋 所有结果会显示在日志中，可复制反馈', 'info');
-
-                    console.log('🖼️ 壁纸API调试台已启动');
-                    console.log('📌 各API说明:');
-                    Object.keys(APIS).forEach(key => {
-                        console.log(`  - ${APIS[key].name}: ${APIS[key].desc}`);
-                    });
-                }
-            });
-
-            observer.observe(loginOverlay, { attributes: true, attributeFilter: ['style'] });
-
-            // 如果登录弹窗一开始被手动移除（例如无登录需求），也可直接初始化
-            // 但此需求必须登录，所以无需额外处理
         })();
     </script>
 </body>
