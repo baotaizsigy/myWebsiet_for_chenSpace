@@ -255,7 +255,7 @@
             color: #555;
         }
 
-        /* ★★★ 新增：用户数据表格 ★★★ */
+        /* ★★★ 用户数据表格 ★★★ */
         .user-table-wrap {
             overflow-x: auto;
             margin-top: 8px;
@@ -304,7 +304,7 @@
             border: 1px solid rgba(46,204,113,0.2);
         }
 
-        /* 登录弹窗样式保持不变 */
+        /* 登录弹窗 */
         .login-overlay {
             position: fixed;
             top: 0;
@@ -461,14 +461,14 @@
             <button class="btn btn-danger" id="clearBtn">🗑️ 清空</button>
         </div>
 
-        <!-- ===== 高级工具按钮 ===== -->
+        <!-- ===== 高级工具 ===== -->
         <div class="btn-group" style="border-top: 1px solid #2a2a3a; padding-top: 12px;">
             <button class="btn btn-outline" id="testDelay">⏱️ 延迟检测</button>
             <button class="btn btn-outline" id="exportLog">💾 导出日志</button>
             <button class="btn btn-outline" id="clearLogBtn">🧹 清日志</button>
         </div>
 
-        <!-- ===== 自定义 URL 测试 ===== -->
+        <!-- ===== 自定义 URL ===== -->
         <div class="panel" style="padding: 16px 20px;">
             <div class="custom-url-row">
                 <input type="text" id="customUrlInput" placeholder="输入图片 URL，例如 https://example.com/image.jpg" />
@@ -492,7 +492,7 @@
             <div style="margin-top:10px;font-size:0.75rem;color:#555;" id="imageInfo"></div>
         </div>
 
-        <!-- ===== ★★★ 新增：后端平台测试面板 ★★★ ===== -->
+        <!-- ===== ★★★ 后端平台测试面板 ★★★ ===== -->
         <div class="panel" id="userPanel" style="display:none;">
             <div class="flex-between">
                 <span class="panel-title">👥 后端平台测试</span>
@@ -532,7 +532,7 @@
         </div>
     </div>
 
-    <!-- ============ 管理员登录弹窗 ============ -->
+    <!-- ===== 管理员登录弹窗 ===== -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-modal">
             <h2>🔐 管理员认证</h2>
@@ -591,7 +591,6 @@
                             setTimeout(() => {
                                 loginOverlay.style.display = 'none';
                             }, 400);
-                            // 登录成功后显示用户面板并初始化
                             if (!initialLogged) {
                                 initialLogged = true;
                                 log('✅ 管理员验证成功，欢迎使用调试台！', 'success');
@@ -603,8 +602,8 @@
                                 Object.keys(APIS).forEach(key => {
                                     console.log(`  - ${APIS[key].name}: ${APIS[key].desc}`);
                                 });
-                                // ★★★ 显示用户面板并加载数据 ★★★
                                 document.getElementById('userPanel').style.display = 'block';
+                                // 先加载用户数据，再启动在线监听
                                 loadUserData();
                                 initOnlineCounter();
                             }
@@ -718,7 +717,7 @@
             // ================================================================
             //  测试函数
             // ================================================================
-            function testApi(url, name, options) {
+            function testApi(url, name) {
                 revokeObjectURL();
                 log(`开始测试: ${name}`, 'info');
                 log(`请求地址: ${url}`, 'url');
@@ -790,7 +789,7 @@
             }
 
             // ================================================================
-            //  各 API 定义
+            //  API 定义
             // ================================================================
             const APIS = {
                 picsum: {
@@ -836,14 +835,19 @@
             };
 
             // ================================================================
-            //  ★★★ 后端平台测试 - 用户数据加载 ★★★
+            //  ★★★ 全局变量：存储在线用户 ID ★★★
+            // ================================================================
+            let onlineUserIds = [];
+
+            // ================================================================
+            //  ★★★ 加载用户数据 ★★★
             // ================================================================
             async function loadUserData() {
                 const tbody = document.getElementById('userTableBody');
+                if (!tbody) return;
                 tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#555;">加载中...</td></tr>';
 
                 try {
-                    // 调用 Cloudflare Pages Function 代理
                     const response = await fetch('/api/users');
                     if (!response.ok) {
                         throw new Error(`HTTP ${response.status}`);
@@ -854,7 +858,6 @@
                     }
 
                     const users = data.users || [];
-                    const onlineIds = data.onlineIds || [];
 
                     if (users.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#555;">暂无用户</td></tr>';
@@ -863,13 +866,13 @@
 
                     let html = '';
                     users.forEach(user => {
-                        const isOnline = onlineIds.includes(user.id);
+                        const isOnline = onlineUserIds.includes(user.id);
                         const lastSeen = user.last_seen ? new Date(user.last_seen).toLocaleString('zh-CN') : '从未';
                         const loginCount = user.login_count || 0;
                         html += `
                             <tr>
-                                <td>${user.username || '未命名'}</td>
-                                <td>${user.email}</td>
+                                <td>${escapeHtml(user.username || '未命名')}</td>
+                                <td>${escapeHtml(user.email)}</td>
                                 <td>${loginCount}</td>
                                 <td>${lastSeen}</td>
                                 <td>
@@ -880,12 +883,19 @@
                         `;
                     });
                     tbody.innerHTML = html;
-                    log(`✅ 已加载 ${users.length} 位用户`, 'success');
 
                 } catch (err) {
                     tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#e74c3c;">加载失败: ${err.message}</td></tr>`;
                     log(`❌ 加载用户数据失败: ${err.message}`, 'error');
                 }
+            }
+
+            // 简单的防 XSS
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
             }
 
             // ================================================================
@@ -916,26 +926,48 @@
                     const onlineCountEl = document.getElementById('onlineCount');
                     if (!onlineCountEl) return;
 
+                    // Presence 同步
                     channel.on('presence', { event: 'sync' }, () => {
                         const state = channel.presenceState();
-                        const count = Object.keys(state).length;
-                        onlineCountEl.textContent = count || 0;
-                        // 同时更新用户表格中的在线状态（我们会在loadUserData中传入在线ID列表）
-                        // 这里我们只更新计数，表格会在刷新时更新
+                        onlineUserIds = Object.keys(state);
+                        onlineCountEl.textContent = onlineUserIds.length || 0;
+                        loadUserData();
+                    });
+
+                    // 用户加入
+                    channel.on('presence', { event: 'join' }, () => {
+                        setTimeout(() => {
+                            const state = channel.presenceState();
+                            onlineUserIds = Object.keys(state);
+                            onlineCountEl.textContent = onlineUserIds.length;
+                            loadUserData();
+                        }, 150);
+                    });
+
+                    // 用户离开
+                    channel.on('presence', { event: 'leave' }, () => {
+                        setTimeout(() => {
+                            const state = channel.presenceState();
+                            onlineUserIds = Object.keys(state);
+                            onlineCountEl.textContent = onlineUserIds.length;
+                            loadUserData();
+                        }, 150);
                     });
 
                     await channel.subscribe();
                     onlineChannel = channel;
 
-                    // 初始加载后每30秒刷新一次用户列表（包括在线状态）
-                    setInterval(() => {
-                        loadUserData();
-                    }, 30000);
+                    // 首次加载
+                    setTimeout(() => loadUserData(), 500);
 
-                    log('👥 在线人数统计已启动', 'success');
+                    // 每 30 秒刷新基本信息
+                    setInterval(() => loadUserData(), 30000);
+
+                    log('👥 在线人数统计已启动（实时同步）', 'success');
                 } catch (err) {
                     console.warn('在线人数功能不可用:', err.message);
                     document.getElementById('onlineCount').textContent = '--';
+                    loadUserData();
                 }
             }
 
@@ -1050,7 +1082,6 @@
                 showPlaceholder('已清空');
             });
 
-            // ★★★ 刷新用户数据按钮 ★★★
             document.getElementById('refreshUsersBtn').addEventListener('click', function() {
                 loadUserData();
                 log('🔄 用户数据已刷新', 'info');
