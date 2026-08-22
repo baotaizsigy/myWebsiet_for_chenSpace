@@ -7,9 +7,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         /* ===== 重置 ===== */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Segoe UI', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
             color: white;
             background-color: #0a1220;
@@ -23,6 +28,13 @@
             padding: 20px;
             position: relative;
         }
+
+        body.dark-mode {
+            background-image: none !important;
+            background-color: #000000 !important;
+        }
+
+        /* 背景模糊层 */
         .bg-blur {
             position: fixed;
             inset: 0;
@@ -31,6 +43,7 @@
             z-index: 0;
             pointer-events: none;
         }
+
         /* ===== 导航栏 ===== */
         .navbar {
             position: fixed;
@@ -40,11 +53,12 @@
             width: 90%;
             max-width: 700px;
             padding: 12px 24px;
-            background: rgba(10,10,30,0.35);
+            background: rgba(10, 10, 30, 0.35);
             backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.15);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -58,41 +72,135 @@
             -webkit-mask-repeat: no-repeat;
             mask-repeat: no-repeat;
             opacity: 0;
-            animation: navbarExpand 1s cubic-bezier(0.23,1,0.32,1) forwards;
+            animation: navbarExpand 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
             animation-delay: 0.05s;
             animation-fill-mode: forwards;
             overflow: hidden;
         }
+
         .navbar::before {
             content: '';
             position: absolute;
             inset: -50%;
-            background: conic-gradient(from var(--angle,0deg) at 50% 50%, transparent 0%, rgba(255,255,255,0.04) 15%, rgba(255,255,255,0.08) 30%, rgba(255,255,255,0.04) 45%, transparent 60%, transparent 100%);
+            background: conic-gradient(from var(--angle, 0deg) at 50% 50%,
+                    transparent 0%,
+                    rgba(255, 255, 255, 0.04) 15%,
+                    rgba(255, 255, 255, 0.08) 30%,
+                    rgba(255, 255, 255, 0.04) 45%,
+                    transparent 60%,
+                    transparent 100%);
             animation: rotateGloss 8s linear infinite;
             pointer-events: none;
             z-index: 0;
         }
-        @keyframes rotateGloss { 0% { --angle: 0deg; } 100% { --angle: 360deg; } }
-        @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
-        .navbar.mask-done { -webkit-mask-image: none !important; mask-image: none !important; }
+
+        @keyframes rotateGloss {
+            0% {
+                --angle: 0deg;
+            }
+            100% {
+                --angle: 360deg;
+            }
+        }
+
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        .navbar.mask-done {
+            -webkit-mask-image: none !important;
+            mask-image: none !important;
+        }
+
         @keyframes navbarExpand {
-            0% { -webkit-mask-size: 0% 100%; mask-size: 0% 100%; opacity: 0; }
-            60% { opacity: 1; }
-            100% { -webkit-mask-size: 100% 100%; mask-size: 100% 100%; opacity: 1; }
+            0% {
+                -webkit-mask-size: 0% 100%;
+                mask-size: 0% 100%;
+                opacity: 0;
+            }
+            60% {
+                opacity: 1;
+            }
+            100% {
+                -webkit-mask-size: 100% 100%;
+                mask-size: 100% 100%;
+                opacity: 1;
+            }
         }
-        .nav-left { display: flex; align-items: center; gap: 10px; z-index: 2; }
-        .nav-title { font-size: 1.1rem; font-weight: 600; color: rgba(255,255,255,0.9); letter-spacing: 0.8px; white-space: nowrap; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-        .nav-buttons { display: flex; gap: 12px; z-index: 2; }
+
+        @media (min-width: 768px) {
+            .navbar {
+                width: calc(100% - 48px);
+                max-width: 100%;
+                padding: 14px 32px;
+            }
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 2;
+        }
+
+        .nav-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: 0.8px;
+            white-space: nowrap;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            z-index: 2;
+        }
+
         .nav-btn {
-            padding: 6px 22px; border: none; border-radius: 30px; font-size: 0.9rem;
-            font-weight: 500; cursor: pointer; transition: all 0.25s ease;
-            background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85);
-            backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.06);
-            letter-spacing: 0.5px; font-family: inherit; white-space: nowrap;
+            padding: 6px 22px;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            letter-spacing: 0.5px;
+            font-family: inherit;
+            white-space: nowrap;
         }
-        .nav-btn:hover { background: rgba(255,255,255,0.18); transform: scale(1.04); border-color: rgba(255,255,255,0.2); color: white; }
-        .nav-btn:active { transform: scale(0.96); }
-        @media (max-width: 480px) { .nav-btn { padding: 4px 14px; font-size: 0.75rem; } .nav-title { font-size: 0.9rem; } }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: scale(1.04);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.96);
+        }
+
+        @media (max-width: 480px) {
+            .nav-btn {
+                padding: 4px 14px;
+                font-size: 0.75rem;
+            }
+            .nav-title {
+                font-size: 0.9rem;
+            }
+            .nav-buttons {
+                gap: 6px;
+            }
+        }
 
         /* ===== 登录卡片 ===== */
         .login-container {
@@ -100,38 +208,88 @@
             z-index: 1;
             width: 100%;
             max-width: 420px;
-            animation: containerIn 0.8s cubic-bezier(0.23,1,0.32,1) forwards;
+            animation: containerIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
             opacity: 0;
             transform: translateY(40px) scale(0.96);
         }
-        @keyframes containerIn { 0% { opacity: 0; transform: translateY(40px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+
+        @keyframes containerIn {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
         .login-card {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(48px);
             -webkit-backdrop-filter: blur(48px);
             border-radius: 32px;
-            border: 1.5px solid rgba(255,255,255,0.15);
-            box-shadow: 0 30px 80px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.04), 0 0 60px rgba(100,180,255,0.05);
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+                0 0 60px rgba(100, 180, 255, 0.05);
             padding: 40px 36px 44px;
             position: relative;
             overflow: hidden;
         }
+
+        /* 卡片光泽 */
         .login-card::before {
             content: '';
             position: absolute;
             inset: -50%;
-            background: conic-gradient(from var(--gloss-angle,0deg) at 50% 50%, transparent 0%, rgba(255,255,255,0.02) 10%, rgba(255,255,255,0.05) 20%, rgba(255,255,255,0.07) 30%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.02) 50%, transparent 60%, transparent 100%);
-            animation: liquidGloss 12s cubic-bezier(0.45,0.05,0.55,0.95) infinite;
+            background: conic-gradient(from var(--gloss-angle, 0deg) at 50% 50%,
+                    transparent 0%,
+                    rgba(255, 255, 255, 0.02) 10%,
+                    rgba(255, 255, 255, 0.05) 20%,
+                    rgba(255, 255, 255, 0.07) 30%,
+                    rgba(255, 255, 255, 0.05) 40%,
+                    rgba(255, 255, 255, 0.02) 50%,
+                    transparent 60%,
+                    transparent 100%);
+            animation: liquidGloss 12s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
             pointer-events: none;
             z-index: 0;
         }
-        @keyframes liquidGloss { 0% { --gloss-angle: 0deg; transform: rotate(0deg) scale(1); } 50% { --gloss-angle: 180deg; transform: rotate(8deg) scale(1.02); } 100% { --gloss-angle: 360deg; transform: rotate(0deg) scale(1); } }
-        @property --gloss-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+
+        @keyframes liquidGloss {
+            0% {
+                --gloss-angle: 0deg;
+                transform: rotate(0deg) scale(1);
+            }
+            50% {
+                --gloss-angle: 180deg;
+                transform: rotate(8deg) scale(1.02);
+            }
+            100% {
+                --gloss-angle: 360deg;
+                transform: rotate(0deg) scale(1);
+            }
+        }
+
+        @property --gloss-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        /* 边框发光 */
         .login-card .border-glow {
             position: absolute;
             inset: -2px;
             border-radius: 34px;
-            background: conic-gradient(from var(--border-angle,0deg), transparent 0%, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0.08) 60%, transparent 80%, transparent 100%);
+            background: conic-gradient(from var(--border-angle, 0deg),
+                    transparent 0%,
+                    rgba(255, 255, 255, 0.08) 20%,
+                    rgba(255, 255, 255, 0.15) 40%,
+                    rgba(255, 255, 255, 0.08) 60%,
+                    transparent 80%,
+                    transparent 100%);
             animation: borderFlow 8s linear infinite;
             pointer-events: none;
             z-index: -1;
@@ -142,32 +300,76 @@
             mask-composite: exclude;
             padding: 2px;
         }
-        @keyframes borderFlow { 0% { --border-angle: 0deg; } 100% { --border-angle: 360deg; } }
-        @property --border-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+
+        @keyframes borderFlow {
+            0% {
+                --border-angle: 0deg;
+            }
+            100% {
+                --border-angle: 360deg;
+            }
+        }
+
+        @property --border-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        /* 鼠标跟随光晕 */
         .login-card::after {
             content: '';
             position: absolute;
             inset: -100%;
-            background: radial-gradient(ellipse at var(--mouse-x,50%) var(--mouse-y,50%), rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 30%, transparent 70%);
+            background: radial-gradient(ellipse at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                    rgba(255, 255, 255, 0.06) 0%,
+                    rgba(255, 255, 255, 0.02) 30%,
+                    transparent 70%);
             pointer-events: none;
             z-index: 0;
-            transition: background 0.8s cubic-bezier(0.34,1.56,0.64,1);
+            transition: background 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .login-card>* { position: relative; z-index: 1; }
 
-        .login-header { text-align: center; margin-bottom: 28px; }
-        .login-header .icon { font-size: 36px; color: rgba(255,255,255,0.15); margin-bottom: 4px; display: block; }
-        .login-header h1 { font-size: 1.6rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
-        .login-header p { font-size: 0.85rem; color: rgba(255,255,255,0.35); margin-top: 2px; }
+        .login-card>* {
+            position: relative;
+            z-index: 1;
+        }
 
+        .login-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .login-header .icon {
+            font-size: 36px;
+            color: rgba(255, 255, 255, 0.15);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .login-header h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .login-header p {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.35);
+            margin-top: 2px;
+        }
+
+        /* 切换标签 */
         .tabs {
             display: flex;
-            background: rgba(255,255,255,0.04);
+            background: rgba(255, 255, 255, 0.04);
             border-radius: 40px;
             padding: 4px;
             margin-bottom: 24px;
-            border: 1px solid rgba(255,255,255,0.04);
+            border: 1px solid rgba(255, 255, 255, 0.04);
         }
+
         .tab-btn {
             flex: 1;
             padding: 10px 0;
@@ -176,34 +378,75 @@
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
             background: transparent;
-            color: rgba(255,255,255,0.4);
+            color: rgba(255, 255, 255, 0.4);
             font-family: inherit;
             letter-spacing: 0.5px;
         }
-        .tab-btn.active { background: rgba(255,255,255,0.10); color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
-        .tab-btn:hover:not(.active) { color: rgba(255,255,255,0.7); }
 
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: rgba(255,255,255,0.4); margin-bottom: 4px; letter-spacing: 0.5px; }
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.10);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* 表单 */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
         .form-group input {
             width: 100%;
             padding: 12px 16px;
             border-radius: 14px;
-            border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
             color: #fff;
             font-size: 0.95rem;
             outline: none;
             transition: all 0.3s ease;
             font-family: inherit;
         }
-        .form-group input:focus { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); }
-        .form-group input::placeholder { color: rgba(255,255,255,0.2); }
-        .form-group input.error { border-color: #ff5f57; }
-        .form-group .error-msg { font-size: 0.75rem; color: #ff5f57; margin-top: 4px; display: none; }
-        .form-group .error-msg.show { display: block; }
+
+        .form-group input:focus {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.02);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .form-group input.error {
+            border-color: #ff5f57;
+            box-shadow: 0 0 20px rgba(255, 95, 87, 0.1);
+        }
+
+        .form-group .error-msg {
+            font-size: 0.75rem;
+            color: #ff5f57;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .form-group .error-msg.show {
+            display: block;
+        }
 
         .submit-btn {
             width: 100%;
@@ -213,27 +456,77 @@
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
-            background: rgba(255,255,255,0.08);
-            color: rgba(255,255,255,0.85);
-            border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             font-family: inherit;
             letter-spacing: 0.5px;
             margin-top: 4px;
             position: relative;
+            overflow: hidden;
         }
-        .submit-btn:hover { background: rgba(255,255,255,0.16); transform: scale(1.02); border-color: rgba(255,255,255,0.2); color: #fff; }
-        .submit-btn:active { transform: scale(0.97); }
-        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-        .submit-btn .spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto; }
-        .submit-btn.loading .spinner { display: block; }
-        .submit-btn.loading .btn-text { display: none; }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .form-footer { text-align: center; margin-top: 16px; font-size: 0.8rem; color: rgba(255,255,255,0.25); }
-        .form-footer a { color: rgba(255,255,255,0.5); text-decoration: none; cursor: pointer; transition: color 0.2s; }
-        .form-footer a:hover { color: #fff; }
+        .submit-btn:hover {
+            background: rgba(255, 255, 255, 0.16);
+            transform: scale(1.02);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
 
+        .submit-btn:active {
+            transform: scale(0.97);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .submit-btn .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto;
+        }
+
+        .submit-btn.loading .spinner {
+            display: block;
+        }
+        .submit-btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .form-footer a {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .form-footer a:hover {
+            color: #fff;
+        }
+
+        /* ===== Toast 提示 ===== */
         .toast {
             position: fixed;
             top: 80px;
@@ -242,36 +535,251 @@
             padding: 14px 32px;
             border-radius: 16px;
             backdrop-filter: blur(20px);
-            background: rgba(20,25,40,0.85);
-            border: 1px solid rgba(255,255,255,0.08);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(20, 25, 40, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             color: #fff;
             font-size: 0.9rem;
             font-weight: 500;
             z-index: 9999;
             opacity: 0;
             transform: translateX(-50%) translateY(-20px);
-            transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             pointer-events: none;
             max-width: 90vw;
             text-align: center;
         }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-        .toast.error { border-color: rgba(255,95,87,0.3); background: rgba(40,20,25,0.9); }
-        .toast.success { border-color: rgba(46,204,113,0.3); background: rgba(20,40,30,0.9); }
 
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.error {
+            border-color: rgba(255, 95, 87, 0.3);
+            background: rgba(40, 20, 25, 0.9);
+        }
+
+        .toast.success {
+            border-color: rgba(46, 204, 113, 0.3);
+            background: rgba(20, 40, 30, 0.9);
+        }
+
+        /* ===== ★★★ 邮箱验证弹窗 ★★★ ===== */
+        .email-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: modalFadeIn 0.3s ease;
+        }
+        .email-modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes modalFadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .email-modal-box {
+            background: rgba(30, 35, 45, 0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 28px;
+            padding: 36px 40px 40px;
+            max-width: 420px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+            color: #fff;
+            position: relative;
+            text-align: center;
+            animation: modalBoxIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalBoxIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) translateY(24px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .email-modal-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 26px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            padding: 0 8px;
+            line-height: 1;
+        }
+        .email-modal-close:hover {
+            color: #fff;
+            transform: scale(1.15);
+        }
+        .email-modal-close:active {
+            transform: scale(0.9);
+        }
+
+        .email-modal-icon {
+            font-size: 52px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .email-modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+            letter-spacing: 0.3px;
+        }
+
+        .email-modal-desc {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.50);
+            margin-bottom: 6px;
+            line-height: 1.7;
+        }
+
+        .email-modal-hint {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.25);
+            margin-bottom: 20px;
+            line-height: 1.6;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 10px 14px;
+            border: 1px dashed rgba(255, 255, 255, 0.05);
+        }
+
+        .email-modal-hint i {
+            margin-right: 6px;
+        }
+
+        .email-modal-btn {
+            padding: 12px 44px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-family: inherit;
+            letter-spacing: 0.5px;
+        }
+        .email-modal-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: scale(1.04);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 24px rgba(255, 255, 255, 0.05);
+        }
+        .email-modal-btn:active {
+            transform: scale(0.96);
+        }
+
+        .email-modal-btn .spinner-small {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin: 0 auto;
+        }
+        .email-modal-btn.loading .spinner-small {
+            display: block;
+        }
+        .email-modal-btn.loading .btn-text {
+            display: none;
+        }
+
+        /* ===== 响应式 ===== */
         @media (max-width: 480px) {
-            .login-card { padding: 28px 20px 32px; border-radius: 24px; }
-            .login-header h1 { font-size: 1.3rem; }
-            .tab-btn { font-size: 0.8rem; padding: 8px 0; }
-            .form-group input { padding: 10px 14px; font-size: 0.9rem; }
-            .submit-btn { padding: 12px; font-size: 0.9rem; }
-            .toast { top: 72px; padding: 10px 20px; font-size: 0.8rem; }
+            .login-card {
+                padding: 28px 20px 32px;
+                border-radius: 24px;
+            }
+            .login-header h1 {
+                font-size: 1.3rem;
+            }
+            .tab-btn {
+                font-size: 0.8rem;
+                padding: 8px 0;
+            }
+            .form-group input {
+                padding: 10px 14px;
+                font-size: 0.9rem;
+            }
+            .submit-btn {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+            .toast {
+                top: 72px;
+                padding: 10px 20px;
+                font-size: 0.8rem;
+            }
+            .email-modal-box {
+                padding: 28px 22px 32px;
+            }
+            .email-modal-icon {
+                font-size: 42px;
+            }
+            .email-modal-title {
+                font-size: 17px;
+            }
+            .email-modal-desc {
+                font-size: 13px;
+            }
+            .email-modal-btn {
+                padding: 10px 32px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .login-card {
+                padding: 20px 16px 24px;
+            }
+            .nav-btn {
+                padding: 3px 10px;
+                font-size: 0.65rem;
+            }
+            .email-modal-box {
+                padding: 22px 16px 26px;
+            }
         }
     </style>
 </head>
 <body>
 
+    <!-- 背景模糊 -->
     <div class="bg-blur"></div>
 
     <!-- ===== 导航栏 ===== -->
@@ -284,7 +792,7 @@
         </div>
     </nav>
 
-    <!-- ===== Toast ===== -->
+    <!-- ===== Toast 提示 ===== -->
     <div class="toast" id="toast"></div>
 
     <!-- ===== 登录卡片 ===== -->
@@ -298,6 +806,7 @@
                 <p id="pageSub">欢迎回来，请登录你的账号</p>
             </div>
 
+            <!-- 切换标签 -->
             <div class="tabs">
                 <button class="tab-btn active" data-tab="login" id="tabLogin">登录</button>
                 <button class="tab-btn" data-tab="register" id="tabRegister">注册</button>
@@ -357,6 +866,25 @@
         </div>
     </div>
 
+    <!-- ===== ★★★ 邮箱验证弹窗 ★★★ ===== -->
+    <div class="email-modal-overlay" id="emailModal">
+        <div class="email-modal-box">
+            <button class="email-modal-close" id="emailModalClose">&times;</button>
+            <span class="email-modal-icon">📧</span>
+            <div class="email-modal-title">请前往邮箱验证登录</div>
+            <div class="email-modal-desc">
+                我们已向您的邮箱发送了验证链接，请点击链接完成验证后再登录。
+            </div>
+            <div class="email-modal-hint">
+                <i class="fas fa-lightbulb"></i> 没收到邮件？请检查垃圾箱，或稍等片刻
+            </div>
+            <button class="email-modal-btn" id="emailModalBtn">
+                <span class="btn-text">✅ 已验证，重新登录</span>
+                <span class="spinner-small"></span>
+            </button>
+        </div>
+    </div>
+
     <script type="module">
         // ================================================================
         // 1. 加载 Supabase SDK
@@ -369,9 +897,8 @@
         const SUPABASE_URL = '___PUBLIC_SUPABASE_URL___';
         const SUPABASE_ANON_KEY = '___PUBLIC_SUPABASE_ANON_KEY___';
 
-        // 如果占位符未被替换（本地开发时），使用你复制到的密钥直接测试
-        // ★★★ 提交到 Git 前，请把下面的硬编码删掉或注释掉，只保留占位符 ★★★
-        const finalUrl = SUPABASE_URL.startsWith('___') 
+        // 如果占位符未被替换（本地开发时），使用你复制到的密钥
+        const finalUrl = SUPABASE_URL.startsWith('___')
             ? 'https://dpzztlxwxxxyfiwcfcir.supabase.co'
             : SUPABASE_URL;
         const finalKey = SUPABASE_ANON_KEY.startsWith('___')
@@ -423,7 +950,7 @@
             localStorage.removeItem('chen_session');
         }
 
-        // 导出到全局，供其他脚本使用
+        // 导出到全局，供其他页面使用
         window.__supabase = { supabase, registerUser, loginUser, getCurrentUser, logoutUser };
 
         // ================================================================
@@ -438,11 +965,18 @@
         }
 
         function setLoading(btn, loading) {
-            if (loading) { btn.classList.add('loading'); btn.disabled = true; } 
-            else { btn.classList.remove('loading'); btn.disabled = false; }
+            if (loading) {
+                btn.classList.add('loading');
+                btn.disabled = true;
+            } else {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
         }
 
-        function validateEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
 
         const loginForm = document.getElementById('loginForm');
         const registerForm = document.getElementById('registerForm');
@@ -475,15 +1009,83 @@
 
         tabLogin.addEventListener('click', () => switchTab('login'));
         tabRegister.addEventListener('click', () => switchTab('register'));
-        switchToRegister.addEventListener('click', (e) => { e.preventDefault(); switchTab('register'); });
-        switchToLogin.addEventListener('click', (e) => { e.preventDefault(); switchTab('login'); });
+        switchToRegister.addEventListener('click', (e) => { e.preventDefault();
+            switchTab('register'); });
+        switchToLogin.addEventListener('click', (e) => { e.preventDefault();
+            switchTab('login'); });
 
         document.getElementById('backHome').addEventListener('click', () => {
             window.location.href = 'index.html';
         });
 
         // ================================================================
-        // 5. 登录提交
+        // 5. ★★★ 邮箱验证弹窗 ★★★
+        // ================================================================
+        const emailModal = document.getElementById('emailModal');
+        const emailModalClose = document.getElementById('emailModalClose');
+        const emailModalBtn = document.getElementById('emailModalBtn');
+        let emailModalResolve = null;
+
+        function showEmailModal() {
+            return new Promise((resolve) => {
+                emailModalResolve = resolve;
+                emailModal.classList.add('active');
+                // 重置按钮状态
+                emailModalBtn.classList.remove('loading');
+                emailModalBtn.disabled = false;
+                emailModalBtn.querySelector('.btn-text').textContent = '✅ 已验证，重新登录';
+            });
+        }
+
+        function hideEmailModal() {
+            emailModal.classList.remove('active');
+        }
+
+        // 关闭按钮
+        emailModalClose.addEventListener('click', () => {
+            hideEmailModal();
+            if (emailModalResolve) {
+                emailModalResolve(false);
+                emailModalResolve = null;
+            }
+        });
+
+        // 点击背景关闭
+        emailModal.addEventListener('click', (e) => {
+            if (e.target === emailModal) {
+                hideEmailModal();
+                if (emailModalResolve) {
+                    emailModalResolve(false);
+                    emailModalResolve = null;
+                }
+            }
+        });
+
+        // "已验证" 按钮
+        emailModalBtn.addEventListener('click', () => {
+            // 按钮进入加载状态
+            emailModalBtn.classList.add('loading');
+            emailModalBtn.disabled = true;
+            emailModalBtn.querySelector('.btn-text').textContent = '验证中...';
+
+            // 延迟一点再触发重新登录，让用户看到反馈
+            setTimeout(() => {
+                hideEmailModal();
+                if (emailModalResolve) {
+                    emailModalResolve(true);
+                    emailModalResolve = null;
+                }
+                // 重置按钮
+                emailModalBtn.classList.remove('loading');
+                emailModalBtn.disabled = false;
+                emailModalBtn.querySelector('.btn-text').textContent = '✅ 已验证，重新登录';
+                // 重新触发表单提交
+                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            }, 600);
+        });
+
+        // ================================================================
+        // 6. 登录提交（含邮箱验证检测）
         // ================================================================
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -494,27 +1096,52 @@
             const btn = document.getElementById('loginBtn');
 
             let valid = true;
-            email.classList.remove('error'); emailError.classList.remove('show');
-            password.classList.remove('error'); passwordError.classList.remove('show');
-            if (!validateEmail(email.value)) { email.classList.add('error'); emailError.classList.add('show'); valid = false; }
-            if (password.value.length < 6) { password.classList.add('error'); passwordError.classList.add('show'); valid = false; }
+            email.classList.remove('error');
+            emailError.classList.remove('show');
+            password.classList.remove('error');
+            passwordError.classList.remove('show');
+            if (!validateEmail(email.value)) {
+                email.classList.add('error');
+                emailError.classList.add('show');
+                valid = false;
+            }
+            if (password.value.length < 6) {
+                password.classList.add('error');
+                passwordError.classList.add('show');
+                valid = false;
+            }
             if (!valid) return;
 
             setLoading(btn, true);
+
             try {
                 const result = await loginUser(email.value, password.value);
                 if (result.user) {
                     showToast('🎉 登录成功！', 'success');
-                    setTimeout(() => { window.location.href = 'index.html'; }, 600);
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 600);
                 }
             } catch (err) {
-                showToast('❌ ' + err.message, 'error');
-                setLoading(btn, false);
+                const msg = err.message || '';
+                // ★★★ 检查是否是邮箱未验证的错误 ★★★
+                if (msg.toLowerCase().includes('email not confirmed') ||
+                    msg.toLowerCase().includes('email not verified') ||
+                    msg.toLowerCase().includes('confirm your email')) {
+                    // 显示邮箱验证弹窗
+                    setLoading(btn, false);
+                    const shouldRetry = await showEmailModal();
+                    // 如果用户点击了"已验证"，会重新触发 submit，这里不需要额外操作
+                    // 如果用户关闭了弹窗，不做事
+                } else {
+                    showToast('❌ ' + msg, 'error');
+                    setLoading(btn, false);
+                }
             }
         });
 
         // ================================================================
-        // 6. 注册提交
+        // 7. 注册提交
         // ================================================================
         registerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -532,18 +1159,53 @@
             [username, email, password, confirm].forEach(el => el.classList.remove('error'));
             [usernameError, emailError, passwordError, confirmError].forEach(el => el.classList.remove('show'));
 
-            if (username.value.trim().length < 2) { username.classList.add('error'); usernameError.classList.add('show'); valid = false; }
-            if (!validateEmail(email.value)) { email.classList.add('error'); emailError.classList.add('show'); valid = false; }
-            if (password.value.length < 6) { password.classList.add('error'); passwordError.classList.add('show'); valid = false; }
-            if (password.value !== confirm.value) { confirm.classList.add('error'); confirmError.classList.add('show'); valid = false; }
+            if (username.value.trim().length < 2) {
+                username.classList.add('error');
+                usernameError.classList.add('show');
+                valid = false;
+            }
+            if (!validateEmail(email.value)) {
+                email.classList.add('error');
+                emailError.classList.add('show');
+                valid = false;
+            }
+            if (password.value.length < 6) {
+                password.classList.add('error');
+                passwordError.classList.add('show');
+                valid = false;
+            }
+            if (password.value !== confirm.value) {
+                confirm.classList.add('error');
+                confirmError.classList.add('show');
+                valid = false;
+            }
             if (!valid) return;
 
             setLoading(btn, true);
+
             try {
                 const result = await registerUser(username.value, email.value, password.value);
                 if (result.user) {
-                    showToast('🎉 注册成功！已自动登录', 'success');
-                    setTimeout(() => { window.location.href = 'index.html'; }, 600);
+                    // 注册成功后自动登录，但可能邮箱未验证
+                    // 检查 session 是否存在
+                    if (result.session) {
+                        showToast('🎉 注册成功！已自动登录', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 600);
+                    } else {
+                        // 需要验证邮箱
+                        showToast('📧 注册成功！请前往邮箱验证后登录', 'success');
+                        // 切换到登录标签，让用户去登录
+                        setTimeout(() => {
+                            switchTab('login');
+                            // 自动填入邮箱
+                            document.getElementById('loginEmail').value = email.value;
+                            document.getElementById('loginPassword').value = '';
+                            document.getElementById('loginPassword').focus();
+                        }, 300);
+                        setLoading(btn, false);
+                    }
                 }
             } catch (err) {
                 showToast('❌ ' + err.message, 'error');
@@ -552,7 +1214,7 @@
         });
 
         // ================================================================
-        // 7. 检查是否已登录
+        // 8. 检查是否已登录
         // ================================================================
         async function checkAlreadyLoggedIn() {
             const user = await getCurrentUser();
@@ -564,7 +1226,7 @@
         checkAlreadyLoggedIn();
 
         // ================================================================
-        // 8. 鼠标跟随光晕
+        // 9. 鼠标跟随光晕
         // ================================================================
         const card = document.getElementById('loginCard');
         card.addEventListener('mousemove', function(e) {
@@ -580,15 +1242,18 @@
         });
 
         // ================================================================
-        // 9. 导航栏动画
+        // 10. 导航栏动画
         // ================================================================
         const navbar = document.getElementById('navbar');
         navbar.addEventListener('animationend', function(e) {
             if (e.animationName === 'navbarExpand') this.classList.add('mask-done');
         });
-        setTimeout(() => { if (!navbar.classList.contains('mask-done')) navbar.classList.add('mask-done'); }, 5000);
+        setTimeout(() => {
+            if (!navbar.classList.contains('mask-done')) navbar.classList.add('mask-done');
+        }, 5000);
 
         console.log('🔐 登录系统已启动 (Supabase 模式)');
     </script>
+
 </body>
 </html>
