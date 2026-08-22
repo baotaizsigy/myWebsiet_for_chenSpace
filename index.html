@@ -69,7 +69,9 @@
             mask-image: none !important;
         }
 
-        /* ===== 导航栏 ===== */
+        /* ================================================================
+               导航栏
+               ================================================================ */
         .navbar {
             position: fixed;
             top: 20px;
@@ -338,7 +340,9 @@
             }
         }
 
-        /* ===== 通知系统 ===== */
+        /* ================================================================
+               通知系统 — 滑入动画 + 跑马灯 + 自适应宽度
+               ================================================================ */
         .notification-container {
             position: fixed;
             right: 20px;
@@ -990,7 +994,9 @@
             text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
         }
 
-        /* ===== 弹窗 ===== */
+        /* ================================================================
+               弹窗
+               ================================================================ */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -2889,7 +2895,7 @@
             }
 
             // ================================================================
-            //  22. ★★★ 在线人数（Supabase Presence） ★★★
+            //  ★★★ 在线人数（Supabase Presence） ★★★
             // ================================================================
             async function initOnlineCounter() {
                 try {
@@ -2913,6 +2919,13 @@
                         userId = session?.user?.id || null;
                     } catch { /* ignore */ }
 
+                    if (!userId) {
+                        console.log('👤 未登录，不追踪在线状态');
+                        const el = document.getElementById('onlineCount');
+                        if (el) el.textContent = '?';
+                        return;
+                    }
+
                     const channel = supabase.channel('online-users', {
                         config: { presence: { key: 'user_id' } }
                     });
@@ -2924,14 +2937,16 @@
                         const state = channel.presenceState();
                         const count = Object.keys(state).length;
                         onlineCountEl.textContent = count || 0;
+                        console.log(`👥 在线人数更新: ${count}`);
                     });
 
                     await channel.subscribe(async (status) => {
-                        if (status === 'SUBSCRIBED' && userId) {
+                        if (status === 'SUBSCRIBED') {
                             await channel.track({
                                 user_id: userId,
                                 online_at: new Date().toISOString(),
                             });
+                            console.log('✅ 已跟踪用户:', userId);
                         }
                     });
 
@@ -2942,11 +2957,6 @@
                         } catch { /* ignore */ }
                     });
 
-                    if (!userId) {
-                        onlineCountEl.textContent = '?';
-                        onlineCountEl.style.opacity = '0.5';
-                    }
-
                     console.log('👥 在线人数统计已启动');
                 } catch (err) {
                     console.warn('在线人数功能不可用:', err.message);
@@ -2956,7 +2966,7 @@
             }
 
             // ================================================================
-            //  23. 初始化
+            //  22. 初始化
             // ================================================================
             function init() {
                 console.log('🚀 初始化页面...');
@@ -2976,6 +2986,5 @@
 
         })();
     </script>
-
 </body>
 </html>
