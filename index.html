@@ -149,6 +149,40 @@
             z-index: 2;
         }
 
+        /* ★★★ 用户状态样式 ★★★ */
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 4px 12px 4px 8px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.85);
+            white-space: nowrap;
+        }
+        .user-status:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: scale(1.03);
+        }
+        .user-status i {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .user-status .username-text {
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        @media (max-width: 480px) {
+            .user-status { padding: 3px 8px 3px 6px; font-size: 0.7rem; }
+            .user-status .username-text { max-width: 50px; }
+        }
+
         .device-indicator {
             font-size: 0.75rem;
             font-weight: 500;
@@ -1720,6 +1754,11 @@
     <!-- ===== 导航栏 ===== -->
     <nav class="navbar" id="navbar">
         <div class="nav-left">
+            <!-- ★★★ 左上角用户状态 ★★★ -->
+            <span class="user-status" id="userStatus">
+                <i class="fas fa-user-circle"></i>
+                <span class="username-text" id="userNameDisplay">加载中...</span>
+            </span>
             <span class="device-indicator" id="deviceIndicator">💻</span>
             <span class="nav-title">✦ chen的空间</span>
         </div>
@@ -1857,12 +1896,69 @@
     </div>
 
     <script>
+        // ================================================================
+        //  ★★★ 用户登录状态（Supabase 集成） ★★★
+        // ================================================================
+
+        async function getSupabaseUser() {
+            if (window.__supabase) {
+                try {
+                    const user = await window.__supabase.getCurrentUser();
+                    return user;
+                } catch { return null; }
+            }
+            try {
+                const session = JSON.parse(localStorage.getItem('chen_session'));
+                return session?.user || null;
+            } catch {
+                return null;
+            }
+        }
+
+        async function getUserName() {
+            const user = await getSupabaseUser();
+            return user?.user_metadata?.username || user?.email?.split('@')[0] || null;
+        }
+
+        async function isLoggedIn() {
+            return !!(await getSupabaseUser());
+        }
+
+        async function updateUserStatus() {
+            const statusEl = document.getElementById('userStatus');
+            const nameEl = document.getElementById('userNameDisplay');
+            if (!statusEl || !nameEl) return;
+
+            const loggedIn = await isLoggedIn();
+            if (loggedIn) {
+                const name = await getUserName();
+                nameEl.textContent = name || '用户';
+                statusEl.style.borderColor = 'rgba(46, 204, 113, 0.3)';
+                statusEl.style.background = 'rgba(46, 204, 113, 0.08)';
+                // 点击跳转 index5（个人中心，暂未创建）
+                statusEl.onclick = function(e) {
+                    e.preventDefault();
+                    window.location.href = 'index5.html';
+                };
+            } else {
+                nameEl.textContent = '登录';
+                statusEl.style.borderColor = 'rgba(255, 255, 255, 0.06)';
+                statusEl.style.background = 'rgba(255, 255, 255, 0.06)';
+                statusEl.onclick = function(e) {
+                    e.preventDefault();
+                    window.location.href = 'login.html';
+                };
+            }
+        }
+
+        // ================================================================
+        //  原有逻辑（保持不变，但确保不冲突）
+        // ================================================================
+
         (function() {
             'use strict';
 
-            // ================================================================
-            //  1. 诗句列表
-            // ================================================================
+            // 诗句列表
             const poems = [
                 '花季莫浅忆，雨季莫愁离',
                 '汴水流，泗水流，流到瓜州古渡头。吴山点点愁',
@@ -1872,9 +1968,7 @@
                 '物是人非事事休，欲语泪先流'
             ];
 
-            // ================================================================
-            //  2. 打字机动画
-            // ================================================================
+            // 打字机动画
             const textEl = document.getElementById('typingText');
             const words = ['welcome', '你好', '欢迎来到我的空间', '无限进步'];
             let currentIndex = 0;
@@ -2013,9 +2107,7 @@
                 clearTimer();
             });
 
-            // ================================================================
-            //  3. DOM 引用 & 状态
-            // ================================================================
+            // DOM 引用
             const circleBtn = document.getElementById('circleBtn');
             const bodyEl = document.body;
             const cards = document.querySelectorAll('.card');
@@ -2030,27 +2122,21 @@
             const fullpageColRight3 = document.getElementById('fullpageColRight3');
             const fullpageSection3 = document.getElementById('fullpageSection3');
 
-            // 弹窗
             const modalOverlay = document.getElementById('modalOverlay');
             const modalClose = document.getElementById('modalClose');
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
             const modalBtnContainer = document.getElementById('modalButtonContainer');
 
-            // 导航栏文本
             const navTextEl = document.getElementById('navText');
             const navbarEl = document.getElementById('navbar');
-
-            // 通知容器
             const notifContainer = document.getElementById('notificationContainer');
 
             let isDarkMode = false;
             let isCard2Clicked = false;
             let isSharing = false;
 
-            // ================================================================
-            //  4. ★★★ 随机跑马灯配色方案 ★★★
-            // ================================================================
+            // 随机配色
             const colorPalettes = [
                 ['#ff6b6b', '#feca57', '#48dbfb', '#a29bfe'],
                 ['#fd79a8', '#fdcb6e', '#00cec9', '#6c5ce7'],
@@ -2066,9 +2152,7 @@
                 return colorPalettes[Math.floor(Math.random() * colorPalettes.length)];
             }
 
-            // ================================================================
-            //  5. ★★★ 通知系统 ★★★
-            // ================================================================
+            // 通知系统
             function showNotification(text, duration) {
                 duration = duration || 5000;
 
@@ -2108,9 +2192,7 @@
                 return item;
             }
 
-            // ================================================================
-            //  6. 初始化欢迎通知队列
-            // ================================================================
+            // 初始化欢迎通知
             function initWelcomeNotifications() {
                 const welcomeMsg = ['🎉 欢迎来到chen_space', '🖱️ 上下滑动浏览更多', '👆 部分卡片可点击',
                     '顶部分享页可切换页面'
@@ -2124,9 +2206,7 @@
                 });
             }
 
-            // ================================================================
-            //  7. 弹窗功能
-            // ================================================================
+            // 弹窗功能
             function openModal(title, bodyHTML, buttonHTML) {
                 modalTitle.textContent = title;
                 modalBody.innerHTML = bodyHTML;
@@ -2159,13 +2239,10 @@
                 }
             });
 
-            // ================================================================
-            //  8. ★★★ 所有卡片事件绑定（包括第三页） ★★★
-            // ================================================================
+            // 卡片事件绑定
             function bindAllCardEvents() {
                 console.log('🔄 绑定所有卡片事件...');
 
-                // 卡片1：打开 DeepSeek
                 const c1 = document.getElementById('card1');
                 if (c1) {
                     c1.addEventListener('click', function() {
@@ -2174,7 +2251,6 @@
                     });
                 }
 
-                // 卡片2：切换文字
                 const c2 = document.getElementById('card2');
                 if (c2) {
                     c2.addEventListener('click', function() {
@@ -2190,7 +2266,6 @@
                     });
                 }
 
-                // 卡片3
                 const c3 = document.getElementById('card3');
                 if (c3) {
                     c3.addEventListener('click', function() {
@@ -2198,7 +2273,6 @@
                     });
                 }
 
-                // 卡片4
                 const c4 = document.getElementById('card4');
                 if (c4) {
                     c4.addEventListener('click', function() {
@@ -2206,7 +2280,6 @@
                     });
                 }
 
-                // 卡片5
                 const c5 = document.getElementById('card5');
                 if (c5) {
                     c5.addEventListener('click', function() {
@@ -2214,7 +2287,6 @@
                     });
                 }
 
-                // 卡片6
                 const c6 = document.getElementById('card6');
                 if (c6) {
                     c6.addEventListener('click', function() {
@@ -2222,11 +2294,9 @@
                     });
                 }
 
-                // ★★★ 卡片7 — 第三页左侧（资源分享）— 弹窗后跳转 ★★★
                 const c7 = document.getElementById('card7');
                 if (c7) {
                     c7.addEventListener('click', function() {
-                        // 先弹窗
                         modalTitle.textContent = '⏳ 即将跳转';
                         modalBody.innerHTML = '正在前往分享页...';
                         modalBtnContainer.innerHTML = '';
@@ -2234,14 +2304,12 @@
                         document.body.style.overflow = 'hidden';
                         showNotification('⏳ 即将跳转');
 
-                        // 3秒后跳转
                         setTimeout(function() {
                             window.location.href = 'index2.html';
                         }, 3000);
                     });
                 }
 
-                // ★★★ 卡片8 — 第三页右侧（求同款） ★★★
                 const c8 = document.getElementById('card8');
                 if (c8) {
                     c8.addEventListener('click', function() {
@@ -2257,9 +2325,7 @@
                 console.log('✅ 所有卡片事件绑定完成');
             }
 
-            // ================================================================
-            //  9. ★★★ 圆形按钮事件 ★★★
-            // ================================================================
+            // 圆形按钮事件
             function bindCircleButton() {
                 console.log('🔄 绑定圆形按钮...');
 
@@ -2290,9 +2356,7 @@
                 console.log('✅ 圆形按钮绑定完成');
             }
 
-            // ================================================================
-            //  10. 导航栏按钮
-            // ================================================================
+            // 导航栏按钮
             document.getElementById('homeBtn').addEventListener('click', function(e) {
                 e.preventDefault();
                 this.style.transform = 'scale(0.94)';
@@ -2300,7 +2364,6 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
-            // ★★★ 分享页按钮 ★★★
             document.getElementById('shareBtn').addEventListener('click', function(e) {
                 e.preventDefault();
                 if (isSharing) return;
@@ -2329,7 +2392,6 @@
                 }
             });
 
-            // ★★★ 关于按钮 — 跳转 index4.html ★★★
             document.getElementById('aboutBtn').addEventListener('click', function(e) {
                 e.preventDefault();
                 this.style.transform = 'scale(0.94)';
@@ -2337,9 +2399,7 @@
                 window.location.href = 'index4.html';
             });
 
-            // ================================================================
-            //  11. 滚动缩放卡片
-            // ================================================================
+            // 滚动缩放卡片
             const MIN_SCALE = 0.30;
             const NORMAL_SCALE = 1.0;
             const THRESHOLD_TOP = 0.70;
@@ -2395,9 +2455,7 @@
                 });
             }
 
-            // ================================================================
-            //  12. 模糊覆盖层
-            // ================================================================
+            // 模糊覆盖层
             const blurOverlay = document.getElementById('blurOverlay');
             const heroSection = document.querySelector('.hero-section');
 
@@ -2429,9 +2487,7 @@
             window.addEventListener('resize', updateBlurOverlay, { passive: true });
             setTimeout(updateBlurOverlay, 200);
 
-            // ================================================================
-            //  13. Dock 栏
-            // ================================================================
+            // Dock 栏
             let dockVisible = false;
 
             function checkDockVisibility() {
@@ -2470,9 +2526,7 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
-            // ================================================================
-            //  14. 自适应字体大小
-            // ================================================================
+            // 自适应字体大小
             function adjustFontSize() {
                 const allCards = document.querySelectorAll('.card');
                 allCards.forEach(function(card) {
@@ -2574,9 +2628,7 @@
                 setTimeout(adjustFontSize, 300);
             });
 
-            // ================================================================
-            //  15. 设备检测
-            // ================================================================
+            // 设备检测
             function detectDevice() {
                 const ua = navigator.userAgent;
                 const isPhone = /Mobi|Android|iPhone|iPod/i.test(ua) && !/iPad/i.test(ua);
@@ -2601,9 +2653,7 @@
                 window.addEventListener('load', detectDevice);
             }
 
-            // ================================================================
-            //  16. 背景切换
-            // ================================================================
+            // 背景切换
             let lastBgState = '';
 
             function updateBackground() {
@@ -2646,9 +2696,7 @@
                 }
             }
 
-            // ================================================================
-            //  17. 全屏卡片入场动画
-            // ================================================================
+            // 全屏卡片入场动画
             function triggerFullpageAnimation() {
                 const rect = fullpageSection.getBoundingClientRect();
                 const windowHeight = window.innerHeight;
@@ -2702,9 +2750,7 @@
                 });
             }
 
-            // ================================================================
-            //  18. 导航栏边缘过渡消除
-            // ================================================================
+            // 导航栏边缘过渡消除
             function onNavbarExpandEnd() {
                 navbarEl.classList.add('mask-done');
             }
@@ -2721,9 +2767,7 @@
                 }
             }, 5000);
 
-            // ================================================================
-            //  19. caillo~ 切换为随机诗句
-            // ================================================================
+            // caillo~ 切换为随机诗句
             let poemSwitched = false;
 
             function switchToPoem() {
@@ -2777,9 +2821,7 @@
                 }
             }, 5500);
 
-            // ================================================================
-            //  20. 通知容器位置自适应
-            // ================================================================
+            // 通知容器位置自适应
             function updateNotifPosition() {
                 const nav = document.getElementById('navbar');
                 const container = document.getElementById('notificationContainer');
@@ -2794,9 +2836,7 @@
                 setTimeout(updateNotifPosition, 300);
             });
 
-            // ================================================================
-            //  21. ★★★ 主初始化 ★★★
-            // ================================================================
+            // 初始化
             function init() {
                 console.log('🚀 初始化页面...');
                 setTimeout(initWelcomeNotifications, 800);
@@ -2812,6 +2852,15 @@
             }
 
         })();
+
+        // ★★★ 在页面加载完成后更新用户状态 ★★★
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(updateUserStatus, 300);
+        } else {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(updateUserStatus, 300);
+            });
+        }
     </script>
 
 </body>
