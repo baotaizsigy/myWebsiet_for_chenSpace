@@ -18,7 +18,6 @@
             color: white;
             overflow-x: hidden;
             background-color: #1a1a2e;
-            /* 背景由 JS 动态设置，先显示纯色，让卡片优先渲染 */
             background-size: cover;
             background-position: center center;
             background-attachment: fixed;
@@ -80,7 +79,7 @@
         }
 
         /* ================================================================
-               导航栏
+               导航栏（含按钮）
                ================================================================ */
         .navbar {
             position: fixed;
@@ -253,6 +252,7 @@
             }
         }
 
+        /* ★★★ 导航栏按钮 ★★★ */
         .nav-buttons {
             display: flex;
             gap: 12px;
@@ -441,7 +441,7 @@
         }
 
         /* ================================================================
-               主布局 — 左对齐文字 + 第二页卡片网格
+               主布局 — 所有内容在同一个页面，滚动查看
                ================================================================ */
         .main-wrapper {
             position: relative;
@@ -454,7 +454,7 @@
             padding: 20px 40px 80px;
         }
 
-        /* ===== 第一页 ===== */
+        /* ===== 第一页：标题区 ===== */
         .hero-section {
             width: 100%;
             max-width: 800px;
@@ -526,16 +526,47 @@
             z-index: 1;
         }
 
-        /* 固定4列，等比缩放 */
-        .share-grid {
+        /* ===== 第三页：楼主分享板块 ===== */
+        .lz-section {
+            width: 100%;
+            max-width: 1200px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+
+        .lz-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+            text-align: left;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ★★★ 卡片网格 — 固定4列，每列等宽 ★★★ */
+        .share-grid,
+        .lz-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: clamp(10px, 1.5vw, 30px);
             width: 100%;
         }
 
-        /* 卡片 — 4:3 比例，毛玻璃 */
-        .share-card {
+        /* ★★★ 卡片 — 整个卡片一起缩放 ★★★ */
+        .share-card,
+        .lz-card {
+            --scale: 1;
+            transform: scale(var(--scale));
+            transform-origin: center center;
+            will-change: transform;
+
             background: rgba(20, 20, 40, 0.35);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
@@ -544,7 +575,10 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             padding: clamp(12px, 1.5vw, 24px);
             cursor: pointer;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 0.25s ease,
+                border-color 0.3s ease,
+                background 0.3s ease;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -555,17 +589,21 @@
             position: relative;
         }
 
-        .share-card:hover {
-            transform: translateY(-6px) scale(1.01);
+        .share-card:hover,
+        .lz-card:hover {
+            transform: scale(calc(var(--scale) * 1.02)) translateY(-4px);
             box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
             border-color: rgba(255, 255, 255, 0.25);
+            background: rgba(30, 30, 60, 0.45);
         }
 
-        .share-card:active {
-            transform: scale(0.97);
+        .share-card:active,
+        .lz-card:active {
+            transform: scale(calc(var(--scale) * 0.97)) translateY(0);
         }
 
-        .share-card .card-title {
+        .share-card .card-title,
+        .lz-card .card-title {
             font-size: clamp(0.9rem, 1.6vw, 1.8rem);
             font-weight: 700;
             color: #ffffff;
@@ -574,7 +612,8 @@
             letter-spacing: 0.5px;
         }
 
-        .share-card .card-body {
+        .share-card .card-body,
+        .lz-card .card-body {
             font-size: clamp(0.65rem, 0.9vw, 1rem);
             color: rgba(255, 255, 255, 0.8);
             line-height: 1.5;
@@ -583,12 +622,15 @@
         }
 
         /* 暗黑模式 */
-        body.dark-mode .share-card {
+        body.dark-mode .share-card,
+        body.dark-mode .lz-card {
             background: rgba(0, 0, 0, 0.5);
             border-color: rgba(255, 255, 255, 0.06);
         }
 
-        body.dark-mode .share-card:hover {
+        body.dark-mode .share-card:hover,
+        body.dark-mode .lz-card:hover {
+            background: rgba(0, 0, 0, 0.6);
             border-color: rgba(255, 255, 255, 0.15);
         }
 
@@ -1016,23 +1058,41 @@
                 font-size: 0.8rem;
             }
 
-            .share-title {
+            .share-title,
+            .lz-title {
                 font-size: 2.2rem;
             }
-            .share-card .card-title {
+            .share-card .card-title,
+            .lz-card .card-title {
                 font-size: clamp(0.8rem, 1.6vw, 1.2rem);
             }
-            .share-card .card-body {
+            .share-card .card-body,
+            .lz-card .card-body {
                 font-size: clamp(0.6rem, 1vw, 0.85rem);
             }
-            .share-grid {
+            .share-grid,
+            .lz-grid {
                 gap: clamp(8px, 1.5vw, 16px);
             }
         }
 
+        /* ★★★ 修改点：在屏幕宽度 600px 以下改为2列，移动端更舒适 ★★★ */
         @media (max-width: 600px) {
             .nav-center {
                 display: none;
+            }
+            .share-grid,
+            .lz-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: clamp(8px, 1.5vw, 16px);
+            }
+            .share-card .card-title,
+            .lz-card .card-title {
+                font-size: clamp(0.7rem, 1.4vw, 1.0rem);
+            }
+            .share-card .card-body,
+            .lz-card .card-body {
+                font-size: clamp(0.5rem, 0.8vw, 0.7rem);
             }
         }
 
@@ -1052,14 +1112,6 @@
             }
             .nav-title {
                 font-size: 0.8rem;
-            }
-            .nav-btn {
-                padding: 4px 10px;
-                font-size: 0.65rem;
-                border-radius: 20px;
-            }
-            .nav-buttons {
-                gap: 6px;
             }
             .device-indicator {
                 font-size: 0.55rem;
@@ -1104,17 +1156,21 @@
                 font-size: 0.7rem;
             }
 
-            .share-title {
+            .share-title,
+            .lz-title {
                 font-size: 1.8rem;
             }
-            .share-card .card-title {
-                font-size: clamp(0.7rem, 1.5vw, 1.0rem);
-            }
-            .share-card .card-body {
-                font-size: clamp(0.5rem, 1vw, 0.7rem);
-            }
-            .share-grid {
+            .share-grid,
+            .lz-grid {
                 gap: clamp(6px, 1.2vw, 12px);
+            }
+            .share-card .card-title,
+            .lz-card .card-title {
+                font-size: clamp(0.6rem, 1.2vw, 0.9rem);
+            }
+            .share-card .card-body,
+            .lz-card .card-body {
+                font-size: clamp(0.45rem, 0.8vw, 0.65rem);
             }
         }
 
@@ -1127,10 +1183,6 @@
             }
             .nav-title {
                 font-size: 0.7rem;
-            }
-            .nav-btn {
-                font-size: 0.6rem;
-                padding: 3px 8px;
             }
             .device-indicator {
                 font-size: 0.5rem;
@@ -1157,14 +1209,17 @@
                 padding: 4px 12px;
                 font-size: 0.6rem;
             }
-            .share-grid {
+            .share-grid,
+            .lz-grid {
                 gap: 6px;
             }
-            .share-card .card-title {
-                font-size: 0.6rem;
+            .share-card .card-title,
+            .lz-card .card-title {
+                font-size: 0.55rem;
             }
-            .share-card .card-body {
-                font-size: 0.45rem;
+            .share-card .card-body,
+            .lz-card .card-body {
+                font-size: 0.4rem;
             }
         }
     </style>
@@ -1176,7 +1231,7 @@
     <!-- ===== 底部羽化模糊覆盖层 ===== -->
     <div class="blur-overlay" id="blurOverlay"></div>
 
-    <!-- ===== 导航栏 ===== -->
+    <!-- ===== 导航栏（含按钮） ===== -->
     <nav class="navbar" id="navbar">
         <div class="nav-left">
             <span class="device-indicator" id="deviceIndicator">💻</span>
@@ -1185,6 +1240,7 @@
         <div class="nav-center">
             <span class="nav-text" id="navText">caillo~</span>
         </div>
+        <!-- ★★★ 按钮已加回 ★★★ -->
         <div class="nav-buttons">
             <button class="nav-btn" id="homeBtn">🏠 首页</button>
             <button class="nav-btn" id="backBtn">🔙 回空间</button>
@@ -1197,16 +1253,24 @@
     <!-- ===== 主体 ===== -->
     <div class="main-wrapper">
 
-        <!-- 第一页 -->
+        <!-- ===== 第一页：标题区 ===== -->
         <section class="hero-section">
             <div class="main-title">分享页</div>
             <div class="sub-text">赠人玫瑰</div>
         </section>
 
-        <!-- 第二页：网页分享 -->
+        <!-- ===== 第二页：网页分享 ===== -->
         <section class="share-section" id="shareSection">
             <div class="share-title">🌐 网页分享</div>
             <div class="share-grid" id="shareGrid">
+                <!-- 卡片由 JavaScript 动态生成 -->
+            </div>
+        </section>
+
+        <!-- ===== 第三页：楼主分享 ===== -->
+        <section class="lz-section" id="lzSection">
+            <div class="lz-title">👤 楼主分享</div>
+            <div class="lz-grid" id="lzGrid">
                 <!-- 卡片由 JavaScript 动态生成 -->
             </div>
         </section>
@@ -1262,7 +1326,14 @@
             ];
 
             // ================================================================
-            //  2. 渲染卡片（优先执行，不依赖任何网络请求）
+            //  2. ★★★ 楼主分享卡片数据 ★★★
+            // ================================================================
+            const lzCardsData = [
+                ["🏠 奶妈捷风空间", "跳转至b站空间", "https://space.bilibili.com/3493293233015567"]
+            ];
+
+            // ================================================================
+            //  3. 渲染卡片
             // ================================================================
             function renderCards() {
                 const grid = document.getElementById('shareGrid');
@@ -1292,7 +1363,85 @@
             }
 
             // ================================================================
-            //  3. 设置随机壁纸（使用 picsum.photos，异步加载不阻塞）
+            //  4. 渲染楼主分享卡片
+            // ================================================================
+            function renderLzCards() {
+                const grid = document.getElementById('lzGrid');
+                if (!grid) return;
+                grid.innerHTML = '';
+                lzCardsData.forEach(function(card) {
+                    const title = card[0];
+                    const body = card[1];
+                    const url = card[2];
+
+                    const div = document.createElement('div');
+                    div.className = 'lz-card';
+                    div.dataset.url = url;
+
+                    div.innerHTML = `
+                        <div class="card-title">${title}</div>
+                        <div class="card-body">${body}</div>
+                    `;
+
+                    grid.appendChild(div);
+                });
+            }
+
+            // ================================================================
+            //  5. ★★★ 卡片滚动缩放效果 — 整个卡片一起缩放（像 index1）★★★
+            // ================================================================
+            const MIN_SCALE = 0.30;
+            const NORMAL_SCALE = 1.0;
+            const THRESHOLD_TOP = 0.70;
+            const THRESHOLD_BOTTOM = 1.00;
+
+            function updateCardScales() {
+                const windowHeight = window.innerHeight;
+                const thresholdTopPx = windowHeight * THRESHOLD_TOP;
+                const thresholdBottomPx = windowHeight * THRESHOLD_BOTTOM;
+                const range = thresholdBottomPx - thresholdTopPx;
+
+                const allCards = document.querySelectorAll('.share-card, .lz-card');
+
+                allCards.forEach(function(card) {
+                    const rect = card.getBoundingClientRect();
+                    const top = rect.top;
+
+                    let scale = NORMAL_SCALE;
+
+                    if (top <= thresholdTopPx) {
+                        scale = NORMAL_SCALE;
+                    } else if (top >= thresholdBottomPx) {
+                        scale = MIN_SCALE;
+                    } else {
+                        const progress = (top - thresholdTopPx) / range;
+                        scale = NORMAL_SCALE - (NORMAL_SCALE - MIN_SCALE) * progress;
+                    }
+
+                    card.style.setProperty('--scale', scale);
+                });
+            }
+
+            // 节流滚动
+            let ticking = false;
+
+            function onScroll() {
+                if (!ticking) {
+                    window.requestAnimationFrame(function() {
+                        updateCardScales();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('resize', function() {
+                updateCardScales();
+            }, { passive: true });
+
+            // ================================================================
+            //  6. 设置随机壁纸
             // ================================================================
             function setRandomWallpaper() {
                 const apiUrl = 'https://picsum.photos/1920/1080?t=' + Date.now();
@@ -1300,7 +1449,7 @@
             }
 
             // ================================================================
-            //  4. 诗句列表
+            //  7. 诗句列表
             // ================================================================
             const poems = [
                 '花季莫浅忆，雨季莫愁离',
@@ -1312,7 +1461,7 @@
             ];
 
             // ================================================================
-            //  5. DOM 引用 & 状态
+            //  8. DOM 引用
             // ================================================================
             const bodyEl = document.body;
             const dockBar = document.getElementById('dockBar');
@@ -1321,10 +1470,8 @@
             const navTextEl = document.getElementById('navText');
             const notifContainer = document.getElementById('notificationContainer');
 
-            let isDarkMode = false;
-
             // ================================================================
-            //  6. 随机配色
+            //  9. 随机配色
             // ================================================================
             const colorPalettes = [
                 ['#ff6b6b', '#feca57', '#48dbfb', '#a29bfe'],
@@ -1342,7 +1489,7 @@
             }
 
             // ================================================================
-            //  7. 通知系统
+            //  10. 通知系统
             // ================================================================
             function showNotification(text, duration) {
                 duration = duration || 5000;
@@ -1384,13 +1531,13 @@
             }
 
             // ================================================================
-            //  8. 欢迎通知
+            //  11. 欢迎通知
             // ================================================================
             function initWelcomeNotifications() {
                 const welcomeMsg = [
                     '🎉 欢迎来到分享页',
-                    '🔙 点击"回空间"返回',
-                    '🌐 下方有网页分享卡片'
+                    '📜 向下滚动浏览卡片',
+                    '🌐 点击卡片跳转链接'
                 ];
                 const delays = [200, 400, 600];
 
@@ -1402,24 +1549,7 @@
             }
 
             // ================================================================
-            //  9. 导航栏按钮
-            // ================================================================
-            document.getElementById('homeBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                this.style.transform = 'scale(0.94)';
-                setTimeout(() => { this.style.transform = ''; }, 150);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            document.getElementById('backBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                this.style.transform = 'scale(0.94)';
-                setTimeout(() => { this.style.transform = ''; }, 150);
-                window.location.href = 'index.html';
-            });
-
-            // ================================================================
-            //  10. 模态框（弹窗）功能
+            //  12. 模态框功能
             // ================================================================
             const modalOverlay = document.getElementById('modalOverlay');
             const modalClose = document.getElementById('modalClose');
@@ -1455,79 +1585,110 @@
             });
 
             // ================================================================
-            //  11. ★★★ 卡片点击事件（事件委托）★★★
+            //  13. ★★★ 卡片点击事件 ★★★
             // ================================================================
-            document.getElementById('shareGrid').addEventListener('click', function(e) {
-                const card = e.target.closest('.share-card');
-                if (!card) return;
+            function bindCardEvents() {
+                // 网页分享卡片（委托）
+                document.getElementById('shareGrid').addEventListener('click', function(e) {
+                    const card = e.target.closest('.share-card');
+                    if (!card) return;
 
-                // 搜索卡片
-                if (card.dataset.action === 'search') {
-                    const bodyHTML = `
-                        <div class="search-container">
-                            <span>搜索内容：</span>
-                            <input type="text" id="searchInput" placeholder="输入关键词" autofocus />
-                            <button id="searchBtn">🔍 搜索</button>
-                        </div>
-                    `;
-                    openModal('🌐 海外搜索引擎', bodyHTML, '');
+                    if (card.dataset.action === 'search') {
+                        const bodyHTML = `
+                            <div class="search-container">
+                                <span>搜索内容：</span>
+                                <input type="text" id="searchInput" placeholder="输入关键词" autofocus />
+                                <button id="searchBtn">🔍 搜索</button>
+                            </div>
+                        `;
+                        openModal('🌐 海外搜索引擎', bodyHTML, '');
 
-                    setTimeout(function() {
-                        const searchInput = document.getElementById('searchInput');
-                        const searchBtn = document.getElementById('searchBtn');
+                        setTimeout(function() {
+                            const searchInput = document.getElementById('searchInput');
+                            const searchBtn = document.getElementById('searchBtn');
 
-                        if (!searchInput || !searchBtn) return;
+                            if (!searchInput || !searchBtn) return;
 
-                        const doSearch = function() {
-                            const text = searchInput.value.trim();
-                            if (text) {
-                                window.open('https://yandex.com/search/?text=' + encodeURIComponent(text),
-                                    '_blank');
-                                closeModal();
-                            } else {
-                                showNotification('⚠️ 请输入搜索内容');
-                                searchInput.focus();
-                            }
-                        };
+                            const doSearch = function() {
+                                const text = searchInput.value.trim();
+                                if (text) {
+                                    window.open('https://yandex.com/search/?text=' + encodeURIComponent(text),
+                                        '_blank');
+                                    closeModal();
+                                } else {
+                                    showNotification('⚠️ 请输入搜索内容');
+                                    searchInput.focus();
+                                }
+                            };
 
-                        searchBtn._listener && searchBtn.removeEventListener('click', searchBtn._listener);
-                        searchInput._listener && searchInput.removeEventListener('keydown', searchInput
-                        ._listener);
+                            searchBtn._listener && searchBtn.removeEventListener('click', searchBtn._listener);
+                            searchInput._listener && searchInput.removeEventListener('keydown', searchInput
+                            ._listener);
 
-                        searchBtn._listener = doSearch;
-                        searchInput._listener = function(e) {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                                doSearch();
-                            }
-                        };
+                            searchBtn._listener = doSearch;
+                            searchInput._listener = function(e) {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    doSearch();
+                                }
+                            };
 
-                        searchBtn.addEventListener('click', searchBtn._listener);
-                        searchInput.addEventListener('keydown', searchInput._listener);
-                        searchInput.focus();
-                    }, 150);
-                    return;
-                }
+                            searchBtn.addEventListener('click', searchBtn._listener);
+                            searchInput.addEventListener('keydown', searchInput._listener);
+                            searchInput.focus();
+                        }, 150);
+                        return;
+                    }
 
-                // 普通卡片：延迟2秒跳转
-                const url = card.dataset.url;
-                if (url) {
-                    const title = card.querySelector('.card-title')?.textContent || '链接';
-                    showNotification(`⏳ 即将跳转至 ${title.trim()}...`, 2000);
+                    const url = card.dataset.url;
+                    if (url) {
+                        const title = card.querySelector('.card-title')?.textContent || '链接';
+                        showNotification(`⏳ 即将跳转至 ${title.trim()}...`, 2000);
 
-                    card.style.pointerEvents = 'none';
-                    card.style.opacity = '0.6';
+                        card.style.pointerEvents = 'none';
+                        card.style.opacity = '0.6';
 
-                    setTimeout(() => {
+                        setTimeout(() => {
+                            window.open(url, '_blank');
+                            card.style.pointerEvents = '';
+                            card.style.opacity = '';
+                        }, 2000);
+                    }
+                });
+
+                // 楼主分享卡片（委托，直接跳转无延迟）
+                document.getElementById('lzGrid').addEventListener('click', function(e) {
+                    const card = e.target.closest('.lz-card');
+                    if (!card) return;
+
+                    const url = card.dataset.url;
+                    if (url) {
+                        const title = card.querySelector('.card-title')?.textContent || '链接';
+                        showNotification(`🔗 正在打开 ${title.trim()}...`, 1500);
                         window.open(url, '_blank');
-                        card.style.pointerEvents = '';
-                        card.style.opacity = '';
-                    }, 2000);
-                }
+                    }
+                });
+            }
+
+            // ================================================================
+            //  14. ★★★ 导航栏按钮事件 ★★★
+            // ================================================================
+            document.getElementById('homeBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('backBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.94)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+                window.location.href = 'index.html';
             });
 
             // ================================================================
-            //  12. Dock 栏
+            //  15. Dock 栏
             // ================================================================
             let dockVisible = false;
 
@@ -1568,7 +1729,7 @@
             });
 
             // ================================================================
-            //  13. 底部羽化模糊覆盖层
+            //  16. 底部羽化模糊覆盖层
             // ================================================================
             const blurOverlay = document.getElementById('blurOverlay');
             const heroSection = document.querySelector('.hero-section');
@@ -1602,7 +1763,7 @@
             setTimeout(updateBlurOverlay, 200);
 
             // ================================================================
-            //  14. 设备检测
+            //  17. 设备检测
             // ================================================================
             function detectDevice() {
                 const ua = navigator.userAgent;
@@ -1622,7 +1783,7 @@
             }
 
             // ================================================================
-            //  15. 导航栏动画
+            //  18. 导航栏动画
             // ================================================================
             function onNavbarExpandEnd() {
                 navbarEl.classList.add('mask-done');
@@ -1641,7 +1802,7 @@
             }, 5000);
 
             // ================================================================
-            //  16. 诗句切换
+            //  19. 诗句切换
             // ================================================================
             let poemSwitched = false;
 
@@ -1689,7 +1850,7 @@
             }, 5500);
 
             // ================================================================
-            //  17. 通知位置
+            //  20. 通知位置
             // ================================================================
             function updateNotifPosition() {
                 const nav = document.getElementById('navbar');
@@ -1706,19 +1867,17 @@
             });
 
             // ================================================================
-            //  18. ★★★ 初始化（卡片优先，背景延后，通知最后）★★★
+            //  21. ★★★ 初始化 ★★★
             // ================================================================
             function init() {
-                console.log('🚀 初始化分享页（数据驱动卡片）...');
+                console.log('🚀 初始化分享页（合并版 + 整卡缩放）...');
 
-                // 第一步：立即渲染卡片（不依赖任何网络请求）
                 renderCards();
-
-                // 第二步：设置背景（异步加载，不阻塞页面）
+                renderLzCards();
+                bindCardEvents();
                 setRandomWallpaper();
-
-                // 第三步：通知延迟弹出（等卡片显示后再弹）
                 setTimeout(initWelcomeNotifications, 800);
+                setTimeout(updateCardScales, 100);
 
                 console.log('✅ 初始化完成');
             }
